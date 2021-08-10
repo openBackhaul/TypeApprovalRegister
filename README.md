@@ -9,7 +9,7 @@
 - [Documentation of the ApplicationPattern](https://github.com/openBackhaul/ApplicationPattern/tree/tsi)
 
 ### Open API specification (Swagger)
-- [TypeApprovalRegister_0.0.1_tsi.210807.1645a](./TypeApprovalRegister_0.0.1_tsi.210807.1645a.yaml)
+- [TypeApprovalRegister_0.0.1_tsi.210807.1645b](./TypeApprovalRegister_0.0.1_tsi.210807.1645b.yaml)
 
 ### Test Cases (Postman Export) and Data File
 -
