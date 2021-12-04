@@ -8,14 +8,20 @@
 ### Documentation
 - [Documentation of the ApplicationPattern](https://github.com/openBackhaul/ApplicationPattern/tree/tsi)
 
+### Services
+- [TypeApprovalRegister_0.0.2_tsi.211204.1310+services.1](./TypeApprovalRegister_0.0.2_tsi.211204.1310+services.1.xlsx)
+
+### Forwardings
+- [TypeApprovalRegister_0.0.2_tsi.211204.1310+forwardings.1](./TypeApprovalRegister_0.0.2_tsi.211204.1310+forwardings.1.xlsx)
+
 ### Open API specification (Swagger)
-- [TypeApprovalRegister_0.0.1_tsi.210817.1040](./TypeApprovalRegister_0.0.1_tsi.210817.1040.yaml)
+- [TypeApprovalRegister_0.0.2_tsi.211204.1310](./TypeApprovalRegister_0.0.2_tsi.211204.1310.yaml)
+
+### Load File (JSON)
+- [TypeApprovalRegister_0.0.2_tsi.211204.1310+data.1](./TypeApprovalRegister_0.0.2_tsi.211204.1310+data.1.json)
 
 ### Test Cases (Postman Export) and Data File
 -
-
-### Load File (JSON)
-- [TypeApprovalRegister_0.0.1_tsi.210817.1040+data.1](./TypeApprovalRegister_0.0.1_tsi.210817.1040+data.1.json)
 
 ### Publication
 - No official publication planned
