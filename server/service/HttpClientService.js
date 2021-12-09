@@ -11,7 +11,7 @@ exports.getHttpClientApplicationName = function(uuid) {
   return new Promise(function(resolve, reject) {
     var examples = {};
     examples['application/json'] = {
-  "http-client-interface-1-0:application-name" : "RegistryOffice"
+  "http-client-interface-1-0:application-name" : "OldRelease"
 };
     if (Object.keys(examples).length > 0) {
       resolve(examples[Object.keys(examples)[0]]);

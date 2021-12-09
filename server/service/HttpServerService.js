@@ -11,7 +11,7 @@ exports.getHttpServerApplicationName = function(uuid) {
   return new Promise(function(resolve, reject) {
     var examples = {};
     examples['application/json'] = {
-  "http-server-interface-1-0:application-name" : "TypeApprovalRegister"
+  "http-server-interface-1-0:application-name" : "ApplicationName"
 };
     if (Object.keys(examples).length > 0) {
       resolve(examples[Object.keys(examples)[0]]);
@@ -32,7 +32,7 @@ exports.getHttpServerApplicationPurpose = function(uuid) {
   return new Promise(function(resolve, reject) {
     var examples = {};
     examples['application/json'] = {
-  "http-server-interface-1-0:application-purpose" : "Type approvals for applications being active in the MBH SDN must be documented here."
+  "http-server-interface-1-0:application-purpose" : "Brief description of the purpose of the application."
 };
     if (Object.keys(examples).length > 0) {
       resolve(examples[Object.keys(examples)[0]]);
@@ -44,7 +44,7 @@ exports.getHttpServerApplicationPurpose = function(uuid) {
 
 
 /**
- * Returns update periode
+ * Returns update period
  *
  * uuid String 
  * returns inline_response_200_18
@@ -118,7 +118,7 @@ exports.getHttpServerReleaseList = function(uuid) {
     examples['application/json'] = {
   "http-server-interface-1-0:release-list" : [ {
     "release-number" : "0.0.1",
-    "release-date" : "16.07.2021",
+    "release-date" : "20.11.2010",
     "changes" : "Initial version."
   } ]
 };

@@ -4,9 +4,10 @@
 /**
  * Returns detailed logging configuration.
  *
+ * uuid String 
  * returns inline_response_200_28
  **/
-exports.getOperationClientDetailedLoggingIsOn = function() {
+exports.getOperationClientDetailedLoggingIsOn = function(uuid) {
   return new Promise(function(resolve, reject) {
     var examples = {};
     examples['application/json'] = {
@@ -73,7 +74,7 @@ exports.getOperationClientOperationName = function(uuid) {
   return new Promise(function(resolve, reject) {
     var examples = {};
     examples['application/json'] = {
-  "operation-client-interface-1-0:operation-name" : "/v1/register-application"
+  "operation-client-interface-1-0:operation-name" : "/v1/bequeath-your-data-and-die"
 };
     if (Object.keys(examples).length > 0) {
       resolve(examples[Object.keys(examples)[0]]);
@@ -109,9 +110,10 @@ exports.getOperationClientOperationalState = function(uuid) {
  * Configures detailed logging on/off.
  *
  * body Operationclientinterfaceconfiguration_detailedloggingison_body 
+ * uuid String 
  * no response value expected for this operation
  **/
-exports.putOperationClientDetailedLoggingIsOn = function(body) {
+exports.putOperationClientDetailedLoggingIsOn = function(body,uuid) {
   return new Promise(function(resolve, reject) {
     resolve();
   });
