@@ -40,11 +40,12 @@ exports.recordOamRequest = function (oamPath, requestBody, responseCode, authori
             let ipAddressAndPort = await operationClientInterface.getTcpIpAddressAndPortForTheOperationClient(operationClientUuid);
             let operationKey = await operationClientInterface.getOperationKey(operationClientUuid);
             let applicationName = await httpServerInterface.getApplicationName();
+            let releaseNumber = await httpServerInterface.getReleaseNumber();
             let timestamp = moment().format();
             let userName = authorizationCodeDecoder.decodeAuthorizationCodeAndExtractUserName(authorizationCode);
             let stringifiedBody = JSON.stringify(requestBody);
             let httpRequestHeader = onfAttributeFormatter.modifyJsonObjectKeysToKebabCase(new requestHeader(userName, applicationName, "", "", "unknown", operationKey));
-            let httpRequestBody = formulateResponseBody(method, oamPath, stringifiedBody, responseCode, userName, timestamp);
+            let httpRequestBody = formulateResponseBody(method, oamPath, stringifiedBody, responseCode, userName, timestamp,applicationName,releaseNumber);
             let response = await requestBuilder.BuildAndTriggerRestRequest(ipAddressAndPort, serviceName, "POST", httpRequestHeader, httpRequestBody);
             if (response !== undefined && response.status === 200) {
                 resolve(true);
@@ -67,16 +68,17 @@ exports.recordOamRequest = function (oamPath, requestBody, responseCode, authori
  * @param {string} timeStamp timestamp of the execution<br>
  * @returns {object} return the formulated responseBody<br>
  */
-function formulateResponseBody(method, oamPath, stringifiedBody, responseCode, userName, timeStamp) {
+function formulateResponseBody(method, oamPath, stringifiedBody, responseCode, userName, timeStamp,applicationName, releaseNumber) {
     let httpRequestBody = {};
     try {
         httpRequestBody = {
-            "application-name": "RegistryOffice",
+            "application-name": applicationName,
+            "release-number": releaseNumber,
             "method": method,
             "resource": oamPath,
             "stringified-body": stringifiedBody,
             "response-code": responseCode,
-            "Authorization": userName,
+            "user-name": userName,
             "timestamp": timeStamp
         };
         return httpRequestBody;
