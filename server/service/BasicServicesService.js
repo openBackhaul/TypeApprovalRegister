@@ -201,7 +201,7 @@ exports.endSubscription = function (body, user, originator, xCorrelator, traceIn
  *@param {String} xCorrelator String UUID for the service execution flow that allows to correlate requests and responses
  *@param {String} traceIndicator String Sequence of request numbers along the flow
  *@param {String} customerJourney String Holds information supporting customer’s journey to which the execution applies
- * returns inline_response_200_4
+ *@returns inline_response_200_4
  **/
 exports.informAboutApplication = function (user, originator, xCorrelator, traceIndicator, customerJourney) {
   return new Promise(async function (resolve, reject) {
@@ -244,7 +244,7 @@ exports.informAboutApplication = function (user, originator, xCorrelator, traceI
  *@param {String} xCorrelator String UUID for the service execution flow that allows to correlate requests and responses
  *@param {String} traceIndicator String Sequence of request numbers along the flow
  *@param {String} customerJourney String Holds information supporting customer’s journey to which the execution applies
- * returns inline_response_200_5
+ *@returns inline_response_200_5
  **/
 exports.informAboutApplicationInGenericRepresentation = function (user, originator, xCorrelator, traceIndicator, customerJourney) {
   return new Promise(async function (resolve, reject) {
@@ -308,7 +308,7 @@ exports.informAboutApplicationInGenericRepresentation = function (user, originat
  *@param {String} xCorrelator String UUID for the service execution flow that allows to correlate requests and responses
  *@param {String} traceIndicator String Sequence of request numbers along the flow
  *@param {String} customerJourney String Holds information supporting customer’s journey to which the execution applies
- * returns List
+ *@returns List
  **/
 exports.informAboutReleaseHistory = function (user, originator, xCorrelator, traceIndicator, customerJourney) {
   return new Promise(async function (resolve, reject) {
@@ -343,7 +343,7 @@ exports.informAboutReleaseHistory = function (user, originator, xCorrelator, tra
  *@param {String} xCorrelator String UUID for the service execution flow that allows to correlate requests and responses
  *@param {String} traceIndicator String Sequence of request numbers along the flow
  *@param {String} customerJourney String Holds information supporting customer’s journey to which the execution applies
- * returns inline_response_200_7
+ *@returns inline_response_200_7
  **/
 exports.informAboutReleaseHistoryInGenericRepresentation = function (user, originator, xCorrelator, traceIndicator, customerJourney) {
   return new Promise(async function (resolve, reject) {
@@ -455,7 +455,7 @@ exports.inquireOamRequestApprovals = function (body, user, originator, xCorrelat
  *@param {String} xCorrelator String UUID for the service execution flow that allows to correlate requests and responses
  *@param {String} traceIndicator String Sequence of request numbers along the flow
  *@param {String} customerJourney String Holds information supporting customer’s journey to which the execution applies
- * returns inline_response_200_3
+ *@returns inline_response_200_3
  **/
 exports.listLtpsAndFcs = function (user, originator, xCorrelator, traceIndicator, customerJourney) {
   return new Promise(async function (resolve, reject) {
@@ -557,7 +557,7 @@ exports.redirectOamRequestInformation = function (body, user, originator, xCorre
  *@param {String} xCorrelator String UUID for the service execution flow that allows to correlate requests and responses
  *@param {String} traceIndicator String Sequence of request numbers along the flow
  *@param {String} customerJourney String Holds information supporting customer’s journey to which the execution applies
- *@param {String} no response value expected for this operation
+ *no response value expected for this operation
  **/
 exports.redirectServiceRequestInformation = function (body, user, originator, xCorrelator, traceIndicator, customerJourney, originalUrl) {
   return new Promise(async function (resolve, reject) {
