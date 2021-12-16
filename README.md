@@ -6,16 +6,16 @@
 - 1.0.0-tsi.d.t : Defintion to be used within the Transport SDN Introduction at Telefonica Germany
 
 ### Services
-- [TypeApprovalRegister_0.0.2_tsi.211207.1845+services.1](./TypeApprovalRegister_0.0.2_tsi.211207.1845+services.1.xlsx)
+- [TypeApprovalRegister_0.0.2_tsi.211216.1830+services.1](./TypeApprovalRegister_0.0.2_tsi.211216.1830+services.1.xlsx)
 
 ### Forwardings
-- [TypeApprovalRegister_0.0.2_tsi.211207.1845+forwardings.1](./TypeApprovalRegister_0.0.2_tsi.211207.1845+forwardings.1.xlsx)
+- [TypeApprovalRegister_0.0.2_tsi.211216.1830+forwardings.1](./TypeApprovalRegister_0.0.2_tsi.211216.1830+forwardings.1.xlsx)
 
 ### Open API specification (Swagger)
-- [TypeApprovalRegister_0.0.2_tsi.211207.1845](./TypeApprovalRegister_0.0.2_tsi.211207.1845.yaml)
+- [TypeApprovalRegister_0.0.2_tsi.211216.1830](./TypeApprovalRegister_0.0.2_tsi.211216.1830.yaml)
 
 ### Load File (JSON)
-- [TypeApprovalRegister_0.0.2_tsi.211207.1845+data.1](./TypeApprovalRegister_0.0.2_tsi.211207.1845+data.1.json)
+- [TypeApprovalRegister_0.0.2_tsi.211216.1830+data.1](./TypeApprovalRegister_0.0.2_tsi.211216.1830+data.1.json)
 
 ### Test Cases (Postman Export) and Data File
 -
