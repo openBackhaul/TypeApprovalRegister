@@ -15,7 +15,7 @@
 - [TypeApprovalRegister_0.0.2_tsi.211216.1830](./TypeApprovalRegister_0.0.2_tsi.211216.1830.yaml)
 
 ### Load File (JSON)
-- [TypeApprovalRegister_0.0.2_tsi.211216.1830+data.1](./TypeApprovalRegister_0.0.2_tsi.211216.1830+data.1.json)
+- [TypeApprovalRegister_0.0.2_tsi.211216.1830+data.2](./TypeApprovalRegister_0.0.2_tsi.211216.1830+data.2.json)
 
 ### Test Cases (Postman Export) and Data File
 -
