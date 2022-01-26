@@ -1,5 +1,5 @@
 'use strict';
-
+var fileOperation = require('../applicationPattern/databaseDriver/JSONDriver');
 
 /**
  * Returns the name of the application
@@ -7,20 +7,24 @@
  * uuid String 
  * returns inline_response_200_9
  **/
-exports.getApplicationProfileApplicationName = function(uuid) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = {
-  "application-profile-1-0:application-name" : "RegistryOffice"
-};
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
+exports.getApplicationProfileApplicationName = function (url) {
+  return new Promise(async function (resolve, reject) {
+    try {
+      var value = await fileOperation.readFromDatabase(url);
+      var response = {};
+      response['application/json'] = {
+        "application-profile-1-0:application-name": value
+      };
+      if (Object.keys(response).length > 0) {
+        resolve(response[Object.keys(response)[0]]);
+      } else {
+        resolve();
+      }
+    } catch (error) {
+      reject();
     }
   });
 }
-
 
 /**
  * Returns the configured value of the approval status
@@ -28,20 +32,24 @@ exports.getApplicationProfileApplicationName = function(uuid) {
  * uuid String 
  * returns inline_response_200_11
  **/
-exports.getApplicationProfileApprovalStatus = function(uuid) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = {
-  "application-profile-1-0:approval-status" : "application-profile-1-0:APPROVAL_STATUS_TYPE_APPROVED"
-};
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
+exports.getApplicationProfileApprovalStatus = function (url) {
+  return new Promise(async function (resolve, reject) {
+    try {
+      var value = await fileOperation.readFromDatabase(url);
+      var response = {};
+      response['application/json'] = {
+        "application-profile-1-0:approval-status": value
+      };
+      if (Object.keys(response).length > 0) {
+        resolve(response[Object.keys(response)[0]]);
+      } else {
+        resolve();
+      }
+    } catch (error) {
+      reject();
     }
   });
 }
-
 
 /**
  * Returns the release number of the application
@@ -49,20 +57,24 @@ exports.getApplicationProfileApprovalStatus = function(uuid) {
  * uuid String 
  * returns inline_response_200_10
  **/
-exports.getApplicationProfileReleaseNumber = function(uuid) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = {
-  "application-profile-1-0:release-number" : "0.0.1"
-};
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
+exports.getApplicationProfileReleaseNumber = function (url) {
+  return new Promise(async function (resolve, reject) {
+    try {
+      var value = await fileOperation.readFromDatabase(url);
+      var response = {};
+      response['application/json'] = {
+        "application-profile-1-0:release-number": value
+      };
+      if (Object.keys(response).length > 0) {
+        resolve(response[Object.keys(response)[0]]);
+      } else {
+        resolve();
+      }
+    } catch (error) {
+      reject();
     }
   });
 }
-
 
 /**
  * Configures the approval status
@@ -71,9 +83,15 @@ exports.getApplicationProfileReleaseNumber = function(uuid) {
  * uuid String 
  * no response value expected for this operation
  **/
-exports.putApplicationProfileApprovalStatus = function(body,uuid) {
-  return new Promise(function(resolve, reject) {
-    resolve();
+exports.putApplicationProfileApprovalStatus = function (url, body) {
+  return new Promise(async function (resolve, reject) {
+    try {
+      console.log(body);
+      await fileOperation.writeToDatabase(url, body, false);
+      resolve();
+    } catch (error) {
+      reject();
+    }
   });
 }
 

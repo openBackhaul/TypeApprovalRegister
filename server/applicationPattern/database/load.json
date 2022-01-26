@@ -1,5 +1,6 @@
 {
     "core-model-1-4:control-construct": {
+        "uuid": "tar-0-0-1",
         "profile-collection": {
             "profile": [
                 {
@@ -125,8 +126,8 @@
                                 "operation-name": "/v1/register-yourself"
                             },
                             "operation-server-interface-configuration": {
-                                "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_OPERATIONAL",
-                                "operation-key": "11111"
+                                "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_EXPERIMENTAL",
+                                "operation-key": "Operation key not yet provided."
                             }
                         }
                     }
@@ -149,7 +150,7 @@
                             },
                             "operation-server-interface-configuration": {
                                 "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_EXPERIMENTAL",
-                                "operation-key": "11111"
+                                "operation-key": "Operation key not yet provided."
                             }
                         }
                     }
@@ -707,9 +708,9 @@
                         "tcp-server-interface-1-0:tcp-server-interface-pac": {
                             "tcp-server-interface-configuration": {
                                 "local-address": {
-                                    "ipv-4-address": "1.1.1.1"
+                                    "ipv-4-address": "10.118.125.157"
                                 },
-                                "local-port": 3001
+                                "local-port": 1001
                             }
                         }
                     }
@@ -728,8 +729,8 @@
                         "layer-protocol-name": "operation-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
                         "operation-client-interface-1-0:operation-client-interface-pac": {
                             "operation-client-interface-configuration": {
-                                "operation-name": "/v2/bequeath-your-data-and-die",
-                                "operation-key": "1111112"
+                                "operation-name": "/v1/bequeath-your-data-and-die",
+                                "operation-key": "Operation key not yet provided."
                             },
                             "operation-client-interface-status": {
                                 "operational-state": "operation-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
@@ -757,7 +758,7 @@
                                 "application-name": "OldRelease"
                             },
                             "http-client-interface-configuration": {
-                                "release-number": "0.0.2"
+                                "release-number": "0.0.1"
                             }
                         }
                     }
@@ -778,10 +779,10 @@
                             "tcp-client-interface-configuration": {
                                 "remote-address": {
                                     "ip-address": {
-                                        "ipv-4-address": "1.1.1.1"
+                                        "ipv-4-address": "10.118.125.157"
                                     }
                                 },
-                                "remote-port": 3001
+                                "remote-port": 1001
                             }
                         }
                     }
@@ -1000,7 +1001,7 @@
                             "tcp-client-interface-configuration": {
                                 "remote-address": {
                                     "ip-address": {
-                                        "ipv-4-address": "1.1.1.1"
+                                        "ipv-4-address": "10.118.125.157"
                                     }
                                 },
                                 "remote-port": 7001
@@ -1022,7 +1023,7 @@
                         "layer-protocol-name": "operation-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
                         "operation-client-interface-1-0:operation-client-interface-pac": {
                             "operation-client-interface-configuration": {
-                                "operation-name": "/v2/register-application",
+                                "operation-name": "/v1/register-application",
                                 "operation-key": "Operation key not yet provided."
                             },
                             "operation-client-interface-status": {
@@ -1247,10 +1248,10 @@
                             "tcp-client-interface-configuration": {
                                 "remote-address": {
                                     "ip-address": {
-                                        "ipv-4-address": "1.1.1.1"
+                                        "ipv-4-address": "10.118.125.157"
                                     }
                                 },
-                                "remote-port": 8080
+                                "remote-port": 1000
                             }
                         }
                     }
@@ -1271,7 +1272,7 @@
                             "operation-client-interface-configuration": {
                                 "operation-name": "/v1/record-service-request",
                                 "operation-key": "Operation key not yet provided.",
-                                "detailed-logging-is-on": true
+                                "detailed-logging-is-on": "false"
                             },
                             "operation-client-interface-status": {
                                 "operational-state": "operation-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
@@ -1320,10 +1321,10 @@
                             "tcp-client-interface-configuration": {
                                 "remote-address": {
                                     "ip-address": {
-                                        "ipv-4-address": "1.1.1.1"
+                                        "ipv-4-address": "10.118.125.157"
                                     }
                                 },
-                                "remote-port": 3002
+                                "remote-port": 1002
                             }
                         }
                     }
@@ -1392,10 +1393,10 @@
                             "tcp-client-interface-configuration": {
                                 "remote-address": {
                                     "ip-address": {
-                                        "ipv-4-address": "1.1.1.1"
+                                        "ipv-4-address": "10.118.125.157"
                                     }
                                 },
-                                "remote-port": 3003
+                                "remote-port": 1003
                             }
                         }
                     }
@@ -1464,10 +1465,10 @@
                             "tcp-client-interface-configuration": {
                                 "remote-address": {
                                     "ip-address": {
-                                        "ipv-4-address": "1.1.1.1"
+                                        "ipv-4-address": "10.118.125.157"
                                     }
                                 },
-                                "remote-port": 3004
+                                "remote-port": 1004
                             }
                         }
                     }
@@ -1661,10 +1662,10 @@
                             "tcp-client-interface-configuration": {
                                 "remote-address": {
                                     "ip-address": {
-                                        "ipv-4-address": "1.1.1.1"
+                                        "ipv-4-address": "10.118.125.157"
                                     }
                                 },
-                                "remote-port": 3000
+                                "remote-port": 1005
                             }
                         }
                     }
@@ -1921,106 +1922,6 @@
                         ]
                     },
                     {
-                        "uuid": "tar-0-0-1-op-fc-0100",
-                        "name": [
-                            {
-                                "value-name": "ForwardingKind",
-                                "name": "core-model-1-4:FORWARDING_KIND_TYPE_INVARIANT_PROCESS_SNIPPET"
-                            },
-                            {
-                                "value-name": "ForwardingName",
-                                "name": "PromptForBequeathingDataCausesNewApplicationBeingRequestedToSendServiceInfoToEaTL"
-                            }
-                        ],
-                        "fc-port": [
-                            {
-                                "local-id": "100",
-                                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "tar-0-0-1-op-s-1000"
-                            },
-                            {
-                                "local-id": "200",
-                                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                                "logical-termination-point": "tar-0-0-1-op-c-0011"
-                            }
-                        ]
-                    },
-                    {
-                        "uuid": "tar-0-0-1-op-fc-0101",
-                        "name": [
-                            {
-                                "value-name": "ForwardingKind",
-                                "name": "core-model-1-4:FORWARDING_KIND_TYPE_INVARIANT_PROCESS_SNIPPET"
-                            },
-                            {
-                                "value-name": "ForwardingName",
-                                "name": "PromptForBequeathingDataCausesNewApplicationBeingRequestedToSendOamInfoToOL"
-                            }
-                        ],
-                        "fc-port": [
-                            {
-                                "local-id": "100",
-                                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "tar-0-0-1-op-s-1000"
-                            },
-                            {
-                                "local-id": "200",
-                                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                                "logical-termination-point": "tar-0-0-1-op-c-0012"
-                            }
-                        ]
-                    },
-                    {
-                        "uuid": "tar-0-0-1-op-fc-0102",
-                        "name": [
-                            {
-                                "value-name": "ForwardingKind",
-                                "name": "core-model-1-4:FORWARDING_KIND_TYPE_INVARIANT_PROCESS_SNIPPET"
-                            },
-                            {
-                                "value-name": "ForwardingName",
-                                "name": "PromptForBequeathingDataCausesNewApplicationBeingRequestedToInquireForOamRequestApprovals"
-                            }
-                        ],
-                        "fc-port": [
-                            {
-                                "local-id": "100",
-                                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "tar-0-0-1-op-s-1000"
-                            },
-                            {
-                                "local-id": "200",
-                                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                                "logical-termination-point": "tar-0-0-1-op-c-0013"
-                            }
-                        ]
-                    },
-                    {
-                        "uuid": "tar-0-0-1-op-fc-0103",
-                        "name": [
-                            {
-                                "value-name": "ForwardingKind",
-                                "name": "core-model-1-4:FORWARDING_KIND_TYPE_INVARIANT_PROCESS_SNIPPET"
-                            },
-                            {
-                                "value-name": "ForwardingName",
-                                "name": "PromptForBequeathingDataCausesNewApplicationBeingRequestedToSendTopologyChangeInfoToALT"
-                            }
-                        ],
-                        "fc-port": [
-                            {
-                                "local-id": "100",
-                                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "tar-0-0-1-op-s-1000"
-                            },
-                            {
-                                "local-id": "200",
-                                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                                "logical-termination-point": "tar-0-0-1-op-c-0014"
-                            }
-                        ]
-                    },
-                    {
                         "uuid": "tar-0-0-1-op-fc-0110",
                         "name": [
                             {
@@ -2146,36 +2047,6 @@
                         ]
                     },
                     {
-                        "uuid": "tar-0-0-1-op-fc-0104",
-                        "name": [
-                            {
-                                "value-name": "ForwardingKind",
-                                "name": "core-model-1-4:FORWARDING_KIND_TYPE_INVARIANT_PROCESS_SNIPPET"
-                            },
-                            {
-                                "value-name": "ForwardingName",
-                                "name": "PromptForBequeathingDataCausesALTbeingRequestedToUpdateTopologyInfoAboutNewApplication"
-                            }
-                        ],
-                        "fc-port": [
-                            {
-                                "local-id": "000",
-                                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
-                                "logical-termination-point": "tar-0-0-1-op-s-0009"
-                            },
-                            {
-                                "local-id": "100",
-                                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "tar-0-0-1-op-s-1000"
-                            },
-                            {
-                                "local-id": "200",
-                                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                                "logical-termination-point": "tar-0-0-1-op-c-0070"
-                            }
-                        ]
-                    },
-                    {
                         "uuid": "tar-0-0-1-op-fc-0105",
                         "name": [
                             {
@@ -2274,6 +2145,36 @@
                             },
                             {
                                 "value-name": "ForwardingName",
+                                "name": "PromptForRedirectingTopologyInformationCausesSendingAnInitialStateToALT"
+                            }
+                        ],
+                        "fc-port": [
+                            {
+                                "local-id": "000",
+                                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
+                                "logical-termination-point": "tar-0-0-1-op-s-0009"
+                            },
+                            {
+                                "local-id": "100",
+                                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
+                                "logical-termination-point": "tar-0-0-1-op-s-0009"
+                            },
+                            {
+                                "local-id": "200",
+                                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
+                                "logical-termination-point": "tar-0-0-1-op-c-0070"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "tar-0-0-1-op-fc-0006",
+                        "name": [
+                            {
+                                "value-name": "ForwardingKind",
+                                "name": "core-model-1-4:FORWARDING_KIND_TYPE_INVARIANT_PROCESS_SNIPPET"
+                            },
+                            {
+                                "value-name": "ForwardingName",
                                 "name": "ServiceRequestCausesLtpUpdateRequest"
                             }
                         ],
@@ -2306,7 +2207,7 @@
                             {
                                 "local-id": "104",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "tar-0-0-1-op-s-0004"
+                                "logical-termination-point": "tar-0-0-1-op-s-0005"
                             },
                             {
                                 "local-id": "105",
@@ -2346,7 +2247,7 @@
                         ]
                     },
                     {
-                        "uuid": "tar-0-0-1-op-fc-0006",
+                        "uuid": "tar-0-0-1-op-fc-0007",
                         "name": [
                             {
                                 "value-name": "ForwardingKind",
@@ -2371,7 +2272,7 @@
                         ]
                     },
                     {
-                        "uuid": "tar-0-0-1-op-fc-0007",
+                        "uuid": "tar-0-0-1-op-fc-0008",
                         "name": [
                             {
                                 "value-name": "ForwardingKind",
@@ -2396,7 +2297,7 @@
                         ]
                     },
                     {
-                        "uuid": "tar-0-0-1-op-fc-0008",
+                        "uuid": "tar-0-0-1-op-fc-0009",
                         "name": [
                             {
                                 "value-name": "ForwardingKind",
@@ -2421,7 +2322,7 @@
                         ]
                     },
                     {
-                        "uuid": "tar-0-0-1-op-fc-0009",
+                        "uuid": "tar-0-0-1-op-fc-0010",
                         "name": [
                             {
                                 "value-name": "ForwardingKind",
@@ -2440,7 +2341,7 @@
                             },
                             {
                                 "local-id": "100",
-                                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
+                                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
                                 "logical-termination-point": "tar-0-0-1-op-s-0004"
                             },
                             {
@@ -2451,7 +2352,7 @@
                         ]
                     },
                     {
-                        "uuid": "tar-0-0-1-op-fc-0010",
+                        "uuid": "tar-0-0-1-op-fc-0011",
                         "name": [
                             {
                                 "value-name": "ForwardingKind",
@@ -2476,7 +2377,7 @@
                         ]
                     },
                     {
-                        "uuid": "tar-0-0-1-op-fc-0011",
+                        "uuid": "tar-0-0-1-op-fc-0012",
                         "name": [
                             {
                                 "value-name": "ForwardingKind",
@@ -2501,7 +2402,7 @@
                         ]
                     },
                     {
-                        "uuid": "tar-0-0-1-op-fc-0012",
+                        "uuid": "tar-0-0-1-op-fc-0013",
                         "name": [
                             {
                                 "value-name": "ForwardingKind",
@@ -2526,7 +2427,7 @@
                         ]
                     },
                     {
-                        "uuid": "tar-0-0-1-op-fc-0013",
+                        "uuid": "tar-0-0-1-op-fc-0014",
                         "name": [
                             {
                                 "value-name": "ForwardingKind",
@@ -2551,7 +2452,7 @@
                         ]
                     },
                     {
-                        "uuid": "tar-0-0-1-op-fc-0014",
+                        "uuid": "tar-0-0-1-op-fc-0015",
                         "name": [
                             {
                                 "value-name": "ForwardingKind",
@@ -2580,7 +2481,7 @@
                         "name": [
                             {
                                 "value-name": "ForwardingKind",
-                                "name": "core-model-1-4:FORWARDING_KIND_TYPE_PROCESS_SNIPPET"
+                                "name": "core-model-1-4:FORWARDING_KIND_TYPE_INVARIANT_PROCESS_SNIPPET"
                             },
                             {
                                 "value-name": "ForwardingName",
@@ -2610,7 +2511,7 @@
                         "name": [
                             {
                                 "value-name": "ForwardingKind",
-                                "name": "core-model-1-4:FORWARDING_KIND_TYPE_PROCESS_SNIPPET"
+                                "name": "core-model-1-4:FORWARDING_KIND_TYPE_INVARIANT_PROCESS_SNIPPET"
                             },
                             {
                                 "value-name": "ForwardingName",
