@@ -116,32 +116,32 @@ exports.documentApprovalStatus = function (body, user, originator, xCorrelator, 
        * configure application profile with the new application if it is not already exist
        ****************************************************************************************/
       let isApplicationExists = await applicationProfile.isProfileExistsAsync(
-        applicationName, 
+        applicationName,
         releaseNumber
-        );
+      );
       approvalStatus = applicationProfile.ApplicationProfilePac.
       ApplicationProfileConfiguration.approvalStatusEnum[approvalStatus];
-      
+
       if (isApplicationExists) {
         await applicationProfile.setApprovalStatusAsync(
-          applicationName, 
-          releaseNumber, 
+          applicationName,
+          releaseNumber,
           approvalStatus
-          );
+        );
       } else {
         await applicationProfile.createProfileAsync(
-          applicationName, 
-          releaseNumber, 
+          applicationName,
+          releaseNumber,
           approvalStatus
-          );
+        );
       }
 
       /****************************************************************************************
        * Prepare attributes to automate forwarding-construct
        ****************************************************************************************/
       let forwardingAutomationInputList = await prepareForwardingAutomation.documentApprovalStatus(
-        applicationName, 
-        releaseNumber, 
+        applicationName,
+        releaseNumber,
         approvalStatus
       );
       ForwardingAutomationService.automateForwardingConstructAsync(
@@ -225,22 +225,42 @@ exports.listApplications = function (user, originator, xCorrelator, traceIndicat
  * returns inline_response_200_2
  **/
 exports.listApprovedApplicationsInGenericRepresentation = function (user, originator, xCorrelator, traceIndicator, customerJourney) {
-  return new Promise(function (resolve, reject) {
-    var examples = {};
-    examples['application/json'] = {
-      "consequent-action-list": [],
-      "response-value-list": [{
-        "field-name": "RegistryOffice",
-        "value": "0.0.1",
-        "datatype": "String"
-      }, {
-        "field-name": "TypeApprovalRegister",
-        "value": "0.0.1",
-        "datatype": "String"
-      }]
-    };
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
+  return new Promise(async function (resolve, reject) {
+    let response = {};
+    try {
+      /****************************************************************************************
+       * Preparing consequent-action-list for response body
+       ****************************************************************************************/
+      let consequentActionList = [];
+
+      /****************************************************************************************
+       * Preparing response-value-list for response body
+       ****************************************************************************************/
+      let responseValueList = [];
+      let applicationProfileList = await profile.getUuidListAsync(applicationProfile.profileNameEnum.APPLICATION_PROFILE);
+      for (let i = 0; i < applicationProfileList.length; i++) {
+        let uuid = applicationProfileList[i];
+        let approvalStatus = await applicationProfile.getApprovalStatusAsync(uuid);
+        if (approvalStatus == applicationProfile.ApplicationProfilePac.ApplicationProfileConfiguration.approvalStatusEnum.APPROVED) {
+          let applicationName = await applicationProfile.getApplicationNameAsync(uuid);
+          let releaseNumber = await applicationProfile.getApplicationReleaseNumberAsync(uuid);
+          let reponseValue = new responseValue(applicationName, releaseNumber, typeof applicationName);
+          responseValueList.push(reponseValue);
+        }
+      }
+
+      /****************************************************************************************
+       * Setting 'application/json' response body
+       ****************************************************************************************/
+      response['application/json'] = onfAttributeFormatter.modifyJsonObjectKeysToKebabCase({
+        consequentActionList,
+        responseValueList
+      });
+    } catch (error) {
+      console.log(error);
+    }
+    if (Object.keys(response).length > 0) {
+      resolve(response[Object.keys(response)[0]]);
     } else {
       resolve();
     }
