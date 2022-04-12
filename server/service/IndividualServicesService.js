@@ -101,9 +101,62 @@ exports.disregardApplication = function (body, user, originator, xCorrelator, tr
  * customerJourney String Holds information supporting customer’s journey to which the execution applies
  * no response value expected for this operation
  **/
-exports.documentApprovalStatus = function (body, user, originator, xCorrelator, traceIndicator, customerJourney) {
-  return new Promise(function (resolve, reject) {
-    resolve();
+exports.documentApprovalStatus = function (body, user, originator, xCorrelator, traceIndicator, customerJourney, operationServerName) {
+  return new Promise(async function (resolve, reject) {
+    try {
+
+      /****************************************************************************************
+       * Setting up required local variables from the request body
+       ****************************************************************************************/
+      let applicationName = body["application-name"];
+      let releaseNumber = body["application-release-number"];
+      let approvalStatus = body["approval-status"];
+
+      /****************************************************************************************
+       * configure application profile with the new application if it is not already exist
+       ****************************************************************************************/
+      let isApplicationExists = await applicationProfile.isProfileExistsAsync(
+        applicationName, 
+        releaseNumber
+        );
+      approvalStatus = applicationProfile.ApplicationProfilePac.
+      ApplicationProfileConfiguration.approvalStatusEnum[approvalStatus];
+      
+      if (isApplicationExists) {
+        await applicationProfile.setApprovalStatusAsync(
+          applicationName, 
+          releaseNumber, 
+          approvalStatus
+          );
+      } else {
+        await applicationProfile.createProfileAsync(
+          applicationName, 
+          releaseNumber, 
+          approvalStatus
+          );
+      }
+
+      /****************************************************************************************
+       * Prepare attributes to automate forwarding-construct
+       ****************************************************************************************/
+      let forwardingAutomationInputList = await prepareForwardingAutomation.documentApprovalStatus(
+        applicationName, 
+        releaseNumber, 
+        approvalStatus
+      );
+      ForwardingAutomationService.automateForwardingConstructAsync(
+        operationServerName,
+        forwardingAutomationInputList,
+        user,
+        xCorrelator,
+        traceIndicator,
+        customerJourney
+      );
+
+      resolve();
+    } catch (error) {
+      reject(error);
+    }
   });
 }
 
@@ -319,16 +372,16 @@ exports.regardApplication = function (body, user, originator, xCorrelator, trace
       }
 
       let approvalStatusEnum = applicationProfile.ApplicationProfilePac.ApplicationProfileConfiguration.approvalStatusEnum;
-        for (let approvalStatusKey in approvalStatusEnum) {
-          if (approvalStatusEnum[approvalStatusKey] == approvalStatus) {
-            approvalStatus = approvalStatusKey;
-          }
+      for (let approvalStatusKey in approvalStatusEnum) {
+        if (approvalStatusEnum[approvalStatusKey] == approvalStatus) {
+          approvalStatus = approvalStatusKey;
         }
+      }
       /****************************************************************************************
        * Prepare attributes to automate forwarding-construct
        ****************************************************************************************/
-      
-      
+
+
       let forwardingAutomationInputList = await prepareForwardingAutomation.regardApplication(
         applicationName,
         releaseNumber,
