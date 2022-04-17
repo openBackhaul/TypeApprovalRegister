@@ -3,7 +3,7 @@ info:
   title: TypeApprovalRegister
   version: 0.0.2
 servers:
-- url: http://localhost:8080
+- url: http://localhost:3001
   description: Initial deployment
 paths:
   /v1/bequeath-your-data-and-die:
