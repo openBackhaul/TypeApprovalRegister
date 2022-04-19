@@ -72,7 +72,7 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
         let currentApplicationRemotePort = await TcpServerInterface.getLocalPort();
         if((applicationAddress == currentApplicationRemoteAddress) && 
         (applicationPort == currentApplicationRemotePort)){
-          isdataTransferRequired = true;
+          isdataTransferRequired = false;
         }
         if (isUpdated) {
           applicationName = await httpClientInterface.getApplicationNameAsync("tar-0-0-1-http-c-0010");
@@ -102,9 +102,9 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
             traceIndicator,
             customerJourney
           );
+          softwareUpgrade.upgradeSoftwareVersion(isdataTransferRequired, user, xCorrelator, traceIndicator, customerJourney);   
         }        
       } 
-      softwareUpgrade.upgradeSoftwareVersion(isdataTransferRequired, user, xCorrelator, traceIndicator, customerJourney);   
       resolve();
     } catch (error) {
       reject(error);
