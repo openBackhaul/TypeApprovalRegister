@@ -6,7 +6,7 @@
 - 1.0.0-tsi.d.t : Defintion to be used within the Transport SDN Introduction at Telefonica Germany
 
 ### Services
-- [TypeApprovalRegister_0.0.2_tsi.211216.1830+services.1](./TypeApprovalRegister_0.0.2_tsi.211216.1830+services.1.xlsx)
+- [TypeApprovalRegister+services](./TypeApprovalRegister+services.yaml)
 
 ### Forwardings
 - [TypeApprovalRegister_0.0.2_tsi.211216.1830+forwardings.1](./TypeApprovalRegister_0.0.2_tsi.211216.1830+forwardings.1.xlsx)
