@@ -70,7 +70,7 @@ clients:
       application-name: OldRelease
       release-number: 1.0.0
       uuid: tar-1-0-0-http-c-0000
-    tcp:
+    tcp-client:
       ip-address: 10.118.125.157
       tcp-port: 1001
       uuid: tar-1-0-0-tcp-c-0000
@@ -88,7 +88,7 @@ clients:
       application-name: NewRelease
       release-number: 1.0.0
       uuid: tar-1-0-0-http-c-0010
-    tcp:
+    tcp-client:
       ip-address: 10.118.125.157
       tcp-port: 1001
       uuid: tar-1-0-0-tcp-c-0010
@@ -108,7 +108,7 @@ clients:
       application-name: RegistryOffice
       release-number: 1.0.0
       uuid: tar-1-0-0-http-c-0020
-    tcp:
+    tcp-client:
       ip-address: 10.118.125.157
       tcp-port: 1000
       uuid: tar-1-0-0-tcp-c-0020
@@ -140,7 +140,7 @@ clients:
       application-name: TypeApprovalRegister
       release-number: 1.0.0
       uuid: tar-1-0-0-http-c-2030
-    tcp:
+    tcp-client:
       ip-address: 10.118.125.157
       tcp-port: 1001
       uuid: tar-1-0-0-tcp-c-2030
@@ -156,7 +156,7 @@ clients:
       application-name: ExecutionAndTraceLog
       release-number: 1.0.0
       uuid: tar-1-0-0-http-c-0040
-    tcp:
+    tcp-client:
       ip-address: 10.118.125.157
       tcp-port: 1002
       uuid: tar-1-0-0-tcp-c-0040
@@ -174,7 +174,7 @@ clients:
       application-name: OamLog
       release-number: 1.0.0
       uuid: tar-1-0-0-http-c-0050
-    tcp:
+    tcp-client:
       ip-address: 10.118.125.157
       tcp-port: 1003
       uuid: tar-1-0-0-tcp-c-0050
@@ -192,7 +192,7 @@ clients:
       application-name: AdministratorAdministration
       release-number: 1.0.0
       uuid: tar-1-0-0-http-c-0060
-    tcp:
+    tcp-client:
       ip-address: 10.118.125.157
       tcp-port: 1004
       uuid: tar-1-0-0-tcp-c-0060
@@ -210,7 +210,7 @@ clients:
       application-name: ApplicationLayerTopology
       release-number: 1.0.0
       uuid: tar-1-0-0-http-c-0070
-    tcp:
+    tcp-client:
       ip-address: 10.118.125.157
       tcp-port: 1005
       uuid: tar-1-0-0-tcp-c-0070
@@ -238,7 +238,7 @@ clients:
       application-name: OperationKeyManagement
       release-number: 1.0.0
       uuid: tar-1-0-0-http-c-2080
-    tcp:
+    tcp-client:
       ip-address: 10.118.125.157
       tcp-port: 1006
       uuid: tar-1-0-0-tcp-c-2080
