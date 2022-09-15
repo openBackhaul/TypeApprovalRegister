@@ -191,13 +191,17 @@ exports.documentApprovalStatus = function (body, user, originator, xCorrelator, 
           approvalStatus
         );
       } else {
-        await applicationProfile.createProfileAsync(
+      let profile = await applicationProfile.createProfileAsync(
           applicationName,
           releaseNumber,
           approvalStatus
         );
+        if(profile){
+          await ProfileCollection.addProfileAsync(profile);
+          }
       }
-
+     
+      
       /****************************************************************************************
        * Prepare attributes to automate forwarding-construct
        ****************************************************************************************/
