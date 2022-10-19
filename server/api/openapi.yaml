@@ -19632,7 +19632,7 @@ components:
         datatype:
           type: string
           enum:
-          - String
+          - string
       example: null
     inline_response_200_inputvaluelist:
       required:
@@ -19688,7 +19688,7 @@ components:
         datatype:
           type: string
           enum:
-          - String
+          - string
       example: null
     inline_response_200_2_consequentactionlist:
       required:
@@ -20144,7 +20144,7 @@ components:
         datatype:
           type: string
           enum:
-          - String
+          - string
       example: null
     inline_response_200_5_consequentactionlist:
       required:
@@ -20187,7 +20187,7 @@ components:
         datatype:
           type: string
           enum:
-          - String
+          - string
       example: null
     inline_response_200_8_coremodel14controlconstruct_profilecollection:
       required:
