@@ -2519,7 +2519,7 @@ paths:
                         application-name:
                           type: string
                           description: >
-                            'Own application name 
+                            'Own application name
                             from [/core-model-1-4:control-construct/logical-termination-point=tar-1-0-0-http-s-0000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/application-name]'
                         release-number:
                           type: string
@@ -2827,7 +2827,7 @@ paths:
                             from [/core-model-1-4:control-construct/logical-termination-point=tar-1-0-0-http-s-0000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/release-number]'
                         Authorization:
                           type: string
-                          description: > 
+                          description: >
                             'Authorization code of the administrator addressing the OaM request to this application from [parameters::Authorization]'
                         method:
                           type: string
@@ -2855,7 +2855,7 @@ paths:
                       schema:
                         type: object
                         required:
-                        - oam-request-is-approved
+                          - oam-request-is-approved
                         properties:
                           oam-request-is-approved:
                             type: boolean
@@ -5774,7 +5774,7 @@ paths:
                           type: string
                           description: >
                             'from [/core-model-1-4:control-construct/logical-termination-point=tar-1-0-0-http-s-0000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/release-list=*/release-date]
-                             - 
+                             -
                             [/core-model-1-4:control-construct/logical-termination-point=tar-1-0-0-http-s-0000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/release-list=*/changes]'
                         datatype:
                           type: string
@@ -6336,9 +6336,9 @@ paths:
                                                 items:
                                                   type: object
                                                   required:
-                                                  - release-number
-                                                  - release-date
-                                                  - changes
+                                                    - release-number
+                                                    - release-date
+                                                    - changes
                                                   properties:
                                                     release-number:
                                                       type: string
@@ -7302,9 +7302,9 @@ paths:
                     items:
                       type: object
                       required:
-                      - release-number
-                      - release-date
-                      - changes
+                        - release-number
+                        - release-date
+                        - changes
                       properties:
                         release-number:
                           type: string
@@ -7481,7 +7481,7 @@ paths:
         '500':
           $ref: '#/components/responses/responseForErroredOamRequests'
         default:
-          $ref: '#/components/responses/responseForErroredOamRequests'  
+          $ref: '#/components/responses/responseForErroredOamRequests'
 
   /core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name:
     parameters:
@@ -7895,16 +7895,16 @@ paths:
       requestBody:
         required: true
         content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - http-client-interface-1-0:release-number
-                properties:
-                  http-client-interface-1-0:release-number:
-                    type: string
-                    pattern: '^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$'
-                    example: '1.0.0'
+          application/json:
+            schema:
+              type: object
+              required:
+                - http-client-interface-1-0:release-number
+              properties:
+                http-client-interface-1-0:release-number:
+                  type: string
+                  pattern: '^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$'
+                  example: '1.0.0'
       responses:
         '204':
           description: 'Release number configured'
@@ -7919,7 +7919,7 @@ paths:
         '500':
           $ref: '#/components/responses/responseForErroredOamRequests'
         default:
-          $ref: '#/components/responses/responseForErroredOamRequests'  
+          $ref: '#/components/responses/responseForErroredOamRequests'
 
   /core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address:
     parameters:
@@ -7996,7 +7996,7 @@ paths:
         '500':
           $ref: '#/components/responses/responseForErroredOamRequests'
         default:
-          $ref: '#/components/responses/responseForErroredOamRequests'  
+          $ref: '#/components/responses/responseForErroredOamRequests'
   /core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port:
     parameters:
       - in: path
