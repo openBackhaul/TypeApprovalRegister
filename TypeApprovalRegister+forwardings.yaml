@@ -110,6 +110,7 @@ forwardings:
       fc-port-deletion:
       operation-client-deletion:
     initiating-requests:
+      # [all oam requests]
     consequent-requests:
       - client-name: OamLog://v1/record-oam-request
         uuid: tar-1-0-0-op-c-bs-ol-1-0-0-000
@@ -127,6 +128,7 @@ forwardings:
       fc-port-deletion:
       operation-client-deletion:
     initiating-requests:
+      # [all oam requests]
     consequent-requests:
       - client-name: AdministratorAdministration://v1/approve-oam-request
         uuid: tar-1-0-0-op-c-bs-aa-1-0-0-000
@@ -491,7 +493,7 @@ forwardings:
         uuid: tar-1-0-0-op-s-is-001
     consequent-requests:
       - client-name: RegistryOffice://v1/regard-updated-approval-status
-        uuid: tar-1-0-0-op-c-is-ro-1-0-0-002
+        uuid: tar-1-0-0-op-c-im-ro-1-0-0-002
 
   - forwarding-name: UpdateOfApprovalStatusCausesInfoToRegistryOffice
     uuid: tar-1-0-0-op-fc-is-001
@@ -510,4 +512,4 @@ forwardings:
         uuid: tar-1-0-0-op-s-is-003
     consequent-requests:
       - client-name: RegistryOffice://v1/regard-updated-approval-status
-        uuid: tar-1-0-0-op-c-is-ro-1-0-0-002
+        uuid: tar-1-0-0-op-c-im-ro-1-0-0-002
