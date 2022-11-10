@@ -51,7 +51,7 @@ servers:
           uuid: tar-1-0-0-op-s-3004
         - service-name: /v1/list-approved-applications-in-generic-representation
           uuid: tar-1-0-0-op-s-3005
-        - service-name: /v1/redirect-info-about-approval-status-changes	
+        - service-name: /v1/redirect-info-about-approval-status-changes
           uuid: tar-1-0-0-op-s-3006
   http-server:
     own-application-name: TypeApprovalRegister
@@ -61,7 +61,6 @@ servers:
     own-ip-address: 10.118.125.157
     own-tcp-port: 1001
     uuid: tar-1-0-0-tcp-s-0000
-
 
 
 clients:
@@ -96,7 +95,7 @@ clients:
       own-oam:
         basic:
         individual:
-          - service-name: /v1/redirect-info-about-approval-status-changes	
+          - service-name: /v1/redirect-info-about-approval-status-changes
             uuid: tar-1-0-0-op-c-1010
           - service-name: /v1/document-approval-status
             uuid: tar-1-0-0-op-c-1011

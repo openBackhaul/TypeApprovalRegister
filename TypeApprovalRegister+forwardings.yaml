@@ -91,7 +91,7 @@ forwardings:
         uuid: tar-1-0-0-op-s-is-004
       - service-name: /v1/list-approved-applications-in-generic-representation
         uuid: tar-1-0-0-op-s-is-005
-      - service-name: /v1/redirect-info-about-approval-status-changes	
+      - service-name: /v1/redirect-info-about-approval-status-changes
         uuid: tar-1-0-0-op-s-is-006
     consequent-requests:
       - client-name: ExecutionAndTraceLog://v1/record-service-request
