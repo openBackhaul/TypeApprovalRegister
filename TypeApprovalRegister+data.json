@@ -972,7 +972,7 @@
             ]
           },
           {
-            "uuid": "tar-1-0-0-op-c-1011",
+            "uuid": "tar-1-0-0-op-c-is-nr-1-0-0-000",
             "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
             "client-ltp": [
             ],
@@ -1006,7 +1006,7 @@
               "tar-1-0-0-op-c-0013",
               "tar-1-0-0-op-c-0014",
               "tar-1-0-0-op-c-1010",
-              "tar-1-0-0-op-c-1011"
+              "tar-1-0-0-op-c-is-nr-1-0-0-000"
             ],
             "server-ltp": [
               "tar-1-0-0-tcp-c-0010"
@@ -2030,7 +2030,7 @@
                   {
                     "local-id": "200",
                     "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                    "logical-termination-point": "tar-1-0-0-op-c-1011"
+                    "logical-termination-point": "tar-1-0-0-op-c-is-nr-1-0-0-000"
                   }
                 ]
               },

@@ -97,11 +97,11 @@ clients:
         individual:
           - service-name: /v1/redirect-info-about-approval-status-changes
             uuid: tar-1-0-0-op-c-1010
-          - service-name: /v1/document-approval-status
-            uuid: tar-1-0-0-op-c-1011
       service:
         basic:
         individual:
+          - service-name: /v1/document-approval-status
+            uuid: tar-1-0-0-op-c-is-nr-1-0-0-000
 
   - http-client:
       application-name: RegistryOffice
