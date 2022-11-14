@@ -78,6 +78,7 @@ clients:
         basic:
           - service-name: /v1/bequeath-your-data-and-die
             uuid: tar-1-0-0-op-c-0000
+                  tar-1-0-0-op-c-bm-or-1-0-0-000
         individual:
       service:
         basic:
