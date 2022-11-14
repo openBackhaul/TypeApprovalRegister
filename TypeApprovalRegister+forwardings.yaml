@@ -161,7 +161,7 @@ forwardings:
         uuid: tar-1-0-0-op-s-im-000
     consequent-requests:
       - client-name: NewRelease:://v1/document-approval-status
-        uuid: tar-1-0-0-op-c-im-nr-1-0-0-001
+        uuid: tar-1-0-0-op-c-im-nr-1-0-0-000
 
   - forwarding-name: PromptForBequeathingDataCausesRObeingRequestedToInquireForApplicationTypeApprovalsAtNewTAR
     uuid: tar-1-0-0-op-fc-im-112
