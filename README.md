@@ -1,45 +1,38 @@
 # TypeApprovalRegister
-
 - Administrates the list of approvals of Applications.
 - Thorsten Heinze (Thorsten.Heinze@openBackhaul.com)
 
-### Branch
-
-- 1.0.0-tsi.d.t : Defintion to be used within the Transport SDN Introduction at Telefonica Germany
-
-### Services
-
+### ServiceList
 - [TypeApprovalRegister+services](./TypeApprovalRegister+services.yaml)
 
-### Forwardings
+### ProfileList and ProfileInstanceList
+- to be provided
+- to be provided
 
-- [TypeApprovalRegister_0.0.2_tsi.211216.1830+forwardings.1](./TypeApprovalRegister_0.0.2_tsi.211216.1830+forwardings.1.xlsx)
+### ForwardingList
+- [TypeApprovalRegister+forwardings](./TypeApprovalRegister+forwardings.yaml)
 
 ### Open API specification (Swagger)
+- [TypeApprovalRegister](./TypeApprovalRegister.yaml)
 
-- [TypeApprovalRegister_0.0.2_tsi.211216.1830](./TypeApprovalRegister_0.0.2_tsi.211216.1830.yaml)
-
-### Load File (JSON)
-
-- [TypeApprovalRegister_0.0.2_tsi.211216.1830+data.3](./TypeApprovalRegister_0.0.2_tsi.211216.1830+data.3.json)
+### CONFIGfile (JSON)
+- to be provided
 
 ### Test Cases (Postman Export) and Data File
-
 - [TypeApprovalRegister+testcases](./TypeApprovalRegister%2Btestcases.json)
-- [TypeApprovalRegister+data](./TypeApprovalRegister_0.0.2_tsi.211216.1830%2Bdata.3.json)
+- [TypeApprovalRegister+data](./TypeApprovalRegister+data.json)
+
+### NodeJS Implementation
+- to be provided
 
 ### Publication
-
 - No official publication planned
 
-### Aspired Model Classification
-
+### Aspired Classification
 - Live Network
 
 ### Open Issue List
-
 - [TypeApprovalRegister/issues](../../issues)
 
 ### Comments
-
 This application is part of the TinyApplicationController for managing the REST applications forming the MBH SDN application layer at Telefonica Germany.
