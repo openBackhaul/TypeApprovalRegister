@@ -5,41 +5,41 @@ servers:
       basic:
         - service-name: /v1/register-yourself
           uuid: tar-1-0-0-op-s-0000
-                tar-1-0-0-op-s-bm-000   
+                tar-1-0-0-op-s-bm-000
         - service-name: /v1/embed-yourself
           uuid: tar-1-0-0-op-s-0001
-                tar-1-0-0-op-s-bm-001   
+                tar-1-0-0-op-s-bm-001
         - service-name: /v1/redirect-service-request-information
           uuid: tar-1-0-0-op-s-0002
-                tar-1-0-0-op-s-bm-002   
+                tar-1-0-0-op-s-bm-002
         - service-name: /v1/redirect-oam-request-information
           uuid: tar-1-0-0-op-s-0003
-                tar-1-0-0-op-s-bm-003   
+                tar-1-0-0-op-s-bm-003
         - service-name: /v1/end-subscription
           uuid: tar-1-0-0-op-s-0004
-                tar-1-0-0-op-s-bm-004   
+                tar-1-0-0-op-s-bm-004
         - service-name: /v1/inquire-oam-request-approvals
           uuid: tar-1-0-0-op-s-0005
-                tar-1-0-0-op-s-bm-005   
+                tar-1-0-0-op-s-bm-005
         - service-name: /v1/update-client
           uuid: tar-1-0-0-op-s-0007
-                tar-1-0-0-op-s-bm-007   
+                tar-1-0-0-op-s-bm-007
         - service-name: /v1/list-ltps-and-fcs
           uuid: tar-1-0-0-op-s-0008
-                tar-1-0-0-op-s-bm-008   
+                tar-1-0-0-op-s-bm-008
         - service-name: /v1/redirect-topology-change-information
           uuid: tar-1-0-0-op-s-0009
-                tar-1-0-0-op-s-bm-009   
+                tar-1-0-0-op-s-bm-009
         - service-name: /v1/update-operation-key
           uuid: tar-1-0-0-op-s-0010
-                tar-1-0-0-op-s-bm-010  
+                tar-1-0-0-op-s-bm-010
         - service-name: /v1/update-operation-client
           uuid: tar-1-0-0-op-s-0011
-                tar-1-0-0-op-s-bm-011   
+                tar-1-0-0-op-s-bm-011
       individual:
         - service-name: /v1/bequeath-your-data-and-die
           uuid: tar-1-0-0-op-s-1000   
-                tar-1-0-0-op-s-im-000   
+                tar-1-0-0-op-s-im-000
     service:
       basic:
         - service-name: /v1/start-application-in-generic-representation
