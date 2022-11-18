@@ -150,17 +150,6 @@ profile-instances:
       value-reference: 'LOADfile://*/release-number'
 
 
-  - profile-name: 'IntegerProfile'
-    uuid: 'tar-2-0-0-integer-p-000'
-    capability:
-      integer-name: 'waitTimeToApprove'
-      unit: 'second'
-      minimum: 600
-      maximum: 1209600
-    configuration:
-      integer-value: 259200
-
-
   - profile-name: 'FileProfile'
     uuid: 'tar-2-0-0-file-p-000'
     capability:
@@ -171,3 +160,4 @@ profile-instances:
       user-name: 'TypeApprovalRegister'
       password: 'Operations to add password'
       operation: 'write'
+  
