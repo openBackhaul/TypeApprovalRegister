@@ -1831,7 +1831,7 @@
         ],
         "forwarding-domain": [
           {
-            "uuid": "tar-1-0-0-op-fd-0000",
+            "uuid": "tar-1-0-0-op-fd-000",
             "forwarding-construct": [
               {
                 "uuid": "tar-1-0-0-op-fc-bm-000",
