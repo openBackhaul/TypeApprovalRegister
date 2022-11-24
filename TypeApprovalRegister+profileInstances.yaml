@@ -160,4 +160,3 @@ profile-instances:
       user-name: 'TypeApprovalRegister'
       password: 'Operations to add password'
       operation: 'write'
-  
