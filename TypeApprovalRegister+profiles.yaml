@@ -38,4 +38,3 @@ profiles:
       user-name: string
       password: string
       operation: string
-    
