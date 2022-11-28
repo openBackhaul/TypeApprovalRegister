@@ -402,7 +402,7 @@ paths:
                             from [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-tcp-c-im-nr-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port]'
                       example:
                         approval-application: 'TypeApprovalRegister'
-                        approval-application-release-number: '1.0.0'
+                        approval-application-release-number: '2.0.0'
                         approval-operation: '/v1/regard-application'
                         approval-application-protocol: 'HTTP'
                         approval-application-address:
@@ -605,7 +605,7 @@ paths:
                             from [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-op-c-im-ro-2-0-0-001/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]'
                       example:
                         subscriber-application: 'TypeApprovalRegister'
-                        subscriber-release-number: '1.0.0'
+                        subscriber-release-number: '2.0.0'
                         subscription: '/v1/notify-deregistrations'
               responses:
                 '204':
