@@ -1306,7 +1306,7 @@ paths:
                   response-value-list:
                     - field-name: 'RegistryOffice'
                       value: '2.0.0'
-                      datatype: 'String'
+                      datatype: 'string'
           headers:
             x-correlator:
               schema:
@@ -1959,8 +1959,6 @@ components:
                             type: string
                           local-address:
                             type: object
-                            minProperties: 1
-                            additionalProperties: false
                             properties:
                               ipv-4-address:
                                 type: string
@@ -2089,14 +2087,9 @@ components:
                             type: string
                           remote-address:
                             type: object
-                            minProperties: 1
-                            maxProperties: 1
-                            additionalProperties: false
                             properties:
                               ip-address:
                                 type: object
-                                minProperties: 1
-                                additionalProperties: false
                                 properties:
                                   ipv-4-address:
                                     type: string
