@@ -936,7 +936,7 @@
                 "tcp-server-interface-1-0:tcp-server-interface-pac": {
                   "tcp-server-interface-configuration": {
                     "description": "Without TLS layer",
-                    "local-protocol": "HTTP",
+                    "local-protocol": "http",
                     "local-address": {
                       "ipv-4-address": "10.118.125.157"
                     },
@@ -1009,7 +1009,7 @@
                 "layer-protocol-name": "tcp-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_TCP_LAYER",
                 "tcp-client-interface-1-0:tcp-client-interface-pac": {
                   "tcp-client-interface-configuration": {
-                    "remote-protocol": "HTTP",
+                    "remote-protocol": "http",
                     "remote-address": {
                       "ip-address": {
                         "ipv-4-address": "10.118.125.157"
@@ -1110,7 +1110,7 @@
                 "layer-protocol-name": "tcp-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_TCP_LAYER",
                 "tcp-client-interface-1-0:tcp-client-interface-pac": {
                   "tcp-client-interface-configuration": {
-                    "remote-protocol": "HTTP",
+                    "remote-protocol": "http",
                     "remote-address": {
                       "ip-address": {
                         "ipv-4-address": "10.118.125.157"
@@ -1367,7 +1367,7 @@
                 "layer-protocol-name": "tcp-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_TCP_LAYER",
                 "tcp-client-interface-1-0:tcp-client-interface-pac": {
                   "tcp-client-interface-configuration": {
-                    "remote-protocol": "HTTP",
+                    "remote-protocol": "http",
                     "remote-address": {
                       "ip-address": {
                         "ipv-4-address": "10.118.125.157"
@@ -1443,7 +1443,7 @@
                 "layer-protocol-name": "tcp-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_TCP_LAYER",
                 "tcp-client-interface-1-0:tcp-client-interface-pac": {
                   "tcp-client-interface-configuration": {
-                    "remote-protocol": "HTTP",
+                    "remote-protocol": "http",
                     "remote-address": {
                       "ip-address": {
                         "ipv-4-address": "10.118.125.157"
@@ -1518,7 +1518,7 @@
                 "layer-protocol-name": "tcp-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_TCP_LAYER",
                 "tcp-client-interface-1-0:tcp-client-interface-pac": {
                   "tcp-client-interface-configuration": {
-                    "remote-protocol": "HTTP",
+                    "remote-protocol": "http",
                     "remote-address": {
                       "ip-address": {
                         "ipv-4-address": "10.118.125.157"
@@ -1593,7 +1593,7 @@
                 "layer-protocol-name": "tcp-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_TCP_LAYER",
                 "tcp-client-interface-1-0:tcp-client-interface-pac": {
                   "tcp-client-interface-configuration": {
-                    "remote-protocol": "HTTP",
+                    "remote-protocol": "http",
                     "remote-address": {
                       "ip-address": {
                         "ipv-4-address": "10.118.125.157"
@@ -1798,7 +1798,7 @@
                 "layer-protocol-name": "tcp-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_TCP_LAYER",
                 "tcp-client-interface-1-0:tcp-client-interface-pac": {
                   "tcp-client-interface-configuration": {
-                    "remote-protocol": "HTTP",
+                    "remote-protocol": "http",
                     "remote-address": {
                       "ip-address": {
                         "ipv-4-address": "10.118.125.157"
