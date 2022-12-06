@@ -209,8 +209,8 @@ paths:
                         subscriber-protocol: 'HTTP'
                         subscriber-address:
                           ip-address:
-                            ipv-4-address: '1.1.3.14'
-                        subscriber-port: 3014
+                            ipv-4-address: '1.1.3.7'
+                        subscriber-port: 3007
               responses:
                 '204':
                   description: 'Subscribed for notifications about approval status updates'
@@ -407,8 +407,8 @@ paths:
                         approval-application-protocol: 'HTTP'
                         approval-application-address:
                           ip-address:
-                            ipv-4-address: '1.1.3.2'
-                        approval-application-port: 3002
+                            ipv-4-address: '1.1.3.9'
+                        approval-application-port: 3009
               responses:
                 '204':
                   description: 'Subscribed for notifications about new registrations'
@@ -523,8 +523,8 @@ paths:
                         subscriber-protocol: 'HTTP'
                         subscriber-address:
                           ip-address:
-                            ipv-4-address: '1.1.3.14'
-                        subscriber-port: 3014
+                            ipv-4-address: '1.1.3.7'
+                        subscriber-port: 3007
               responses:
                 '204':
                   description: 'Subscribed for notifications about deregistrations'
@@ -1443,8 +1443,8 @@ paths:
                 subscriber-protocol: 'HTTP'
                 subscriber-address:
                   ip-address:
-                    ipv-4-address: '1.1.3.14'
-                subscriber-port: 3014
+                    ipv-4-address: '1.1.3.7'
+                subscriber-port: 3007
       responses:
         '204':
           description: 'Subscribed for notifications about approval status updates'
