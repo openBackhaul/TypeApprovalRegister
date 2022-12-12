@@ -38,7 +38,7 @@ paths:
                   type: string
                   description: >
                     'Name of application that shall be target of the handover process
-                    find or create [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-http-c-im-nr-2-0-0-000/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]'
+                    find or create [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-http-c-im-nr-2-0-0-000/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/application-name]'
                 new-application-release:
                   type: string
                   pattern: '^([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,2})$'
@@ -164,7 +164,7 @@ paths:
                           type: string
                           description: >
                             'TypeApprovalRegister exclusively accepts subscription for notifications about documentation of an approval status by RegistryOffice
-                            from [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-http-c-bm-ro-2-0-0-000/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]'
+                            from [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-http-c-bm-ro-2-0-0-000/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/application-name]'
                         subscriber-release-number:
                           type: string
                           description: >
@@ -363,7 +363,7 @@ paths:
                           type: string
                           description: >
                             'Name of application that wants to receive information about new registrations
-                            from [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-http-c-im-nr-2-0-0-000/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]'
+                            from [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-http-c-im-nr-2-0-0-000/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/application-name]'
                         approval-application-release-number:
                           type: string
                           description: >
@@ -479,7 +479,7 @@ paths:
                           type: string
                           description: >
                             'Name of application that wants to receive notifications about obsolete registrations
-                            from [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-http-c-im-nr-2-0-0-000/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]'
+                            from [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-http-c-im-nr-2-0-0-000/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/application-name]'
                         subscriber-release-number:
                           type: string
                           description: >
@@ -1384,7 +1384,7 @@ paths:
                     - 'RegistryOffice'
                   description: >
                     'TypeApprovalRegister exclusively accepts subscription for notifications about documentation of an approval status by RegistryOffice
-                    find or create [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-http-c-bm-ro-2-0-0-000/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]
+                    find or create [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-http-c-bm-ro-2-0-0-000/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/application-name]
                     == RegistryOffice'
                 subscriber-release-number:
                   type: string
