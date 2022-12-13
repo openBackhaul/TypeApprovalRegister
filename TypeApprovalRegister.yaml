@@ -597,7 +597,7 @@ paths:
                           type: string
                           description: >
                             'Release of application that no longer wants to receive notifications
-                            from [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-http-s-010/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/release-number]'
+                            from [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/release-number]'
                         subscription:
                           type: string
                           description: >
