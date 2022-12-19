@@ -1380,12 +1380,9 @@ paths:
               properties:
                 subscriber-application:
                   type: string
-                  enum:
-                    - 'RegistryOffice'
                   description: >
                     'TypeApprovalRegister exclusively accepts subscription for notifications about documentation of an approval status by RegistryOffice
-                    find [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-http-c-ro-2-0-0-000/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/application-name]
-                    == RegistryOffice'
+                    find [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-http-c-ro-2-0-0-000/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/application-name]'
                 subscriber-release-number:
                   type: string
                   pattern: '^([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,2})$'
