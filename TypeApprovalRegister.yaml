@@ -38,13 +38,13 @@ paths:
                   type: string
                   description: >
                     'Name of application that shall be target of the handover process
-                    find or create [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-http-c-nr-2-0-0-000/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/application-name]'
+                    update [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-http-c-nr-2-0-0-000/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/application-name]'
                 new-application-release:
                   type: string
                   pattern: '^([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,2})$'
                   description: >
                     'Release of application that shall be target of the handover process
-                    find or update [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-http-c-nr-2-0-0-000/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/release-number]'
+                    update [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-http-c-nr-2-0-0-000/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/release-number]'
                 new-application-protocol:
                   type: string
                   enum:
@@ -52,7 +52,7 @@ paths:
                     - 'HTTPS'
                   description: >
                     'Protocol to be used for addressing the application that shall be target of the handover process
-                    update or create [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-tcp-c-nr-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]'
+                    update [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-tcp-c-nr-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]'
                 new-application-address:
                   type: object
                   minProperties: 1
@@ -69,20 +69,20 @@ paths:
                           pattern: '^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
                           description: >
                             'IPv4 address of application that shall be target of the handover process
-                            update or create [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-tcp-c-nr-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]'
+                            update [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-tcp-c-nr-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]'
                     domain-name:
                       type: string
                       pattern: '^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$'
                       description: >
                         'Domain name of application that shall be target of the handover process
-                        update or create [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-tcp-c-nr-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name]'
+                        update [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-tcp-c-nr-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name]'
                 new-application-port:
                   type: integer
                   minimum: 0
                   maximum: 65535
                   description: >
                     'Port of application that shall be target of the handover process
-                    update or create [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-tcp-c-nr-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port]'
+                    update [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-tcp-c-nr-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port]'
               example:
                 new-application-name: 'NewApplicationName'
                 new-application-release: '2.0.0'
@@ -271,7 +271,7 @@ paths:
                       type: object
                       required:
                         - application-name
-                        - application-release-number
+                        - release-number
                         - approval-status
                       properties:
                         application-name:
@@ -279,7 +279,7 @@ paths:
                           description: >
                             'Name of application that shall be subject to the status record
                             from LOADfile'
-                        application-release-number:
+                        release-number:
                           type: string
                           description: >
                             'Release of application that shall be subject to the status record
@@ -291,7 +291,7 @@ paths:
                             from LOADfile'
                       example:
                         application-name: 'ExecutionAndTraceLog'
-                        application-release-number: '1.0.0'
+                        release-number: '1.0.0'
                         approval-status: 'APPROVED'
               responses:
                 '204':
@@ -1380,24 +1380,21 @@ paths:
               properties:
                 subscriber-application:
                   type: string
-                  enum:
-                    - 'RegistryOffice'
                   description: >
                     'TypeApprovalRegister exclusively accepts subscription for notifications about documentation of an approval status by RegistryOffice
-                    find or create [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-http-c-ro-2-0-0-000/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/application-name]
-                    == RegistryOffice'
+                    find [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-http-c-ro-2-0-0-000/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/application-name]'
                 subscriber-release-number:
                   type: string
                   pattern: '^([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,2})$'
                   description: >
                     'Release of the RegistryOffice application that shall be notified about documentation of an approval status
-                    find or create [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-http-c-ro-2-0-0-000/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/release-number]'
+                    update [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-http-c-ro-2-0-0-000/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/release-number]'
                 subscriber-operation:
                   type: string
                   minLength: 6
                   description: >
                     'Names of the operation that shall be addressed by notifications about documentation of an approval status
-                    update or create [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-op-c-im-ro-2-0-0-002/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]'
+                    update [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-op-c-im-ro-2-0-0-002/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]'
                 subscriber-protocol:
                   type: string
                   enum:
@@ -1405,7 +1402,7 @@ paths:
                     - 'HTTPS'
                   description: >
                     'Protocol to be used for addressing the RegistryOffice
-                    update or create [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-tcp-c-ro-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]'
+                    update [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-tcp-c-ro-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]'
                 subscriber-address:
                   type: object
                   minProperties: 1
@@ -1422,20 +1419,20 @@ paths:
                           pattern: '^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
                           description: >
                             'IPv4 address of the RegistryOffice
-                            update or create [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-tcp-c-ro-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]'
+                            update [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-tcp-c-ro-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]'
                     domain-name:
                       type: string
                       pattern: '^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$'
                       description: >
                         'Domain name of the RegistryOffice
-                        update or create [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-tcp-c-ro-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name]'
+                        update [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-tcp-c-ro-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name]'
                 subscriber-port:
                   type: integer
                   minimum: 0
                   maximum: 65535
                   description: >
                     'TCP port of the RegistryOffice
-                    update or create [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-tcp-c-ro-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port]'
+                    update [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-tcp-c-ro-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port]'
               example:
                 subscriber-application: 'OperationKeyManagement'
                 subscriber-release-number: '1.0.0'
@@ -1590,7 +1587,7 @@ paths:
                       type: object
                       required:
                         - application-name
-                        - application-release-number
+                        - release-number
                         - approval-status
                       properties:
                         application-name:
@@ -1598,7 +1595,7 @@ paths:
                           description: >
                             'Name of application with updated approval status
                             from LOADfile'
-                        application-release-number:
+                        release-number:
                           type: string
                           description: >
                             'Release of application with updated approval status
@@ -1609,7 +1606,7 @@ paths:
                             'from LOADfile'
                       example:
                         application-name: 'ExecutionAndTraceLog'
-                        application-release-number: '1.0.0'
+                        release-number: '1.0.0'
                         approval-status: 'APPROVED'
               responses:
                 '204':
