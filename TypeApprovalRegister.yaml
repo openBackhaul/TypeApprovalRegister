@@ -667,33 +667,33 @@ paths:
                       type: object
                       required:
                         - application-name
-                        - old-application-release-number
-                        - new-application-release-number
-                        - new-application-protocol
-                        - new-application-address
-                        - new-application-port
+                        - old-release-number
+                        - new-release-number
+                        - new-protocol
+                        - new-address
+                        - new-port
                       properties:
                         application-name:
                           type: string
                           description: >
                             'Own application name
                             from [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/application-name]'
-                        old-application-release-number:
+                        old-release-number:
                           type: string
                           description: >
                             'Old release number
                             from [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-http-c-or-1-0-0-000/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/release-number]'
-                        new-application-release-number:
+                        new-release-number:
                           type: string
                           description: >
                             'Future release number
                             from [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-http-c-nr-2-0-0-000/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/release-number]'
-                        new-application-protocol:
+                        new-protocol:
                           type: string
                           description: >
                             'Future protocol to be used
                             from [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-tcp-c-nr-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]'
-                        new-application-address:
+                        new-address:
                           type: object
                           properties:
                             ip-address:
@@ -709,20 +709,20 @@ paths:
                               description: >
                                 'Future domain name
                                 from [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-tcp-c-nr-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name]'
-                        new-application-port:
+                        new-port:
                           type: integer
                           description: >
                             'Future port
                             from [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-tcp-c-nr-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port]'
                       example:
                         application-name: 'RegistryOffice'
-                        old-application-release-number: '1.0.0'
-                        new-application-release-number: '2.0.0'
-                        new-application-protocol: 'HTTP'
-                        new-application-address:
+                        old-release-number: '1.0.0'
+                        new-release-number: '2.0.0'
+                        new-protocol: 'HTTP'
+                        new-address:
                           ip-address:
                             ipv-4-address: '1.1.3.8'
-                        new-application-port: 3008
+                        new-port: 3008
               responses:
                 '204':
                   description: 'Will broadcast server replacement'
@@ -783,21 +783,21 @@ paths:
                       type: object
                       required:
                         - application-name
-                        - application-release-number
+                        - release-number
                       properties:
                         application-name:
                           type: string
                           description: >
                             'Own application name
                             from [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/application-name]'
-                        application-release-number:
+                        release-number:
                           type: string
                           description: >
                             'Own release number
                             from [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/release-number]'
                       example:
                         application-name: 'BadApplication'
-                        application-release-number: '1.0.0'
+                        release-number: '1.0.0'
               responses:
                 '204':
                   description: 'Application deregistered'
@@ -861,7 +861,7 @@ paths:
                       type: object
                       required:
                         - application-name
-                        - application-release-number
+                        - release-number
                         - old-operation-name
                         - new-operation-name
                       properties:
@@ -870,7 +870,7 @@ paths:
                           description: >
                             'Own application name
                             from [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/application-name]'
-                        application-release-number:
+                        release-number:
                           type: string
                           description: >
                             'Own release number
@@ -887,7 +887,7 @@ paths:
                             from [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-0-op-s-*/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-capability/operation-name]'
                       example:
                         application-name: 'TypeApprovalRegister'
-                        application-release-number: '2.0.0'
+                        release-number: '2.0.0'
                         old-operation-name: '/v1/regard-application'
                         new-operation-name: '/v2/regard-application'
               responses:
@@ -1505,7 +1505,7 @@ paths:
                       type: object
                       required:
                         - application-name
-                        - application-release-number
+                        - release-number
                         - approval-status
                       properties:
                         application-name:
@@ -1513,7 +1513,7 @@ paths:
                           description: >
                             'Name of application with existing approval status
                             from LOADfile'
-                        application-release-number:
+                        release-number:
                           type: string
                           description: >
                             'Release of application with existing approval status
@@ -1525,7 +1525,7 @@ paths:
                             from LOADfile'
                       example:
                         application-name: 'ExecutionAndTraceLog'
-                        application-release-number: '1.0.0'
+                        release-number: '1.0.0'
                         approval-status: 'APPROVED'
               responses:
                 '204':
