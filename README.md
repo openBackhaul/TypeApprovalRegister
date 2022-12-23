@@ -1,38 +1,22 @@
 # TypeApprovalRegister
-- Administrates the list of approvals of Applications.
-- Thorsten Heinze (Thorsten.Heinze@openBackhaul.com)
 
-### ServiceList
-- [TypeApprovalRegister+services](./TypeApprovalRegister+services.yaml)
+### Location
+The TypeApprovalRegister is part of the TinyApplicationController.  
+The TinyApplicationController is for managing the REST microservices of the application layer.  
 
-### ProfileList and ProfileInstanceList
-- to be provided
-- to be provided
+### Description
+A type approval must be documented for every application that is part of the application layer.  
+Some combination of application name and release number might be approved before or after registering at the RegistryOffice.
+In case of already documented approvals, TypeApprovalRegister automatically continues the embedding process.
 
-### ForwardingList
-- [TypeApprovalRegister+forwardings](./TypeApprovalRegister+forwardings.yaml)
+### Relevance
+The TypeApprovalRegister is core element of the application layer running in the live network at Telefonica Germany.
 
-### Open API specification (Swagger)
-- [TypeApprovalRegister](./TypeApprovalRegister.yaml)
-
-### CONFIGfile (JSON)
-- to be provided
-
-### Test Cases (Postman Export) and Data File
-- [TypeApprovalRegister+testcases](./TypeApprovalRegister%2Btestcases.json)
-- [TypeApprovalRegister+data](./TypeApprovalRegister+data.json)
-
-### NodeJS Implementation
-- to be provided
-
-### Publication
-- No official publication planned
-
-### Aspired Classification
-- Live Network
-
-### Open Issue List
-- [TypeApprovalRegister/issues](../../issues)
+### Resources
+- [Specification](./spec/)
+- [TestSuite](./testing/)
+- [Implementation](./server/)
 
 ### Comments
-This application is part of the TinyApplicationController for managing the REST applications forming the MBH SDN application layer at Telefonica Germany.
+./.
+
