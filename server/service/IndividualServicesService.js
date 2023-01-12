@@ -1,7 +1,7 @@
 'use strict';
 
-const LogicalTerminatinPointConfigurationInput = require('onf-core-model-ap/applicationPattern/onfModel/services/models/logicalTerminationPoint/ConfigurationInput');
-const LogicalTerminationPointService = require('onf-core-model-ap/applicationPattern/onfModel/services/LogicalTerminationPointServices');
+const LogicalTerminatinPointConfigurationInput = require('onf-core-model-ap/applicationPattern/onfModel/services/models/logicalTerminationPoint/ConfigurationInputWithMapping');
+const LogicalTerminationPointService = require('onf-core-model-ap/applicationPattern/onfModel/services/LogicalTerminationPointWithMappingServices');
 const LogicalTerminationPointConfigurationStatus = require('onf-core-model-ap/applicationPattern/onfModel/services/models/logicalTerminationPoint/ConfigurationStatus');
 const layerProtocol = require('onf-core-model-ap/applicationPattern/onfModel/models/LayerProtocol');
 
@@ -37,6 +37,7 @@ const ProfileCollection = require('onf-core-model-ap/applicationPattern/onfModel
 
 const softwareUpgrade = require('./individualServices/SoftwareUpgrade');
 const TcpServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpServerInterface');
+const individualServicesOperationsMapping = require('./individualServices/IndividualServicesOperationsMapping');
 /**
  * Initiates process of embedding a new release
  *
@@ -357,27 +358,33 @@ exports.redirectInfoAboutApprovalStatusChanges = function (body, user, originato
       let applicationAddress = body["subscriber-address"];
       let applicationPort = body["subscriber-port"];
       let subscriberOperation = body["subscriber-operation"];
+      let applicationProtocol = body["subscriber-protocol"];
 
       /****************************************************************************************
        * Prepare logicalTerminatinPointConfigurationInput object to 
        * configure logical-termination-point
        ****************************************************************************************/
 
-      let operationList = [
-        subscriberOperation
-      ];
+      let operationNamesByAttributes = new Map();
+      operationNamesByAttributes.set("subscriber-operation", subscriberOperation);
+
+      let tcpObjectList = [];
+      let tcpObject = formulateTcpObjectForApplication(applicationProtocol, applicationAddress, applicationPort);
+      tcpObjectList.push(tcpObject);
+
       let logicalTerminatinPointConfigurationInput = new LogicalTerminatinPointConfigurationInput(
         applicationName,
         releaseNumber,
-        applicationAddress,
-        applicationPort,
-        operationList
+        tcpObjectList,
+        operationServerName,
+        operationNamesByAttributes,
+        individualServicesOperationsMapping.individualServicesOperationsMapping
       );
       let logicalTerminationPointconfigurationStatus = await LogicalTerminationPointService.createOrUpdateApplicationInformationAsync(
         logicalTerminatinPointConfigurationInput
       );
 
-
+      
       /****************************************************************************************
        * Prepare attributes to configure forwarding-construct
        ****************************************************************************************/
@@ -419,6 +426,24 @@ exports.redirectInfoAboutApprovalStatusChanges = function (body, user, originato
       reject(error);
     }
   });
+}
+
+/**
+ * @description This function helps to formulate the tcpClient object in the format {protocol : "" , address : "" , port : ""}
+ * @return {Promise} return the formulated tcpClientObject
+ **/
+function formulateTcpObjectForApplication(protocol, address, port) {
+  let tcpInfoObject;
+  try {
+    tcpInfoObject = {
+      "protocol" : protocol,
+      "address": address,
+      "port": port
+    };
+  } catch (error) {
+    console.log("error in formulating tcp object");
+  }
+  return tcpInfoObject;
 }
 
 /**
