@@ -34,11 +34,13 @@ const ForwardingConstruct = require('onf-core-model-ap/applicationPattern/onfMod
 const profile = require('onf-core-model-ap/applicationPattern/onfModel/models/Profile');
 const applicationProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/ApplicationProfile');
 const ProfileCollection = require('onf-core-model-ap/applicationPattern/onfModel/models/ProfileCollection');
+const fileProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/FileProfile');
 
 const softwareUpgrade = require('./individualServices/SoftwareUpgrade');
 const TcpServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpServerInterface');
+const fileSystem = require('fs');
 /**
- * Initiates process of embedding a new release
+ * Initiates process of embedding a new releasefv
  *
  * body V1_bequeathyourdataanddie_body 
  * user String User identifier from the system starting the service call
@@ -298,27 +300,41 @@ exports.listApprovedApplicationsInGenericRepresentation = function (user, origin
        * Preparing consequent-action-list for response body
        ****************************************************************************************/
       let consequentActionList = [];
+      let responseValueList = []
+      let applicationData = []
+      let uuid
+      let filePath
+      let approvalStatus
+      let applicationName
+      let releaseNumber
+      let reponseValue
 
       /****************************************************************************************
        * Preparing response-value-list for response body
-       ****************************************************************************************/
-      let responseValueList = [];
-      let applicationProfileList = await profile.getUuidListAsync(applicationProfile.profileNameEnum.APPLICATION_PROFILE);
-      for (let i = 0; i < applicationProfileList.length; i++) {
-        let uuid = applicationProfileList[i];
-        let approvalStatus = await applicationProfile.getApprovalStatusAsync(uuid);
-        if (approvalStatus == applicationProfile.ApplicationProfilePac.ApplicationProfileConfiguration.approvalStatusEnum.APPROVED) {
-          let applicationName = await applicationProfile.getApplicationNameAsync(uuid);
-          let releaseNumber = await applicationProfile.getApplicationReleaseNumberAsync(uuid);
-          let reponseValue = new responseValue(applicationName, releaseNumber, typeof applicationName);
-          responseValueList.push(reponseValue);
+       ****************************************************************************************/      
+      let profileUuid = await profile.getUuidListAsync(applicationProfile.profileNameEnum.FILE_PROFILE);
+      for (let profileUuidIndex = 0; profileUuidIndex < profileUuid.length; profileUuidIndex++) {
+        uuid = profileUuid[profileUuidIndex];
+        filePath = await fileProfile.getFilePath(uuid)        
+        if(fileSystem.existsSync(filePath)){
+          applicationData = JSON.parse(fileSystem.readFileSync(filePath, 'utf8'));
+          applicationData["applications"].forEach(applicationDataItem => {
+            approvalStatus = applicationDataItem["approval-status"];
+            if (approvalStatus == "APPROVED") {
+              applicationName = applicationDataItem["application-name"]
+              releaseNumber = applicationDataItem["application-release-number"]
+              reponseValue = new responseValue(applicationName, releaseNumber, typeof applicationName);
+              responseValueList.push(reponseValue);            }
+          });
+        }else{
+          console.log("path not exists " + filePath);
         }
       }
 
       /****************************************************************************************
        * Setting 'application/json' response body
        ****************************************************************************************/
-      response['application/json'] = onfAttributeFormatter.modifyJsonObjectKeysToKebabCase({
+        response['application/json'] = onfAttributeFormatter.modifyJsonObjectKeysToKebabCase({
         consequentActionList,
         responseValueList
       });
