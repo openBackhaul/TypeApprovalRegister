@@ -37,6 +37,8 @@ const ProfileCollection = require('onf-core-model-ap/applicationPattern/onfModel
 
 const softwareUpgrade = require('./individualServices/SoftwareUpgrade');
 const TcpServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpServerInterface');
+const fileProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/FileProfile');
+const fileSystem = require('fs')
 /**
  * Initiates process of embedding a new release
  *
@@ -244,26 +246,47 @@ exports.listApplications = function (user, originator, xCorrelator, traceIndicat
       /****************************************************************************************
        * Preparing response body
        ****************************************************************************************/
-      let applicationList = [];
-      let applicationProfileList = await profile.getUuidListAsync(applicationProfile.profileNameEnum.APPLICATION_PROFILE);
-      for (let i = 0; i < applicationProfileList.length; i++) {
-        let uuid = applicationProfileList[i];
-        let applicationName = await applicationProfile.getApplicationNameAsync(uuid);
-        let releaseNumber = await applicationProfile.getApplicationReleaseNumberAsync(uuid);
-        let approvalStatus = await applicationProfile.getApprovalStatusAsync(uuid);
-        let approvalStatusJsonObject = applicationProfile.ApplicationProfilePac.ApplicationProfileConfiguration.approvalStatusEnum;
-        for (let approvalStatusKey in approvalStatusJsonObject) {
-          if (approvalStatusJsonObject[approvalStatusKey] == approvalStatus) {
-            approvalStatus = approvalStatusKey;
-          }
+      let applicationList = []
+      let applicationData = []
+      let uuid
+      let filePath
+      let approvalStatus
+      let applicationName
+      let releaseNumber
+      let approvalStatusJsonObject
+
+      /****************************************************************************************
+       * Preparing response-value-list for response body
+       ****************************************************************************************/      
+      let profileUuid = await profile.getUuidListAsync(applicationProfile.profileNameEnum.FILE_PROFILE);
+      for (let profileUuidIndex = 0; profileUuidIndex < profileUuid.length; profileUuidIndex++) {
+        uuid = profileUuid[profileUuidIndex];
+        filePath = await fileProfile.getFilePath(uuid)        
+        if(fileSystem.existsSync(filePath)){
+          applicationData = JSON.parse(fileSystem.readFileSync(filePath, 'utf8'));
+          applicationData["applications"].forEach(applicationDataItem => {
+            applicationName = applicationDataItem["application-name"]
+            releaseNumber = applicationDataItem["application-release-number"]
+            approvalStatus = applicationDataItem["approval-status"];
+            approvalStatusJsonObject = applicationProfile.ApplicationProfilePac.ApplicationProfileConfiguration.approvalStatusEnum;
+            for (let approvalStatusKey in approvalStatusJsonObject) {
+              if (approvalStatusJsonObject[approvalStatusKey] == approvalStatus) {
+                approvalStatus = approvalStatusKey;
+              }
+            }
+
+            let application = {
+              "application-name": applicationName,
+              "release-number": releaseNumber,
+              "approval-status": approvalStatus
+            };
+            applicationList.push(application);
+          });
+        }else{
+          console.log("path not exists " + filePath);
         }
-        let application = {
-          "application-name": applicationName,
-          "application-release-number": releaseNumber,
-          "approval-status": approvalStatus
-        };
-        applicationList.push(application);
       }
+
       /****************************************************************************************
        * Setting 'application/json' response body
        ****************************************************************************************/
