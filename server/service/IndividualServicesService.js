@@ -37,6 +37,8 @@ const ProfileCollection = require('onf-core-model-ap/applicationPattern/onfModel
 
 const softwareUpgrade = require('./individualServices/SoftwareUpgrade');
 const TcpServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpServerInterface');
+const fileProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/Profile/FileProfile');
+const fileSystem = require('fs')
 /**
  * Initiates process of embedding a new release
  *
@@ -132,16 +134,50 @@ exports.disregardApplication = function (body, user, originator, xCorrelator, tr
       /****************************************************************************************
        * Setting up required local variables from the request body
        ****************************************************************************************/
-      let applicationName = body["application-name"];
-      let releaseNumber = body["application-release-number"];
+      let applicationData = []
+      let uuid
+      let filePath
+      let isApplicationExists = false
+      let applicationNameRequestBody = body["application-name"];
+      let releaseNumberRequestBody = body["release-number"];
+      let applicationNameToDelete
 
       /****************************************************************************************
-       * configure application profile with the new application if it is not already exist
-       ****************************************************************************************/
-      let isApplicationExists = await applicationProfile.isProfileExistsAsync(applicationName, releaseNumber);
-      if (isApplicationExists) {
-        let profileUuid = await applicationProfile.getProfileUuidAsync(applicationName, releaseNumber);
-        await ProfileCollection.deleteProfileAsync(profileUuid);
+       * Preparing response-value-list for response body
+       ****************************************************************************************/      
+      let profileUuid = await profile.getUuidListAsync(applicationProfile.profileNameEnum.FILE_PROFILE);
+      for (let profileUuidIndex = 0; profileUuidIndex < profileUuid.length; profileUuidIndex++) {
+        uuid = profileUuid[profileUuidIndex];
+        filePath = await fileProfile.getFilePath(uuid)        
+        if(fileSystem.existsSync(filePath)){
+          applicationData = JSON.parse(fileSystem.readFileSync(filePath, 'utf8'));
+          applicationData["applications"].forEach(applicationDataItem => {
+              let applicationName = applicationDataItem["application-name"]
+              let releaseNumber = applicationDataItem["application-release-number"]
+
+              if(applicationNameRequestBody === applicationName && releaseNumberRequestBody === releaseNumber){
+                isApplicationExists = true
+                applicationNameToDelete = applicationName
+              }
+          });
+
+          
+          /****************************************************************************************
+           * configure application profile with the new application if it is not already exist
+           ****************************************************************************************/
+          if(isApplicationExists){
+            deleteProfileByName(applicationData["applications"], applicationNameToDelete)
+          }
+          let  applicationDataToJson = {
+              "applications": applicationData["applications"]
+          }
+
+          fileSystem.writeFileSync(filePath, JSON.stringify(applicationDataToJson), (errWritingIntoFile) => {
+            if (errWritingIntoFile) throw errWritingIntoFile;
+          });
+        }else{
+          console.log("path not exists " + filePath);
+        }
       }
       resolve();
     } catch (error) {
@@ -150,7 +186,18 @@ exports.disregardApplication = function (body, user, originator, xCorrelator, tr
   });
 }
 
-
+/*
+* Delete profile by name from application-data/application-data.json
+*/
+const deleteProfileByName = (applicationData, applicationNameToDelete) => {
+  const applicationDataIndex = applicationData.findIndex(applicationDataItem => {
+     return applicationDataItem["application-name"] === String(applicationNameToDelete);
+  });
+  if(applicationDataIndex === -1){
+     return false;
+  };
+  return !!applicationData.splice(applicationDataIndex, 1);
+}
 
 /**
  * Creates or updates the approval status of an application
