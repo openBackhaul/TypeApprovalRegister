@@ -160,11 +160,7 @@ exports.disregardApplication = function (body, user, originator, xCorrelator, tr
                 applicationNameToDelete = applicationName
               }
           });
-
           
-          /****************************************************************************************
-           * configure application profile with the new application if it is not already exist
-           ****************************************************************************************/
           if(isApplicationExists){
             deleteProfileByName(applicationData["applications"], applicationNameToDelete)
           }
