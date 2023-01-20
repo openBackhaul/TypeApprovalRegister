@@ -162,7 +162,7 @@ exports.disregardApplication = function (body, user, originator, xCorrelator, tr
           });
           
           if(isApplicationExists){
-            deleteProfileByName(applicationData["applications"], applicationNameToDelete)
+            deleteApplication(applicationData["applications"], applicationNameToDelete)
           }
           let  applicationDataToJson = {
               "applications": applicationData["applications"]
@@ -185,7 +185,7 @@ exports.disregardApplication = function (body, user, originator, xCorrelator, tr
 /*
 * Delete profile by name from application-data/application-data.json
 */
-const deleteProfileByName = (applicationData, applicationNameToDelete) => {
+const deleteApplication = (applicationData, applicationNameToDelete) => {
   const applicationDataIndex = applicationData.findIndex(applicationDataItem => {
      return applicationDataItem["application-name"] === String(applicationNameToDelete);
   });
