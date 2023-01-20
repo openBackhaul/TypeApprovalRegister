@@ -253,7 +253,6 @@ exports.listApplications = function (user, originator, xCorrelator, traceIndicat
       let approvalStatus
       let applicationName
       let releaseNumber
-      let approvalStatusJsonObject
 
       /****************************************************************************************
        * Preparing response-value-list for response body
@@ -268,13 +267,6 @@ exports.listApplications = function (user, originator, xCorrelator, traceIndicat
             applicationName = applicationDataItem["application-name"]
             releaseNumber = applicationDataItem["application-release-number"]
             approvalStatus = applicationDataItem["approval-status"];
-            approvalStatusJsonObject = applicationProfile.ApplicationProfilePac.ApplicationProfileConfiguration.approvalStatusEnum;
-            for (let approvalStatusKey in approvalStatusJsonObject) {
-              if (approvalStatusJsonObject[approvalStatusKey] == approvalStatus) {
-                approvalStatus = approvalStatusKey;
-              }
-            }
-
             let application = {
               "application-name": applicationName,
               "release-number": releaseNumber,
