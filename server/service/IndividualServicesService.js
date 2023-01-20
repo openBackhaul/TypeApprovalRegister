@@ -368,10 +368,13 @@ exports.redirectInfoAboutApprovalStatusChanges = function (body, user, originato
       let operationNamesByAttributes = new Map();
       operationNamesByAttributes.set("subscriber-operation", subscriberOperation);
 
-      let tcpObjectList = [];
-      let tcpObject = formulateTcpObjectForApplication(applicationProtocol, applicationAddress, applicationPort);
-      tcpObjectList.push(tcpObject);
-
+      let tcpObjectList = [
+        {
+          "protocol" : applicationProtocol,
+          "address": applicationAddress,
+          "port": applicationPort
+        }
+      ];
       let logicalTerminatinPointConfigurationInput = new LogicalTerminatinPointConfigurationInput(
         applicationName,
         releaseNumber,
@@ -426,24 +429,6 @@ exports.redirectInfoAboutApprovalStatusChanges = function (body, user, originato
       reject(error);
     }
   });
-}
-
-/**
- * @description This function helps to formulate the tcpClient object in the format {protocol : "" , address : "" , port : ""}
- * @return {Promise} return the formulated tcpClientObject
- **/
-function formulateTcpObjectForApplication(protocol, address, port) {
-  let tcpInfoObject;
-  try {
-    tcpInfoObject = {
-      "protocol" : protocol,
-      "address": address,
-      "port": port
-    };
-  } catch (error) {
-    console.log("error in formulating tcp object");
-  }
-  return tcpInfoObject;
 }
 
 /**
