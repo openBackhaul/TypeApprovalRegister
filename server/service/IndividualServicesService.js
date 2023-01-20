@@ -37,6 +37,8 @@ const ProfileCollection = require('onf-core-model-ap/applicationPattern/onfModel
 
 const softwareUpgrade = require('./individualServices/SoftwareUpgrade');
 const TcpServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpServerInterface');
+const fileProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/Profile/FileProfile');
+const fileSystem = require('fs')
 /**
  * Initiates process of embedding a new release
  *
@@ -170,45 +172,68 @@ exports.documentApprovalStatus = function (body, user, originator, xCorrelator, 
       /****************************************************************************************
        * Setting up required local variables from the request body
        ****************************************************************************************/
-      let applicationName = body["application-name"];
-      let releaseNumber = body["application-release-number"];
-      let approvalStatus = body["approval-status"];
+      let applicationData = []
+      let uuid
+      let filePath
+      let isApplicationExists = false
+      let isUpdateApprovalStatus = false
+      let applicationNameRequestBody = body["application-name"];
+      let releaseNumberRequestBody = body["release-number"];
+      let approvalStatusRequestBody = body["approval-status"];
 
       /****************************************************************************************
-       * configure application profile with the new application if it is not already exist
-       ****************************************************************************************/
-      let isApplicationExists = await applicationProfile.isProfileExistsAsync(
-        applicationName,
-        releaseNumber
-      );
-      approvalStatus = applicationProfile.ApplicationProfilePac.
-      ApplicationProfileConfiguration.approvalStatusEnum[approvalStatus];
+       * Preparing response-value-list for response body
+       ****************************************************************************************/      
+      let profileUuid = await profile.getUuidListAsync(applicationProfile.profileNameEnum.FILE_PROFILE);
+      for (let profileUuidIndex = 0; profileUuidIndex < profileUuid.length; profileUuidIndex++) {
+        uuid = profileUuid[profileUuidIndex];
+        filePath = await fileProfile.getFilePath(uuid)        
+        if(fileSystem.existsSync(filePath)){
+          applicationData = JSON.parse(fileSystem.readFileSync(filePath, 'utf8'));
+          applicationData["applications"].forEach((applicationDataItem, applicationDataIndex) => {
+            let applicationName = applicationDataItem["application-name"]
+            let releaseNumber = applicationDataItem["application-release-number"]
+            if(applicationNameRequestBody === applicationName && releaseNumberRequestBody === releaseNumber){
+              isApplicationExists = true
+              let approvalStatus = applicationDataItem["approval-status"]
+              if(approvalStatusRequestBody != approvalStatus){
+                isUpdateApprovalStatus = true
+                applicationData["applications"][applicationDataIndex]["approval-status"] = approvalStatusRequestBody
+              }
+            }
+          });
 
-      if (isApplicationExists) {
-        await applicationProfile.setApprovalStatusAsync(
-          applicationName,
-          releaseNumber,
-          approvalStatus
-        );
-      } else {
-      let profile = await applicationProfile.createProfileAsync(
-          applicationName,
-          releaseNumber,
-          approvalStatus
-        );
-        if(profile){
-          await ProfileCollection.addProfileAsync(profile);
+          /****************************************************************************************
+           * configure application profile with the new application if it is not already exist
+           ****************************************************************************************/
+
+          if(!isApplicationExists){
+            let newApplicationData = {
+              "application-name": applicationNameRequestBody,
+              "application-release-number": releaseNumberRequestBody,
+              "approval-status": approvalStatusRequestBody
+            }
+            // Add new application data from request body
+            applicationData["applications"].push(newApplicationData)
+            addAndUpdateApplicationData(filePath, applicationData)
+          }else{
+            if(isUpdateApprovalStatus){
+              addAndUpdateApplicationData(filePath, applicationData)
+            }
           }
+        }else{
+          console.log("path not exists " + filePath);
+        }
       }
-     
-      
+
       /****************************************************************************************
        * Prepare attributes to automate forwarding-construct
        ****************************************************************************************/
+
       let forwardingAutomationInputList = await prepareForwardingAutomation.documentApprovalStatus(
-        applicationName,
-        releaseNumber,
-        approvalStatus
+        applicationNameRequestBody,
+        releaseNumberRequestBody,
+        approvalStatusRequestBody
       );
       ForwardingAutomationService.automateForwardingConstructAsync(
         operationServerName,
@@ -226,6 +251,15 @@ exports.documentApprovalStatus = function (body, user, originator, xCorrelator, 
   });
 }
 
+/*
+* Add new applications if there is no instance available for this application + release-number combination
+* Update approval status if there is an instance available for this application + release-number combination
+*/
+const addAndUpdateApplicationData = (filePath, applicationData) => {
+  fileSystem.writeFileSync(filePath, JSON.stringify(applicationData), (errWritingIntoFile) => {
+    if (errWritingIntoFile) throw errWritingIntoFile;
+  });
+}
 
 /**
  * Provides list of applications
