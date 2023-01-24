@@ -38,7 +38,7 @@ const ProfileCollection = require('onf-core-model-ap/applicationPattern/onfModel
 const softwareUpgrade = require('./individualServices/SoftwareUpgrade');
 const TcpServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpServerInterface');
 const fileProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/Profile/FileProfile');
-const fileSystem = require('fs')
+const prepareApplicationData = require('./individualServices/PrepareApplicationData')
 /**
  * Initiates process of embedding a new release
  *
@@ -168,18 +168,16 @@ exports.disregardApplication = function (body, user, originator, xCorrelator, tr
 exports.documentApprovalStatus = function (body, user, originator, xCorrelator, traceIndicator, customerJourney, operationServerName) {
   return new Promise(async function (resolve, reject) {
     try {
-
       /****************************************************************************************
        * Setting up required local variables from the request body
        ****************************************************************************************/
       let applicationData = []
       let uuid
       let filePath
-      let isApplicationExists = false
-      let isUpdateApprovalStatus = false
-      let applicationNameRequestBody = body["application-name"];
-      let releaseNumberRequestBody = body["release-number"];
-      let approvalStatusRequestBody = body["approval-status"];
+      let applicationNameFromRequestBody = body["application-name"];
+      let releaseNumberFromRequestBody = body["release-number"];
+      let approvalStatusFromRequestBody = body["approval-status"];
+      let applicationStatus
 
       /****************************************************************************************
        * Preparing response-value-list for response body
@@ -187,42 +185,28 @@ exports.documentApprovalStatus = function (body, user, originator, xCorrelator, 
       let profileUuid = await profile.getUuidListAsync(applicationProfile.profileNameEnum.FILE_PROFILE);
       for (let profileUuidIndex = 0; profileUuidIndex < profileUuid.length; profileUuidIndex++) {
         uuid = profileUuid[profileUuidIndex];
-        filePath = await fileProfile.getFilePath(uuid)        
-        if(fileSystem.existsSync(filePath)){
-          applicationData = JSON.parse(fileSystem.readFileSync(filePath, 'utf8'));
-          applicationData["applications"].forEach((applicationDataItem, applicationDataIndex) => {
-            let applicationName = applicationDataItem["application-name"]
-            let releaseNumber = applicationDataItem["application-release-number"]
-            if(applicationNameRequestBody === applicationName && releaseNumberRequestBody === releaseNumber){
-              isApplicationExists = true
-              let approvalStatus = applicationDataItem["approval-status"]
-              if(approvalStatusRequestBody != approvalStatus){
-                isUpdateApprovalStatus = true
-                applicationData["applications"][applicationDataIndex]["approval-status"] = approvalStatusRequestBody
-              }
-            }
-          });
+        filePath = await fileProfile.getFilePath(uuid)     
+        
+        applicationData = await prepareApplicationData.readApplicationData(filePath)
+        applicationStatus = await prepareApplicationData.isApplicationExist(applicationData, applicationNameFromRequestBody, releaseNumberFromRequestBody)
 
-          /****************************************************************************************
-           * configure application profile with the new application if it is not already exist
-           ****************************************************************************************/
 
-          if(!isApplicationExists){
-            let newApplicationData = {
-              "application-name": applicationNameRequestBody,
-              "application-release-number": releaseNumberRequestBody,
-              "approval-status": approvalStatusRequestBody
-            }
-            // Add new application data from request body
-            applicationData["applications"].push(newApplicationData)
-            addAndUpdateApplicationData(filePath, applicationData)
-          }else{
-            if(isUpdateApprovalStatus){
-              addAndUpdateApplicationData(filePath, applicationData)
-            }
+        if(applicationStatus['is-application-exist']){
+          // If there is instance available for this application + release-number combination, update the “approval-status” of the instance
+          if(approvalStatusFromRequestBody != applicationStatus['approval-status']){
+            let applicationStatusIndex = applicationStatus['index']
+            applicationData["applications"][applicationStatusIndex]["approval-status"] = approvalStatusFromRequestBody
+            prepareApplicationData.addAndUpdateApplicationData(filePath, applicationData)
           }
         }else{
-          console.log("path not exists " + filePath);
+          // If there is no instance available for this application + release-number combination, create a instances
+          let newApplicationData = {
+            "application-name": applicationNameFromRequestBody,
+            "application-release-number": releaseNumberFromRequestBody,
+            "approval-status": approvalStatusFromRequestBody
+          }
+          applicationData["applications"].push(newApplicationData)
+          prepareApplicationData.addAndUpdateApplicationData(filePath, applicationData)
         }
       }
 
@@ -231,9 +215,9 @@ exports.documentApprovalStatus = function (body, user, originator, xCorrelator, 
        ****************************************************************************************/
 
       let forwardingAutomationInputList = await prepareForwardingAutomation.documentApprovalStatus(
-        applicationNameRequestBody,
-        releaseNumberRequestBody,
-        approvalStatusRequestBody
+        applicationNameFromRequestBody,
+        releaseNumberFromRequestBody,
+        approvalStatusFromRequestBody
       );
       ForwardingAutomationService.automateForwardingConstructAsync(
         operationServerName,
@@ -248,16 +232,6 @@ exports.documentApprovalStatus = function (body, user, originator, xCorrelator, 
     } catch (error) {
       reject(error);
     }
-  });
-}
-
-/*
-* Add new applications if there is no instance available for this application + release-number combination
-* Update approval status if there is an instance available for this application + release-number combination
-*/
-const addAndUpdateApplicationData = (filePath, applicationData) => {
-  fileSystem.writeFileSync(filePath, JSON.stringify(applicationData), (errWritingIntoFile) => {
-    if (errWritingIntoFile) throw errWritingIntoFile;
   });
 }
 
@@ -501,7 +475,6 @@ exports.regardApplication = function (body, user, originator, xCorrelator, trace
        * Prepare attributes to automate forwarding-construct
        ****************************************************************************************/
 
-
       let forwardingAutomationInputList = await prepareForwardingAutomation.regardApplication(
         applicationName,
         releaseNumber,
@@ -522,9 +495,6 @@ exports.regardApplication = function (body, user, originator, xCorrelator, trace
     }
   });
 }
-
-
-
 
 /**
  * Starts application in generic representation
