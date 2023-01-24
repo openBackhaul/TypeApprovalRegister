@@ -38,7 +38,7 @@ const ProfileCollection = require('onf-core-model-ap/applicationPattern/onfModel
 const softwareUpgrade = require('./individualServices/SoftwareUpgrade');
 const TcpServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpServerInterface');
 const fileProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/Profile/FileProfile');
-const fileSystem = require('fs')
+const prepareApplicationData = require('./individualServices/PrepareApplicationData')
 /**
  * Initiates process of embedding a new release
  *
@@ -137,10 +137,9 @@ exports.disregardApplication = function (body, user, originator, xCorrelator, tr
       let applicationData = []
       let uuid
       let filePath
-      let isApplicationExists = false
       let applicationNameRequestBody = body["application-name"];
       let releaseNumberRequestBody = body["release-number"];
-      let applicationNameToDelete
+      let checkApplicationExists
 
       /****************************************************************************************
        * Preparing response-value-list for response body
@@ -149,30 +148,14 @@ exports.disregardApplication = function (body, user, originator, xCorrelator, tr
       for (let profileUuidIndex = 0; profileUuidIndex < profileUuid.length; profileUuidIndex++) {
         uuid = profileUuid[profileUuidIndex];
         filePath = await fileProfile.getFilePath(uuid)        
-        if(fileSystem.existsSync(filePath)){
-          applicationData = JSON.parse(fileSystem.readFileSync(filePath, 'utf8'));
-          applicationData["applications"].forEach(applicationDataItem => {
-              let applicationName = applicationDataItem["application-name"]
-              let releaseNumber = applicationDataItem["application-release-number"]
-
-              if(applicationNameRequestBody === applicationName && releaseNumberRequestBody === releaseNumber){
-                isApplicationExists = true
-                applicationNameToDelete = applicationName
-              }
-          });
-          
-          if(isApplicationExists){
-            deleteApplication(applicationData["applications"], applicationNameToDelete)
+        applicationData = await prepareApplicationData.readApplicationData(filePath)
+        checkApplicationExists = await prepareApplicationData.isApplicationExist(applicationData, applicationNameRequestBody, releaseNumberRequestBody)
+        if(checkApplicationExists['is-application-exist']){
+          prepareApplicationData.deleteApplication(applicationData["applications"], checkApplicationExists['application-name'])
+          let applicationDataToJson = {
+            "applications": applicationData["applications"]
           }
-          let  applicationDataToJson = {
-              "applications": applicationData["applications"]
-          }
-
-          fileSystem.writeFileSync(filePath, JSON.stringify(applicationDataToJson), (errWritingIntoFile) => {
-            if (errWritingIntoFile) throw errWritingIntoFile;
-          });
-        }else{
-          console.log("path not exists " + filePath);
+          prepareApplicationData.addAndUpdateApplicationData(filePath,applicationDataToJson)
         }
       }
       resolve();
@@ -180,19 +163,6 @@ exports.disregardApplication = function (body, user, originator, xCorrelator, tr
       reject();
     }
   });
-}
-
-/*
-* Delete profile by name from application-data/application-data.json
-*/
-const deleteApplication = (applicationData, applicationNameToDelete) => {
-  const applicationDataIndex = applicationData.findIndex(applicationDataItem => {
-     return applicationDataItem["application-name"] === String(applicationNameToDelete);
-  });
-  if(applicationDataIndex === -1){
-     return false;
-  };
-  return !!applicationData.splice(applicationDataIndex, 1);
 }
 
 /**
