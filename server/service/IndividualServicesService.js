@@ -38,7 +38,7 @@ const ProfileCollection = require('onf-core-model-ap/applicationPattern/onfModel
 const softwareUpgrade = require('./individualServices/SoftwareUpgrade');
 const TcpServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpServerInterface');
 const fileProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/FileProfile');
-const fileSystem = require('fs')
+const prepareApplicationData = require('./individualServices/PrepareApplicationData')
 /**
  * Initiates process of embedding a new release
  *
@@ -246,13 +246,10 @@ exports.listApplications = function (user, originator, xCorrelator, traceIndicat
       /****************************************************************************************
        * Preparing response body
        ****************************************************************************************/
-      let applicationList = []
       let applicationData = []
       let uuid
       let filePath
-      let approvalStatus
-      let applicationName
-      let releaseNumber
+      let applicationDataUpdateReleaseNumberKey
 
       /****************************************************************************************
        * Preparing response-value-list for response body
@@ -260,36 +257,27 @@ exports.listApplications = function (user, originator, xCorrelator, traceIndicat
       let profileUuid = await profile.getUuidListAsync(applicationProfile.profileNameEnum.FILE_PROFILE);
       for (let profileUuidIndex = 0; profileUuidIndex < profileUuid.length; profileUuidIndex++) {
         uuid = profileUuid[profileUuidIndex];
-        filePath = await fileProfile.getFilePath(uuid)        
-        if(fileSystem.existsSync(filePath)){
-          applicationData = JSON.parse(fileSystem.readFileSync(filePath, 'utf8'));
-          applicationData["applications"].forEach(applicationDataItem => {
-            applicationName = applicationDataItem["application-name"]
-            releaseNumber = applicationDataItem["application-release-number"]
-            approvalStatus = applicationDataItem["approval-status"];
-            let application = {
-              "application-name": applicationName,
-              "release-number": releaseNumber,
-              "approval-status": approvalStatus
-            };
-            applicationList.push(application);
-          });
-        }else{
-          console.log("path not exists " + filePath);
-        }
+        filePath = await fileProfile.getFilePath(uuid)
+        applicationData = await prepareApplicationData.readApplicationData(filePath)
+
+        applicationDataUpdateReleaseNumberKey = applicationData['applications'].map(function(applicationDataItem) {
+          applicationDataItem['release-number'] = applicationDataItem['application-release-number']; // Assign new key
+          delete applicationDataItem['application-release-number']; // Delete old key
+          return applicationDataItem;
+        });
       }
 
       /****************************************************************************************
        * Setting 'application/json' response body
        ****************************************************************************************/
-      response['application/json'] = applicationList;
+      response['application/json'] = applicationDataUpdateReleaseNumberKey;
+      if (Object.keys(response).length > 0) {
+        resolve(response[Object.keys(response)[0]]);
+      } else {
+        resolve();
+      }
     } catch (error) {
       reject();
-    }
-    if (Object.keys(response).length > 0) {
-      resolve(response[Object.keys(response)[0]]);
-    } else {
-      resolve();
     }
   });
 }
