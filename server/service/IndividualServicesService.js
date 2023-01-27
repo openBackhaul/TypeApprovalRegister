@@ -144,7 +144,7 @@ exports.disregardApplication = function (body, user, originator, xCorrelator, tr
       /****************************************************************************************
        * Preparing response-value-list for response body
        ****************************************************************************************/      
-      let profileUuid = await profile.getUuidListAsync(applicationProfile.profileNameEnum.FILE_PROFILE);
+      let profileUuid = await profile.getUuidListAsync(profile.profileNameEnum.FILE_PROFILE);
       for (let profileUuidIndex = 0; profileUuidIndex < profileUuid.length; profileUuidIndex++) {
         uuid = profileUuid[profileUuidIndex];
         filePath = await fileProfile.getFilePath(uuid)        
