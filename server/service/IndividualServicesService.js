@@ -449,7 +449,7 @@ exports.regardApplication = function (body, user, originator, xCorrelator, trace
       let applicationNameRequestBody = body["application-name"]
       let releaseNumberRequestBody = body["release-number"]
 
-      let profileUuid = await profile.getUuidListAsync(applicationProfile.profileNameEnum.FILE_PROFILE);
+      let profileUuid = await profile.getUuidListAsync(profile.profileNameEnum.FILE_PROFILE);
       for (let profileUuidIndex = 0; profileUuidIndex < profileUuid.length; profileUuidIndex++) {
         uuid = profileUuid[profileUuidIndex];
         filePath =  await fileProfile.getFilePath(uuid)
