@@ -37,7 +37,7 @@ const ProfileCollection = require('onf-core-model-ap/applicationPattern/onfModel
 
 const softwareUpgrade = require('./individualServices/SoftwareUpgrade');
 const TcpServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpServerInterface');
-const fileProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/Profile/FileProfile');
+const fileProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/FileProfile');
 const prepareApplicationData = require('./individualServices/PrepareApplicationData')
 /**
  * Initiates process of embedding a new release
@@ -252,37 +252,38 @@ exports.listApplications = function (user, originator, xCorrelator, traceIndicat
       /****************************************************************************************
        * Preparing response body
        ****************************************************************************************/
-      let applicationList = [];
-      let applicationProfileList = await profile.getUuidListAsync(applicationProfile.profileNameEnum.APPLICATION_PROFILE);
-      for (let i = 0; i < applicationProfileList.length; i++) {
-        let uuid = applicationProfileList[i];
-        let applicationName = await applicationProfile.getApplicationNameAsync(uuid);
-        let releaseNumber = await applicationProfile.getApplicationReleaseNumberAsync(uuid);
-        let approvalStatus = await applicationProfile.getApprovalStatusAsync(uuid);
-        let approvalStatusJsonObject = applicationProfile.ApplicationProfilePac.ApplicationProfileConfiguration.approvalStatusEnum;
-        for (let approvalStatusKey in approvalStatusJsonObject) {
-          if (approvalStatusJsonObject[approvalStatusKey] == approvalStatus) {
-            approvalStatus = approvalStatusKey;
-          }
-        }
-        let application = {
-          "application-name": applicationName,
-          "application-release-number": releaseNumber,
-          "approval-status": approvalStatus
-        };
-        applicationList.push(application);
+      let applicationData = []
+      let uuid
+      let filePath
+      let applicationDataUpdateReleaseNumberKey
+
+      /****************************************************************************************
+       * Preparing response-value-list for response body
+       ****************************************************************************************/      
+      let profileUuid = await profile.getUuidListAsync(profile.profileNameEnum.FILE_PROFILE);
+      for (let profileUuidIndex = 0; profileUuidIndex < profileUuid.length; profileUuidIndex++) {
+        uuid = profileUuid[profileUuidIndex];
+        filePath = await fileProfile.getFilePath(uuid)
+        applicationData = await prepareApplicationData.readApplicationData(filePath)
+
+        applicationDataUpdateReleaseNumberKey = applicationData['applications'].map(function(applicationDataItem) {
+          applicationDataItem['release-number'] = applicationDataItem['application-release-number']; // Assign new key
+          delete applicationDataItem['application-release-number']; // Delete old key
+          return applicationDataItem;
+        });
       }
+
       /****************************************************************************************
        * Setting 'application/json' response body
        ****************************************************************************************/
-      response['application/json'] = applicationList;
+      response['application/json'] = applicationDataUpdateReleaseNumberKey;
+      if (Object.keys(response).length > 0) {
+        resolve(response[Object.keys(response)[0]]);
+      } else {
+        resolve();
+      }
     } catch (error) {
       reject();
-    }
-    if (Object.keys(response).length > 0) {
-      resolve(response[Object.keys(response)[0]]);
-    } else {
-      resolve();
     }
   });
 }
