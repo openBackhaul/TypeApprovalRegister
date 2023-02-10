@@ -67,3 +67,17 @@ exports.putHttpClientReleaseNumber = function (body, url) {
     reject();
   });
 }
+
+/**
+ * Configures application name 
+ * no response value expected for this operation
+ **/
+exports.putHttpClientApplicationName = function (body, url) {
+  return new Promise(async function (resolve, reject) {
+    try {
+      await fileOperation.writeToDatabaseAsync(url, body, false);
+      resolve();
+    } catch (error) {}
+    reject();
+  });
+}

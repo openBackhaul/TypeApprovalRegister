@@ -2,18 +2,43 @@
 var fileOperation = require('onf-core-model-ap/applicationPattern/databaseDriver/JSONDriver');
 
 /**
- * Returns remote address
+ * Returns Consequent Operation Reference
  *
  * uuid String 
  * returns inline_response_200_28
  **/
-exports.getTcpClientRemoteAddress = function (url) {
+exports.getActionProfileConsequentOperationReference = function (url) {
   return new Promise(async function (resolve, reject) {
     try {
       var value = await fileOperation.readFromDatabaseAsync(url);
       var response = {};
       response['application/json'] = {
-        "tcp-client-interface-1-0:remote-address": value
+        "action-profile-1-0:consequent-operation-reference": value
+      };
+      if (Object.keys(response).length > 0) {
+        resolve(response[Object.keys(response)[0]]);
+      } else {
+        resolve();
+      }
+    } catch (error) {
+      reject();
+    }
+  });
+}
+
+/**
+ * Returns Display in new browser window
+ *
+ * uuid String 
+ * returns inline_response_200_28
+ **/
+exports.getActionProfileDisplayInNewBrowserWindow = function (url) {
+  return new Promise(async function (resolve, reject) {
+    try {
+      var value = await fileOperation.readFromDatabaseAsync(url);
+      var response = {};
+      response['application/json'] = {
+        "action-profile-1-0:display-in-new-browser-window": value
       };
       if (Object.keys(response).length > 0) {
         resolve(response[Object.keys(response)[0]]);
@@ -28,18 +53,18 @@ exports.getTcpClientRemoteAddress = function (url) {
 
 
 /**
- * Returns target TCP protocol at server
+ * Returns Consequent Operation Reference
  *
  * uuid String 
- * returns inline_response_200_29
+ * returns inline_response_200_28
  **/
-exports.getTcpClientRemoteProtocol = function (url) {
+exports.getActionProfileInputValueListt = function (url) {
   return new Promise(async function (resolve, reject) {
     try {
       var value = await fileOperation.readFromDatabaseAsync(url);
       var response = {};
       response['application/json'] = {
-        "tcp-client-interface-1-0:remote-protocol": value
+        "action-profile-1-0:input-value-list": value
       };
       if (Object.keys(response).length > 0) {
         resolve(response[Object.keys(response)[0]]);
@@ -53,18 +78,18 @@ exports.getTcpClientRemoteProtocol = function (url) {
 }
 
 /**
- * Returns target TCP port at server
+ * Returns Profile Label
  *
  * uuid String 
- * returns inline_response_200_29
+ * returns inline_response_200_28
  **/
-exports.getTcpClientRemotePort = function (url) {
+exports.getActionProfileLabel = function (url) {
   return new Promise(async function (resolve, reject) {
     try {
       var value = await fileOperation.readFromDatabaseAsync(url);
       var response = {};
       response['application/json'] = {
-        "tcp-client-interface-1-0:remote-port": value
+        "action-profile-1-0:label": value
       };
       if (Object.keys(response).length > 0) {
         resolve(response[Object.keys(response)[0]]);
@@ -79,37 +104,24 @@ exports.getTcpClientRemotePort = function (url) {
 
 
 /**
- * Configures remote address
+ * Returns Profile Operartion Name
  *
- * body Ipaddress_ipv4address_body 
  * uuid String 
- * no response value expected for this operation
+ * returns inline_response_200_28
  **/
-exports.putTcpClientRemoteAddress = function (url, body) {
+exports.getActionProfileOperationName = function (url) {
   return new Promise(async function (resolve, reject) {
     try {
-      console.log(body);
-      await fileOperation.writeToDatabaseAsync(url, body, false);
-      resolve();
-    } catch (error) {
-      reject();
-    }
-  });
-}
-
-
-/**
- * Configures target TCP port at server
- *
- * body Tcpclientinterfaceconfiguration_remoteport_body 
- * uuid String 
- * no response value expected for this operation
- **/
-exports.putTcpClientRemotePort = function (url, body) {
-  return new Promise(async function (resolve, reject) {
-    try {
-      await fileOperation.writeToDatabaseAsync(url, body, false);
-      resolve();
+      var value = await fileOperation.readFromDatabaseAsync(url);
+      var response = {};
+      response['application/json'] = {
+        "action-profile-1-0:operation-name": value
+      };
+      if (Object.keys(response).length > 0) {
+        resolve(response[Object.keys(response)[0]]);
+      } else {
+        resolve();
+      }
     } catch (error) {
       reject();
     }
@@ -117,13 +129,10 @@ exports.putTcpClientRemotePort = function (url, body) {
 }
 
 /**
- * Configures target TCP protocol at server
- *
- * body Tcpclientinterfaceconfiguration_remoteport_body 
- * uuid String 
+ * Configures Profile Consequent Operation Reference
  * no response value expected for this operation
  **/
-exports.putTcpClientRemoteProtocol = function (url, body) {
+exports.putActionProfileConsequentOperationReference = function (url, body) {
   return new Promise(async function (resolve, reject) {
     try {
       await fileOperation.writeToDatabaseAsync(url, body, false);

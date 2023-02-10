@@ -2,18 +2,68 @@
 var fileOperation = require('onf-core-model-ap/applicationPattern/databaseDriver/JSONDriver');
 
 /**
- * Returns address of the server
+ * Returns the description of the file
+ *
+ * uuid String 
+ * returns inline_response_200_18
+ **/
+exports.getFileProfileFileDescription = function(url) {
+  return new Promise(async function (resolve, reject) {
+    try {
+      var value = await fileOperation.readFromDatabaseAsync(url);
+      var response = {};
+      response['application/json'] = {
+        "file-profile-1-0:file-description": value
+      };
+      if (Object.keys(response).length > 0) {
+        resolve(response[Object.keys(response)[0]]);
+      } else {
+        resolve();
+      }
+    } catch (error) {
+      reject();
+    }
+  });
+}
+
+/**
+ * Returns the identifier of the file
+ *
+ * uuid String 
+ * returns inline_response_200_17
+ **/
+exports.getFileProfileFileIdentifier = function(url) {
+  return new Promise(async function (resolve, reject) {
+    try {
+      var value = await fileOperation.readFromDatabaseAsync(url);
+      var response = {};
+      response['application/json'] = {
+        "file-profile-1-0:file-identifier": value
+      };
+      if (Object.keys(response).length > 0) {
+        resolve(response[Object.keys(response)[0]]);
+      } else {
+        resolve();
+      }
+    } catch (error) {
+      reject();
+    }
+  });
+}
+
+/**
+ * Returns the path of the file
  *
  * uuid String 
  * returns inline_response_200_19
  **/
-exports.getTcpServerLocalAddress = function (url) {
+exports.getFileProfileFilePath = function(url) {
   return new Promise(async function (resolve, reject) {
     try {
       var value = await fileOperation.readFromDatabaseAsync(url);
       var response = {};
       response['application/json'] = {
-        "tcp-server-interface-1-0:local-address": value
+        "file-profile-1-0:file-path": value
       };
       if (Object.keys(response).length > 0) {
         resolve(response[Object.keys(response)[0]]);
@@ -26,43 +76,69 @@ exports.getTcpServerLocalAddress = function (url) {
   });
 }
 
+/**
+ * Returns the allowed operation on the file
+ *
+ * uuid String 
+ * returns inline_response_200_22
+ **/
+exports.getFileProfileOperation = function(url) {
+  return new Promise(async function (resolve, reject) {
+    try {
+      var value = await fileOperation.readFromDatabaseAsync(url);
+      var response = {};
+      response['application/json'] = {
+        "file-profile-1-0:operation": value
+      };
+      if (Object.keys(response).length > 0) {
+        resolve(response[Object.keys(response)[0]]);
+      } else {
+        resolve();
+      }
+    } catch (error) {
+      reject();
+    }
+  });
+}
 
 /**
- * Returns TCP port of the server
+ * Returns the password for acccessing the file
+ *
+ * uuid String 
+ * returns inline_response_200_21
+ **/
+exports.getFileProfilePassword = function(url) {
+  return new Promise(async function (resolve, reject) {
+    try {
+      var value = await fileOperation.readFromDatabaseAsync(url);
+      var response = {};
+      response['application/json'] = {
+        "file-profile-1-0:password": value
+      };
+      if (Object.keys(response).length > 0) {
+        resolve(response[Object.keys(response)[0]]);
+      } else {
+        resolve();
+      }
+    } catch (error) {
+      reject();
+    }
+  });
+}
+
+/**
+ * Returns the user name for acccessing the file
  *
  * uuid String 
  * returns inline_response_200_20
  **/
-exports.getTcpServerLocalPort = function (url) {
+exports.getFileProfileUserName = function(url) {
   return new Promise(async function (resolve, reject) {
     try {
       var value = await fileOperation.readFromDatabaseAsync(url);
       var response = {};
       response['application/json'] = {
-        "tcp-server-interface-1-0:local-port": value
-      };
-      if (Object.keys(response).length > 0) {
-        resolve(response[Object.keys(response)[0]]);
-      } else {
-        resolve();
-      }
-    } catch (error) {
-      reject();
-    }
-  });
-}
-
-
-/**
- * Returns TCP description of the server
- **/
-exports.getTcpServerDescription = function (url) {
-  return new Promise(async function (resolve, reject) {
-    try {
-      var value = await fileOperation.readFromDatabaseAsync(url);
-      var response = {};
-      response['application/json'] = {
-        "tcp-server-interface-1-0:description": value
+        "file-profile-1-0:user-name": value
       };
       if (Object.keys(response).length > 0) {
         resolve(response[Object.keys(response)[0]]);
@@ -76,83 +152,73 @@ exports.getTcpServerDescription = function (url) {
 }
 
 /**
- * Returns TCP Protocol of the server
- **/
-exports.getTcpServerLocalProtocol = function (url) {
-  return new Promise(async function (resolve, reject) {
-    try {
-      var value = await fileOperation.readFromDatabaseAsync(url);
-      var response = {};
-      response['application/json'] = {
-        "tcp-server-interface-1-0:local-protocol": value
-      };
-      if (Object.keys(response).length > 0) {
-        resolve(response[Object.keys(response)[0]]);
-      } else {
-        resolve();
-      }
-    } catch (error) {
-      reject();
-    }
-  });
-}
-
-/**
- * Documents address of the server
- * no response value expected for this operation
- **/
-exports.putTcpServerLocalAddress = function (url, body) {
-  return new Promise(async function (resolve, reject) {
-    try {
-      await fileOperation.writeToDatabaseAsync(url, body, false);
-      resolve();
-    } catch (error) {
-      reject();
-    }
-  });
-}
-
-/**
- * Documents Description of the server
- * no response value expected for this operation
- **/
-exports.putTcpServerDescription = function (url, body) {
-  return new Promise(async function (resolve, reject) {
-    try {
-      await fileOperation.writeToDatabaseAsync(url, body, false);
-      resolve();
-    } catch (error) {
-      reject();
-    }
-  });
-}
-
-/**
- * Documents protocol of the server
- * no response value expected for this operation
- **/
-exports.putTcpServerLocalProtocol = function (url, body) {
-  return new Promise(async function (resolve, reject) {
-    try {
-      await fileOperation.writeToDatabaseAsync(url, body, false);
-      resolve();
-    } catch (error) {
-      reject();
-    }
-  });
-}
-
-
-/**
- * Documents TCP port of the server
+ * Configures path of the file
  *
- * body Tcpserverinterfaceconfiguration_localport_body 
+ * body Fileprofileconfiguration_filepath_body 
  * uuid String 
  * no response value expected for this operation
  **/
-exports.putTcpServerLocalPort = function (url, body) {
+exports.putFileProfileFilePath = function (url, body) {
   return new Promise(async function (resolve, reject) {
     try {
+      console.log(body);
+      await fileOperation.writeToDatabaseAsync(url, body, false);
+      resolve();
+    } catch (error) {
+      reject();
+    }
+  });
+}
+
+/**
+ * Configures the allowed operation on the file
+ *
+ * body Fileprofileconfiguration_operation_body 
+ * uuid String 
+ * no response value expected for this operation
+ **/
+exports.putFileProfileOperation = function (url, body) {
+  return new Promise(async function (resolve, reject) {
+    try {
+      console.log(body);
+      await fileOperation.writeToDatabaseAsync(url, body, false);
+      resolve();
+    } catch (error) {
+      reject();
+    }
+  });
+}
+
+/**
+ * Configures the password for acccessing the file
+ *
+ * body Fileprofileconfiguration_password_body 
+ * uuid String 
+ * no response value expected for this operation
+ **/
+exports.putFileProfilePassword = function (url, body) {
+  return new Promise(async function (resolve, reject) {
+    try {
+      console.log(body);
+      await fileOperation.writeToDatabaseAsync(url, body, false);
+      resolve();
+    } catch (error) {
+      reject();
+    }
+  });
+}
+
+/**
+ * Configures the user name for acccessing the file
+ *
+ * body Fileprofileconfiguration_username_body 
+ * uuid String 
+ * no response value expected for this operation
+ **/
+exports.putFileProfileUserName = function (url, body) {
+  return new Promise(async function (resolve, reject) {
+    try {
+      console.log(body);
       await fileOperation.writeToDatabaseAsync(url, body, false);
       resolve();
     } catch (error) {
