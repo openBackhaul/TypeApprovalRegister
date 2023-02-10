@@ -34,7 +34,6 @@ const ForwardingConstruct = require('onf-core-model-ap/applicationPattern/onfMod
 const profile = require('onf-core-model-ap/applicationPattern/onfModel/models/Profile');
 const applicationProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/ApplicationProfile');
 const ProfileCollection = require('onf-core-model-ap/applicationPattern/onfModel/models/ProfileCollection');
-const fileProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/FileProfile');
 const responseProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/ResponseProfile');
 
 const softwareUpgrade = require('./individualServices/SoftwareUpgrade');
