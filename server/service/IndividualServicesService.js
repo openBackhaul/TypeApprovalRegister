@@ -37,7 +37,7 @@ const ProfileCollection = require('onf-core-model-ap/applicationPattern/onfModel
 
 const softwareUpgrade = require('./individualServices/SoftwareUpgrade');
 const TcpServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpServerInterface');
-const fileProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/Profile/FileProfile');
+const fileProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/FileProfile');
 const prepareApplicationData = require('./individualServices/PrepareApplicationData')
 /**
  * Initiates process of embedding a new release
