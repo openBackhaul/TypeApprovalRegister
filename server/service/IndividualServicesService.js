@@ -71,15 +71,15 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
        * configure logical-termination-point
        ****************************************************************************************/
       
-      const HttpClientLtpUuidFromForwarding = await resolveHttpClientLtpUuidFromForwardingName('PromptForBequeathingDataCausesNewTARbeingRequestedToRedirectInfoAboutApprovals');
-      if (HttpClientLtpUuidFromForwarding?.httpClientLtpUuid == undefined) {
+      const HttpClientLtpUuidFromForwarding = await resolveHttpClient('PromptForBequeathingDataCausesNewTARbeingRequestedToRedirectInfoAboutApprovals');
+      if (HttpClientLtpUuidFromForwarding == undefined) {
         reject(new Error(`The NewRelease ${applicationName} was not found.`));
         return;
       }
 
       let isdataTransferRequired = true;
       let logicalTerminationPointConfigurationStatus = {};
-      let newReleaseHttpClientLtpUuid = HttpClientLtpUuidFromForwarding.httpClientLtpUuid;
+      let newReleaseHttpClientLtpUuid = HttpClientLtpUuidFromForwarding[0];
       if (newReleaseHttpClientLtpUuid != undefined) {
       
         let isReleaseUpdated = await httpClientInterface.setReleaseNumberAsync(newReleaseHttpClientLtpUuid, releaseNumber);
@@ -137,33 +137,33 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
 /*
   function to get Http Client LTP UUID using forwarding name
 */
-async function resolveHttpClientLtpUuidFromForwardingName(forwardingName) {
-  const forwardingConstruct = await ForwardingDomain.getForwardingConstructForTheForwardingNameAsync(forwardingName);
-  if (forwardingConstruct === undefined) {
-    return null;
-  }
-
-  let fcPortOutputDirectionLogicalTerminationPointList = [];
-  const fcPortList = forwardingConstruct[onfAttributes.FORWARDING_CONSTRUCT.FC_PORT];
-  for (const fcPort of fcPortList) {
-    const portDirection = fcPort[onfAttributes.FC_PORT.PORT_DIRECTION];
-
-    if (FcPort.portDirectionEnum.OUTPUT === portDirection) {
-      fcPortOutputDirectionLogicalTerminationPointList.push(fcPort[onfAttributes.FC_PORT.LOGICAL_TERMINATION_POINT]);
+var resolveHttpClient = exports.resolveHttpClientLtpUuidFromForwardingName = function (forwardingName) {
+  return new Promise(async function (resolve, reject) {
+    try {
+      let ForwardConstructName = await ForwardingDomain.getForwardingConstructForTheForwardingNameAsync(forwardingName)
+      if (ForwardConstructName === undefined) {
+        return null;
+      }
+      let LogicalTerminationPointlist;
+      let httpClientUuidList = [];
+      let ForwardConstructUuid = ForwardConstructName[onfAttributes.GLOBAL_CLASS.UUID]
+      let ListofUuid = await ForwardingConstruct.getFcPortListAsync(ForwardConstructUuid)
+      for (let i = 0; i < ListofUuid.length; i++) {
+        let PortDirection = ListofUuid[i][[onfAttributes.FC_PORT.PORT_DIRECTION]]
+        if (PortDirection === FcPort.portDirectionEnum.OUTPUT) {
+          LogicalTerminationPointlist = ListofUuid[i][onfAttributes.CONTROL_CONSTRUCT.LOGICAL_TERMINATION_POINT]
+          let httpClientUuid = await logicalTerminationPoint.getServerLtpListAsync(LogicalTerminationPointlist)
+          let tcpClientUuid = await logicalTerminationPoint.getServerLtpListAsync(httpClientUuid[0])
+          httpClientUuidList.push(httpClientUuid[0], LogicalTerminationPointlist, tcpClientUuid[0]);
+        }
+      }
+      resolve(httpClientUuidList)
+    } catch (error) {
+      console.log(error)
     }
-  }
-
-  if (fcPortOutputDirectionLogicalTerminationPointList.length !== 1) {
-    return null;
-  }
-
-  const opLtpUuid = fcPortOutputDirectionLogicalTerminationPointList[0];
-  const httpLtpUuidList = await LogicalTerminationPoint.getServerLtpListAsync(opLtpUuid);
-  const httpClientLtpUuid = httpLtpUuidList[0];
-  return {
-    httpClientLtpUuid
-  }
+  })
 }
+
 
 
 /**
