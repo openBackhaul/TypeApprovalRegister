@@ -204,9 +204,7 @@ async function PromptForBequeathingDataCausesTransferOfListOfAlreadyGrantedTypeA
             /***********************************************************************************
              * Preparing requestBody and transfering the data one by one
              ************************************************************************************/
-
-            // let applicationProfileList = await profile.getUuidListAsync(applicationProfile.profileNameEnum.APPLICATION_PROFILE);
-
+            
             let profileUuid = await profile.getUuidListAsync(profile.profileNameEnum.FILE_PROFILE);
 
             for (let profileUuidIndex = 0; profileUuidIndex < profileUuid.length; profileUuidIndex++) {
