@@ -245,37 +245,38 @@ exports.listApplications = function (user, originator, xCorrelator, traceIndicat
       /****************************************************************************************
        * Preparing response body
        ****************************************************************************************/
-      let applicationList = [];
-      let applicationProfileList = await profile.getUuidListAsync(applicationProfile.profileNameEnum.APPLICATION_PROFILE);
-      for (let i = 0; i < applicationProfileList.length; i++) {
-        let uuid = applicationProfileList[i];
-        let applicationName = await applicationProfile.getApplicationNameAsync(uuid);
-        let releaseNumber = await applicationProfile.getApplicationReleaseNumberAsync(uuid);
-        let approvalStatus = await applicationProfile.getApprovalStatusAsync(uuid);
-        let approvalStatusJsonObject = applicationProfile.ApplicationProfilePac.ApplicationProfileConfiguration.approvalStatusEnum;
-        for (let approvalStatusKey in approvalStatusJsonObject) {
-          if (approvalStatusJsonObject[approvalStatusKey] == approvalStatus) {
-            approvalStatus = approvalStatusKey;
+      let applicationData = []
+      let uuid
+      let filePath
+      let applicationDataUpdateReleaseNumberKey
+
+      /****************************************************************************************
+       * Preparing response-value-list for response body
+       ****************************************************************************************/      
+      let profileUuid = await profile.getUuidListAsync(profile.profileNameEnum.FILE_PROFILE);
+      for (let profileUuidIndex = 0; profileUuidIndex < profileUuid.length; profileUuidIndex++) {
+        uuid = profileUuid[profileUuidIndex];
+        filePath = await fileProfile.getFilePath(uuid)
+        applicationData = await prepareApplicationData.readApplicationData(filePath)
+
+        applicationDataUpdateReleaseNumberKey = applicationData['applications'].map(function(applicationDataItem) {
+          applicationDataItem['release-number'] = applicationDataItem['application-release-number']; // Assign new key
+          delete applicationDataItem['application-release-number']; // Delete old key
+          return applicationDataItem;
+        });
           }
-        }
-        let application = {
-          "application-name": applicationName,
-          "application-release-number": releaseNumber,
-          "approval-status": approvalStatus
-        };
-        applicationList.push(application);
-      }
+
       /****************************************************************************************
        * Setting 'application/json' response body
        ****************************************************************************************/
-      response['application/json'] = applicationList;
-    } catch (error) {
-      reject();
-    }
+      response['application/json'] = applicationDataUpdateReleaseNumberKey;
     if (Object.keys(response).length > 0) {
       resolve(response[Object.keys(response)[0]]);
     } else {
       resolve();
+    }
+    } catch (error) {
+      reject();
     }
   });
 }
@@ -495,81 +496,6 @@ exports.regardApplication = function (body, user, originator, xCorrelator, trace
       resolve();
     } catch (error) {
       reject();
-    }
-  });
-}
-
-
-
-
-/**
- * Starts application in generic representation
- *
- * user String User identifier from the system starting the service call
- * originator String 'Identification for the system consuming the API, as defined in  [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]' 
- * xCorrelator String UUID for the service execution flow that allows to correlate requests and responses
- * traceIndicator String Sequence of request numbers along the flow
- * customerJourney String Holds information supporting customer’s journey to which the execution applies
- * returns inline_response_200
- **/
-exports.startApplicationInGenericRepresentation = function (user, originator, xCorrelator, traceIndicator, customerJourney) {
-  return new Promise(async function (resolve, reject) {
-    let response = {};
-    try {
-      /****************************************************************************************
-       * Preparing consequent-action-list for response body
-       ****************************************************************************************/
-      let consequentActionList = [];
-
-      let protocol = "http";
-      let applicationAddress = await tcpServerInterface.getLocalAddress();
-      let applicationPort = await tcpServerInterface.getLocalPort();
-      let baseUrl = protocol + "://" + applicationAddress + ":" + applicationPort;
-
-      let LabelForListApprovedApplication = "List Approved Applications";
-      let requestForListApprovedApplication = baseUrl + await operationServerInterface.getOperationNameAsync("tar-0-0-1-op-s-3005");
-      let consequentActionForListApprovedApplication = new consequentAction(
-        LabelForListApprovedApplication,
-        requestForListApprovedApplication,
-        false
-      );
-      consequentActionList.push(consequentActionForListApprovedApplication);
-
-      let LabelForInformAboutApplication = "Inform about Application";
-      let requestForInformAboutApplication = baseUrl + await operationServerInterface.getOperationNameAsync("tar-0-0-1-op-s-2002");
-      let consequentActionForInformAboutApplication = new consequentAction(
-        LabelForInformAboutApplication,
-        requestForInformAboutApplication,
-        false
-      );
-      consequentActionList.push(consequentActionForInformAboutApplication);
-
-      /****************************************************************************************
-       * Preparing response-value-list for response body
-       ****************************************************************************************/
-      let responseValueList = [];
-      let applicationName = await httpServerInterface.getApplicationNameAsync();
-      let reponseValue = new responseValue(
-        "applicationName",
-        applicationName,
-        typeof applicationName
-      );
-      responseValueList.push(reponseValue);
-
-      /****************************************************************************************
-       * Setting 'application/json' response body
-       ****************************************************************************************/
-      response['application/json'] = onfAttributeFormatter.modifyJsonObjectKeysToKebabCase({
-        consequentActionList,
-        responseValueList
-      });
-    } catch (error) {
-      console.log(error);
-    }
-    if (Object.keys(response).length > 0) {
-      resolve(response[Object.keys(response)[0]]);
-    } else {
-      resolve();
     }
   });
 }
