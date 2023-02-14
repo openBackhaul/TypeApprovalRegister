@@ -76,12 +76,26 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
       }
 
       let isdataTransferRequired = true;
+      let isReleaseUpdated = false;
+      let isApplicationNameUpdated = false;
+      let isProtocolUpdated = false;
+      let isAddressUpdated = false;
+      let isPortUpdated = false;
+
       let logicalTerminationPointConfigurationStatus = {};
       let newReleaseHttpClientLtpUuid = HttpClientLtpUuidFromForwarding[0];
       if (newReleaseHttpClientLtpUuid != undefined) {
-      
-        let isReleaseUpdated = await httpClientInterface.setReleaseNumberAsync(newReleaseHttpClientLtpUuid, releaseNumber);
-        let isApplicationNameUpdated = await httpClientInterface.setApplicationNameAsync(newReleaseHttpClientLtpUuid, applicationName);
+        
+        let currentReleaseNumber = await httpClientInterface.getReleaseNumberAsync(newReleaseHttpClientLtpUuid)
+        let currentApplicationName = await httpClientInterface.getApplicationNameAsync(newReleaseHttpClientLtpUuid)
+        
+        if(currentReleaseNumber != releaseNumber){
+          isReleaseUpdated = await httpClientInterface.setReleaseNumberAsync(newReleaseHttpClientLtpUuid, releaseNumber);
+        }
+
+        if(currentApplicationName != applicationName){
+          isApplicationNameUpdated = await httpClientInterface.setApplicationNameAsync(newReleaseHttpClientLtpUuid, applicationName);
+        }
 
         if (isReleaseUpdated || isApplicationNameUpdated) {
           let configurationStatus = new ConfigurationStatus(
@@ -94,9 +108,21 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
         let newReleaseTcpClientUuidList = await logicalTerminationPoint.getServerLtpListAsync(newReleaseHttpClientLtpUuid);
         let newReleaseTcpClientUuid = newReleaseTcpClientUuidList[0];
 
-        let isProtocolUpdated = await tcpClientInterface.setRemoteProtocolAsync(newReleaseTcpClientUuid, applicationProtocol);
-        let isAddressUpdated = await tcpClientInterface.setRemoteAddressAsync(newReleaseTcpClientUuid, applicationAddress);
-        let isPortUpdated = await tcpClientInterface.setRemotePortAsync(newReleaseTcpClientUuid, applicationPort);
+        let currentRemoteProtocol = await tcpClientInterface.getRemoteProtocolAsync(newReleaseTcpClientUuid)
+        let currentRemoteAddress = await tcpClientInterface.getRemoteAddressAsync(newReleaseTcpClientUuid)
+        let currentRemotePort = await tcpClientInterface.getRemotePortAsync(newReleaseTcpClientUuid)
+
+        if(currentRemoteProtocol != applicationProtocol){
+          isProtocolUpdated = await tcpClientInterface.setRemoteProtocolAsync(newReleaseTcpClientUuid, applicationProtocol);
+        }
+
+        if(JSON.stringify(currentRemoteAddress) != JSON.stringify(applicationAddress)){
+          isAddressUpdated = await tcpClientInterface.setRemoteAddressAsync(newReleaseTcpClientUuid, applicationAddress);
+        }
+
+        if(currentRemotePort != applicationPort){
+          isPortUpdated = await tcpClientInterface.setRemotePortAsync(newReleaseTcpClientUuid, applicationPort);
+        }
 
         if (isProtocolUpdated || isAddressUpdated || isPortUpdated) {
           let configurationStatus = new ConfigurationStatus(
