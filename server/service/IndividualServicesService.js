@@ -1,9 +1,8 @@
 'use strict';
 
-const LogicalTerminatinPointConfigurationInput = require('onf-core-model-ap/applicationPattern/onfModel/services/models/logicalTerminationPoint/ConfigurationInputWithMapping');
-const LogicalTerminationPointService = require('onf-core-model-ap/applicationPattern/onfModel/services/LogicalTerminationPointWithMappingServices');
+const LogicalTerminatinPointConfigurationInput = require('onf-core-model-ap/applicationPattern/onfModel/services/models/logicalTerminationPoint/ConfigurationInput');
+const LogicalTerminationPointService = require('onf-core-model-ap/applicationPattern/onfModel/services/LogicalTerminationPointServices');
 const LogicalTerminationPointConfigurationStatus = require('onf-core-model-ap/applicationPattern/onfModel/services/models/logicalTerminationPoint/ConfigurationStatus');
-const LogicalTerminationPoint = require('onf-core-model-ap/applicationPattern/onfModel/models/LogicalTerminationPoint');
 const layerProtocol = require('onf-core-model-ap/applicationPattern/onfModel/models/LayerProtocol');
 
 const ForwardingConfigurationService = require('onf-core-model-ap/applicationPattern/onfModel/services/ForwardingConstructConfigurationServices');
@@ -39,7 +38,6 @@ const ProfileCollection = require('onf-core-model-ap/applicationPattern/onfModel
 
 const softwareUpgrade = require('./individualServices/SoftwareUpgrade');
 const TcpServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpServerInterface');
-const individualServicesOperationsMapping = require('./individualServices/IndividualServicesOperationsMapping');
 const fileProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/FileProfile');
 const prepareApplicationData = require('./individualServices/PrepareApplicationData')
 /**
@@ -163,8 +161,6 @@ var resolveHttpClient = exports.resolveHttpClientLtpUuidFromForwardingName = fun
     }
   })
 }
-
-
 
 /**
  * Deletes the record of an application
@@ -409,30 +405,21 @@ exports.redirectInfoAboutApprovalStatusChanges = function (body, user, originato
       let applicationAddress = body["subscriber-address"];
       let applicationPort = body["subscriber-port"];
       let subscriberOperation = body["subscriber-operation"];
-      let applicationProtocol = body["subscriber-protocol"];
 
       /****************************************************************************************
        * Prepare logicalTerminatinPointConfigurationInput object to 
        * configure logical-termination-point
        ****************************************************************************************/
 
-      let operationNamesByAttributes = new Map();
-      operationNamesByAttributes.set("subscriber-operation", subscriberOperation);
-
-      let tcpObjectList = [
-        {
-          "protocol" : applicationProtocol,
-          "address": applicationAddress,
-          "port": applicationPort
-        }
+      let operationList = [
+        subscriberOperation
       ];
       let logicalTerminatinPointConfigurationInput = new LogicalTerminatinPointConfigurationInput(
         applicationName,
         releaseNumber,
-        tcpObjectList,
-        operationServerName,
-        operationNamesByAttributes,
-        individualServicesOperationsMapping.individualServicesOperationsMapping
+        applicationAddress,
+        applicationPort,
+        operationList
       );
       let logicalTerminationPointconfigurationStatus = await LogicalTerminationPointService.createOrUpdateApplicationInformationAsync(
         logicalTerminatinPointConfigurationInput
