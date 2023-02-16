@@ -384,7 +384,7 @@ exports.redirectInfoAboutApprovalStatusChanges = function (body, user, originato
         operationNamesByAttributes,
         individualServicesOperationsMapping.individualServicesOperationsMapping
       );
-      let logicalTerminationPointconfigurationStatus = await LogicalTerminationPointService.createOrUpdateApplicationInformationAsync(
+      let logicalTerminationPointconfigurationStatus = await LogicalTerminationPointService.findAndUpdateApplicationInformationAsync(
         logicalTerminatinPointConfigurationInput
       );
 
