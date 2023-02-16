@@ -30,6 +30,7 @@ const logicalTerminationPoint = require('onf-core-model-ap/applicationPattern/on
 const tcpClientInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpClientInterface');
 const ForwardingDomain = require('onf-core-model-ap/applicationPattern/onfModel/models/ForwardingDomain');
 const ForwardingConstruct = require('onf-core-model-ap/applicationPattern/onfModel/models/ForwardingConstruct');
+const FcPort = require('onf-core-model-ap/applicationPattern/onfModel/models/FcPort');
 
 const profile = require('onf-core-model-ap/applicationPattern/onfModel/models/Profile');
 const applicationProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/ApplicationProfile');
@@ -59,6 +60,7 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
        ****************************************************************************************/
       let applicationName = body["new-application-name"];
       let releaseNumber = body["new-application-release"];
+      let applicationProtocol = body["new-application-protocol"];
       let applicationAddress = body["new-application-address"];
       let applicationPort = body["new-application-port"];
 
@@ -66,36 +68,76 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
        * Prepare logicalTerminatinPointConfigurationInput object to 
        * configure logical-termination-point
        ****************************************************************************************/
-      let isdataTransferRequired = true;
-      let newReleaseUuid = await httpClientInterface.getHttpClientUuidAsync("NewRelease");
-      let currentApplicationName = await httpServerInterface.getApplicationNameAsync();
-      if (currentApplicationName == applicationName) {
-        let isUpdated = await httpClientInterface.setReleaseNumberAsync(newReleaseUuid, releaseNumber);
-        let currentApplicationRemoteAddress = await TcpServerInterface.getLocalAddress();
-        let currentApplicationRemotePort = await TcpServerInterface.getLocalPort();
-        if((applicationAddress == currentApplicationRemoteAddress) && 
-        (applicationPort == currentApplicationRemotePort)){
-          isdataTransferRequired = false;
-        }
-        if (isUpdated) {
-          applicationName = await httpClientInterface.getApplicationNameAsync(newReleaseUuid);
-          let operationList = [];
-          let logicalTerminatinPointConfigurationInput = new LogicalTerminatinPointConfigurationInput(
-            applicationName,
-            releaseNumber,
-            applicationAddress,
-            applicationPort,
-            operationList
-          );
-          let logicalTerminationPointconfigurationStatus = await LogicalTerminationPointService.createOrUpdateApplicationInformationAsync(
-            logicalTerminatinPointConfigurationInput
-          );
+      
+      const HttpClientLtpUuidFromForwarding = await resolveHttpClient('PromptForBequeathingDataCausesNewTARbeingRequestedToRedirectInfoAboutApprovals');
+      if (HttpClientLtpUuidFromForwarding == undefined) {
+        reject(new Error(`The NewRelease ${applicationName} was not found.`));
+        return;
+      }
 
+      let isdataTransferRequired = true;
+      let isReleaseUpdated = false;
+      let isApplicationNameUpdated = false;
+      let isProtocolUpdated = false;
+      let isAddressUpdated = false;
+      let isPortUpdated = false;
+
+      let logicalTerminationPointConfigurationStatus = {};
+      let newReleaseHttpClientLtpUuid = HttpClientLtpUuidFromForwarding[0];
+      if (newReleaseHttpClientLtpUuid != undefined) {
+        
+        let currentReleaseNumber = await httpClientInterface.getReleaseNumberAsync(newReleaseHttpClientLtpUuid)
+        let currentApplicationName = await httpClientInterface.getApplicationNameAsync(newReleaseHttpClientLtpUuid)
+        
+        if(currentReleaseNumber != releaseNumber){
+          isReleaseUpdated = await httpClientInterface.setReleaseNumberAsync(newReleaseHttpClientLtpUuid, releaseNumber);
+        }
+
+        if(currentApplicationName != applicationName){
+          isApplicationNameUpdated = await httpClientInterface.setApplicationNameAsync(newReleaseHttpClientLtpUuid, applicationName);
+        }
+
+        if (isReleaseUpdated || isApplicationNameUpdated) {
+          let configurationStatus = new ConfigurationStatus(
+            newReleaseHttpClientLtpUuid,
+            undefined,
+            true);
+          logicalTerminationPointConfigurationStatus.httpClientConfigurationStatus = configurationStatus;
+        }
+
+        let newReleaseTcpClientUuidList = await logicalTerminationPoint.getServerLtpListAsync(newReleaseHttpClientLtpUuid);
+        let newReleaseTcpClientUuid = newReleaseTcpClientUuidList[0];
+
+        let currentRemoteProtocol = await tcpClientInterface.getRemoteProtocolAsync(newReleaseTcpClientUuid)
+        let currentRemoteAddress = await tcpClientInterface.getRemoteAddressAsync(newReleaseTcpClientUuid)
+        let currentRemotePort = await tcpClientInterface.getRemotePortAsync(newReleaseTcpClientUuid)
+
+        if(currentRemoteProtocol != applicationProtocol){
+          isProtocolUpdated = await tcpClientInterface.setRemoteProtocolAsync(newReleaseTcpClientUuid, applicationProtocol);
+        }
+
+        if(JSON.stringify(currentRemoteAddress) != JSON.stringify(applicationAddress)){
+          isAddressUpdated = await tcpClientInterface.setRemoteAddressAsync(newReleaseTcpClientUuid, applicationAddress);
+        }
+
+        if(currentRemotePort != applicationPort){
+          isPortUpdated = await tcpClientInterface.setRemotePortAsync(newReleaseTcpClientUuid, applicationPort);
+        }
+
+        if (isProtocolUpdated || isAddressUpdated || isPortUpdated) {
+          let configurationStatus = new ConfigurationStatus(
+            newReleaseTcpClientUuid,
+            undefined,
+            true);
+          logicalTerminationPointConfigurationStatus.tcpClientConfigurationStatusList = [configurationStatus];
+        }
+
+        if (logicalTerminationPointConfigurationStatus != undefined) {
           /****************************************************************************************
            * Prepare attributes to automate forwarding-construct
            ****************************************************************************************/
           let forwardingAutomationInputList = await prepareForwardingAutomation.bequeathYourDataAndDie(
-            logicalTerminationPointconfigurationStatus
+            logicalTerminationPointConfigurationStatus
           );
           ForwardingAutomationService.automateForwardingConstructAsync(
             operationServerName,
@@ -105,10 +147,10 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
             traceIndicator,
             customerJourney
           );
-          softwareUpgrade.upgradeSoftwareVersion(isdataTransferRequired, user, xCorrelator, traceIndicator, customerJourney)
-            .catch(err => console.log(`upgradeSoftwareVersion failed with error: ${err}`)); 
-        }        
-      } 
+         }
+         softwareUpgrade.upgradeSoftwareVersion(isdataTransferRequired, user, xCorrelator, traceIndicator, customerJourney)
+         .catch(err => console.log(`upgradeSoftwareVersion failed with error: ${err}`)); 
+      }
       resolve();
     } catch (error) {
       reject(error);
@@ -116,6 +158,35 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
   });
 }
 
+/*
+  function to get Http Client LTP UUID using forwarding name
+*/
+var resolveHttpClient = exports.resolveHttpClientLtpUuidFromForwardingName = function (forwardingName) {
+  return new Promise(async function (resolve, reject) {
+    try {
+      let ForwardConstructName = await ForwardingDomain.getForwardingConstructForTheForwardingNameAsync(forwardingName)
+      if (ForwardConstructName === undefined) {
+        return null;
+      }
+      let LogicalTerminationPointlist;
+      let httpClientUuidList = [];
+      let ForwardConstructUuid = ForwardConstructName[onfAttributes.GLOBAL_CLASS.UUID]
+      let ListofUuid = await ForwardingConstruct.getFcPortListAsync(ForwardConstructUuid)
+      for (let i = 0; i < ListofUuid.length; i++) {
+        let PortDirection = ListofUuid[i][[onfAttributes.FC_PORT.PORT_DIRECTION]]
+        if (PortDirection === FcPort.portDirectionEnum.OUTPUT) {
+          LogicalTerminationPointlist = ListofUuid[i][onfAttributes.CONTROL_CONSTRUCT.LOGICAL_TERMINATION_POINT]
+          let httpClientUuid = await logicalTerminationPoint.getServerLtpListAsync(LogicalTerminationPointlist)
+          let tcpClientUuid = await logicalTerminationPoint.getServerLtpListAsync(httpClientUuid[0])
+          httpClientUuidList.push(httpClientUuid[0], LogicalTerminationPointlist, tcpClientUuid[0]);
+        }
+      }
+      resolve(httpClientUuidList)
+    } catch (error) {
+      console.log(error)
+    }
+  })
+}
 
 /**
  * Deletes the record of an application
@@ -179,49 +250,55 @@ exports.disregardApplication = function (body, user, originator, xCorrelator, tr
 exports.documentApprovalStatus = function (body, user, originator, xCorrelator, traceIndicator, customerJourney, operationServerName) {
   return new Promise(async function (resolve, reject) {
     try {
-
       /****************************************************************************************
        * Setting up required local variables from the request body
        ****************************************************************************************/
-      let applicationName = body["application-name"];
-      let releaseNumber = body["application-release-number"];
-      let approvalStatus = body["approval-status"];
+      let applicationData = []
+      let uuid
+      let filePath
+      let applicationNameFromRequestBody = body["application-name"];
+      let releaseNumberFromRequestBody = body["release-number"];
+      let approvalStatusFromRequestBody = body["approval-status"];
+      let applicationStatus
 
       /****************************************************************************************
-       * configure application profile with the new application if it is not already exist
-       ****************************************************************************************/
-      let isApplicationExists = await applicationProfile.isProfileExistsAsync(
-        applicationName,
-        releaseNumber
-      );
-      approvalStatus = applicationProfile.ApplicationProfilePac.
-      ApplicationProfileConfiguration.approvalStatusEnum[approvalStatus];
+       * Preparing response-value-list for response body
+       ****************************************************************************************/      
+      let profileUuid = await profile.getUuidListAsync(profile.profileNameEnum.FILE_PROFILE);
+      for (let profileUuidIndex = 0; profileUuidIndex < profileUuid.length; profileUuidIndex++) {
+        uuid = profileUuid[profileUuidIndex];
+        filePath = await fileProfile.getFilePath(uuid)     
+        
+        applicationData = await prepareApplicationData.readApplicationData(filePath)
+        applicationStatus = await prepareApplicationData.isApplicationExist(applicationData, applicationNameFromRequestBody, releaseNumberFromRequestBody)
 
-      if (isApplicationExists) {
-        await applicationProfile.setApprovalStatusAsync(
-          applicationName,
-          releaseNumber,
-          approvalStatus
-        );
-      } else {
-      let profile = await applicationProfile.createProfileAsync(
-          applicationName,
-          releaseNumber,
-          approvalStatus
-        );
-        if(profile){
-          await ProfileCollection.addProfileAsync(profile);
+
+        if(applicationStatus['is-application-exist']){
+          // If there is instance available for this application + release-number combination, update the “approval-status” of the instance
+          if(approvalStatusFromRequestBody != applicationStatus['approval-status']){
+            let applicationStatusIndex = applicationStatus['index']
+            applicationData["applications"][applicationStatusIndex]["approval-status"] = approvalStatusFromRequestBody
+            prepareApplicationData.addAndUpdateApplicationData(filePath, applicationData)
           }
+        }else{
+          // If there is no instance available for this application + release-number combination, create a instances
+          let newApplicationData = {
+            "application-name": applicationNameFromRequestBody,
+            "application-release-number": releaseNumberFromRequestBody,
+            "approval-status": approvalStatusFromRequestBody
+          }
+          applicationData["applications"].push(newApplicationData)
+          prepareApplicationData.addAndUpdateApplicationData(filePath, applicationData)
+        }
       }
-     
-      
+
       /****************************************************************************************
        * Prepare attributes to automate forwarding-construct
        ****************************************************************************************/
       let forwardingAutomationInputList = await prepareForwardingAutomation.documentApprovalStatus(
-        applicationName,
-        releaseNumber,
-        approvalStatus
+        applicationNameFromRequestBody,
+        releaseNumberFromRequestBody,
+        approvalStatusFromRequestBody
       );
       ForwardingAutomationService.automateForwardingConstructAsync(
         operationServerName,
@@ -276,17 +353,17 @@ exports.listApplications = function (user, originator, xCorrelator, traceIndicat
           delete applicationDataItem['application-release-number']; // Delete old key
           return applicationDataItem;
         });
-      }
+          }
 
       /****************************************************************************************
        * Setting 'application/json' response body
        ****************************************************************************************/
       response['application/json'] = applicationDataUpdateReleaseNumberKey;
-      if (Object.keys(response).length > 0) {
-        resolve(response[Object.keys(response)[0]]);
-      } else {
-        resolve();
-      }
+    if (Object.keys(response).length > 0) {
+      resolve(response[Object.keys(response)[0]]);
+    } else {
+      resolve();
+    }
     } catch (error) {
       reject();
     }
@@ -391,7 +468,7 @@ exports.redirectInfoAboutApprovalStatusChanges = function (body, user, originato
         logicalTerminatinPointConfigurationInput
       );
 
-
+      
       /****************************************************************************************
        * Prepare attributes to configure forwarding-construct
        ****************************************************************************************/
@@ -449,42 +526,46 @@ exports.redirectInfoAboutApprovalStatusChanges = function (body, user, originato
 exports.regardApplication = function (body, user, originator, xCorrelator, traceIndicator, customerJourney, operationServerName) {
   return new Promise(async function (resolve, reject) {
     try {
+      let applicationData = []
+      let uuid
+      let filePath
+      let checkApplicationExists = false
+      let approvalStatus
+
       /****************************************************************************************
        * Setting up required local variables from the request body
        ****************************************************************************************/
-      let applicationName = body["application-name"];
-      let releaseNumber = body["application-release-number"];
+      let applicationNameRequestBody = body["application-name"]
+      let releaseNumberRequestBody = body["release-number"]
 
-      /****************************************************************************************
-       * configure application profile with the new application if it is not already exist
-       ****************************************************************************************/
-      let approvalStatus;
+      let profileUuid = await profile.getUuidListAsync(profile.profileNameEnum.FILE_PROFILE);
+      for (let profileUuidIndex = 0; profileUuidIndex < profileUuid.length; profileUuidIndex++) {
+        uuid = profileUuid[profileUuidIndex];
+        filePath =  await fileProfile.getFilePath(uuid)
 
-      let isApplicationExists = await applicationProfile.isProfileExistsAsync(applicationName, releaseNumber);
-
-      if (!isApplicationExists) {
-        approvalStatus = applicationProfile.ApplicationProfilePac.ApplicationProfileConfiguration.approvalStatusEnum.REGISTERED;
-        let profile = await applicationProfile.createProfileAsync(applicationName, releaseNumber, approvalStatus);
-        await ProfileCollection.addProfileAsync(profile);
-      } else {
-        let profileUuid = await applicationProfile.getProfileUuidAsync(applicationName, releaseNumber);
-        approvalStatus = await applicationProfile.getApprovalStatusAsync(profileUuid);
-      }
-
-      let approvalStatusEnum = applicationProfile.ApplicationProfilePac.ApplicationProfileConfiguration.approvalStatusEnum;
-      for (let approvalStatusKey in approvalStatusEnum) {
-        if (approvalStatusEnum[approvalStatusKey] == approvalStatus) {
-          approvalStatus = approvalStatusKey;
+        applicationData = await prepareApplicationData.readApplicationData(filePath)
+        checkApplicationExists = await prepareApplicationData.isApplicationExist(applicationData, applicationNameRequestBody, releaseNumberRequestBody)
+        if(!checkApplicationExists['is-application-exist']){
+          approvalStatus = "REGISTERED"
+          let newApplicationData = {
+            "application-name": applicationNameRequestBody,
+            "application-release-number": releaseNumberRequestBody,
+            "approval-status": approvalStatus
+          }
+          // Add new application data from request body
+          applicationData["applications"].push(newApplicationData)
+          await prepareApplicationData.addAndUpdateApplicationData(filePath, applicationData) 
+        }else{
+          approvalStatus = checkApplicationExists['approval-status']
         }
       }
+
       /****************************************************************************************
        * Prepare attributes to automate forwarding-construct
        ****************************************************************************************/
-
-
       let forwardingAutomationInputList = await prepareForwardingAutomation.regardApplication(
-        applicationName,
-        releaseNumber,
+        applicationNameRequestBody,
+        releaseNumberRequestBody,
         approvalStatus
       );
       ForwardingAutomationService.automateForwardingConstructAsync(
