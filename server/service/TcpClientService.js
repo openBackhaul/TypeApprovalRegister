@@ -1,5 +1,7 @@
 'use strict';
 var fileOperation = require('onf-core-model-ap/applicationPattern/databaseDriver/JSONDriver');
+const prepareForwardingAutomation = require('./individualServices/PrepareForwardingAutomation');
+const ForwardingAutomationService = require('onf-core-model-ap/applicationPattern/onfModel/services/ForwardingConstructAutomationServices');
 
 /**
  * Returns remote address
@@ -88,8 +90,18 @@ exports.getTcpClientRemotePort = function (url) {
 exports.putTcpClientRemoteAddress = function (url, body) {
   return new Promise(async function (resolve, reject) {
     try {
-      console.log(body);
-      await fileOperation.writeToDatabaseAsync(url, body, false);
+      let isUpdated = await fileOperation.writeToDatabaseAsync(url, body, false);
+      /****************************************************************************************
+       * Prepare attributes to automate forwarding-construct
+       ****************************************************************************************/
+      if(isUpdated){
+        let forwardingAutomationInputList = await prepareForwardingAutomation.OAMLayerRequest(
+          uuid
+        );
+        ForwardingAutomationService.automateForwardingConstructWithoutInputAsync(
+          forwardingAutomationInputList
+        );
+      }
       resolve();
     } catch (error) {
       reject();
@@ -108,7 +120,18 @@ exports.putTcpClientRemoteAddress = function (url, body) {
 exports.putTcpClientRemotePort = function (url, body) {
   return new Promise(async function (resolve, reject) {
     try {
-      await fileOperation.writeToDatabaseAsync(url, body, false);
+      let isUpdated = await fileOperation.writeToDatabaseAsync(url, body, false);
+      /****************************************************************************************
+       * Prepare attributes to automate forwarding-construct
+       ****************************************************************************************/
+      if(isUpdated){
+        let forwardingAutomationInputList = await prepareForwardingAutomation.OAMLayerRequest(
+          uuid
+        );
+        ForwardingAutomationService.automateForwardingConstructWithoutInputAsync(
+          forwardingAutomationInputList
+        );
+      }
       resolve();
     } catch (error) {
       reject();
@@ -126,7 +149,18 @@ exports.putTcpClientRemotePort = function (url, body) {
 exports.putTcpClientRemoteProtocol = function (url, body) {
   return new Promise(async function (resolve, reject) {
     try {
-      await fileOperation.writeToDatabaseAsync(url, body, false);
+      let isUpdated = await fileOperation.writeToDatabaseAsync(url, body, false);
+      /****************************************************************************************
+       * Prepare attributes to automate forwarding-construct
+       ****************************************************************************************/
+      if(isUpdated){
+        let forwardingAutomationInputList = await prepareForwardingAutomation.OAMLayerRequest(
+          uuid
+        );
+        ForwardingAutomationService.automateForwardingConstructWithoutInputAsync(
+          forwardingAutomationInputList
+        );
+      }
       resolve();
     } catch (error) {
       reject();
