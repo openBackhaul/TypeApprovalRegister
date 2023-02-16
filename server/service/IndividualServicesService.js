@@ -213,7 +213,6 @@ exports.documentApprovalStatus = function (body, user, originator, xCorrelator, 
       /****************************************************************************************
        * Prepare attributes to automate forwarding-construct
        ****************************************************************************************/
-
       let forwardingAutomationInputList = await prepareForwardingAutomation.documentApprovalStatus(
         applicationNameFromRequestBody,
         releaseNumberFromRequestBody,
@@ -234,6 +233,7 @@ exports.documentApprovalStatus = function (body, user, originator, xCorrelator, 
     }
   });
 }
+
 
 /**
  * Provides list of applications
@@ -476,6 +476,7 @@ exports.regardApplication = function (body, user, originator, xCorrelator, trace
        * Prepare attributes to automate forwarding-construct
        ****************************************************************************************/
 
+
       let forwardingAutomationInputList = await prepareForwardingAutomation.regardApplication(
         applicationName,
         releaseNumber,
@@ -493,78 +494,6 @@ exports.regardApplication = function (body, user, originator, xCorrelator, trace
       resolve();
     } catch (error) {
       reject();
-    }
-  });
-}
-
-/**
- * Starts application in generic representation
- *
- * user String User identifier from the system starting the service call
- * originator String 'Identification for the system consuming the API, as defined in  [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]' 
- * xCorrelator String UUID for the service execution flow that allows to correlate requests and responses
- * traceIndicator String Sequence of request numbers along the flow
- * customerJourney String Holds information supporting customer’s journey to which the execution applies
- * returns inline_response_200
- **/
-exports.startApplicationInGenericRepresentation = function (user, originator, xCorrelator, traceIndicator, customerJourney) {
-  return new Promise(async function (resolve, reject) {
-    let response = {};
-    try {
-      /****************************************************************************************
-       * Preparing consequent-action-list for response body
-       ****************************************************************************************/
-      let consequentActionList = [];
-
-      let protocol = "http";
-      let applicationAddress = await tcpServerInterface.getLocalAddress();
-      let applicationPort = await tcpServerInterface.getLocalPort();
-      let baseUrl = protocol + "://" + applicationAddress + ":" + applicationPort;
-
-      let LabelForListApprovedApplication = "List Approved Applications";
-      let requestForListApprovedApplication = baseUrl + await operationServerInterface.getOperationNameAsync("tar-0-0-1-op-s-3005");
-      let consequentActionForListApprovedApplication = new consequentAction(
-        LabelForListApprovedApplication,
-        requestForListApprovedApplication,
-        false
-      );
-      consequentActionList.push(consequentActionForListApprovedApplication);
-
-      let LabelForInformAboutApplication = "Inform about Application";
-      let requestForInformAboutApplication = baseUrl + await operationServerInterface.getOperationNameAsync("tar-0-0-1-op-s-2002");
-      let consequentActionForInformAboutApplication = new consequentAction(
-        LabelForInformAboutApplication,
-        requestForInformAboutApplication,
-        false
-      );
-      consequentActionList.push(consequentActionForInformAboutApplication);
-
-      /****************************************************************************************
-       * Preparing response-value-list for response body
-       ****************************************************************************************/
-      let responseValueList = [];
-      let applicationName = await httpServerInterface.getApplicationNameAsync();
-      let reponseValue = new responseValue(
-        "applicationName",
-        applicationName,
-        typeof applicationName
-      );
-      responseValueList.push(reponseValue);
-
-      /****************************************************************************************
-       * Setting 'application/json' response body
-       ****************************************************************************************/
-      response['application/json'] = onfAttributeFormatter.modifyJsonObjectKeysToKebabCase({
-        consequentActionList,
-        responseValueList
-      });
-    } catch (error) {
-      console.log(error);
-    }
-    if (Object.keys(response).length > 0) {
-      resolve(response[Object.keys(response)[0]]);
-    } else {
-      resolve();
     }
   });
 }
