@@ -265,17 +265,17 @@ exports.listApplications = function (user, originator, xCorrelator, traceIndicat
           delete applicationDataItem['application-release-number']; // Delete old key
           return applicationDataItem;
         });
-      }
+          }
 
       /****************************************************************************************
        * Setting 'application/json' response body
        ****************************************************************************************/
       response['application/json'] = applicationDataUpdateReleaseNumberKey;
-      if (Object.keys(response).length > 0) {
-        resolve(response[Object.keys(response)[0]]);
-      } else {
-        resolve();
-      }
+    if (Object.keys(response).length > 0) {
+      resolve(response[Object.keys(response)[0]]);
+    } else {
+      resolve();
+    }
     } catch (error) {
       reject();
     }
@@ -438,42 +438,46 @@ exports.redirectInfoAboutApprovalStatusChanges = function (body, user, originato
 exports.regardApplication = function (body, user, originator, xCorrelator, traceIndicator, customerJourney, operationServerName) {
   return new Promise(async function (resolve, reject) {
     try {
+      let applicationData = []
+      let uuid
+      let filePath
+      let checkApplicationExists = false
+      let approvalStatus
+
       /****************************************************************************************
        * Setting up required local variables from the request body
        ****************************************************************************************/
-      let applicationName = body["application-name"];
-      let releaseNumber = body["application-release-number"];
+      let applicationNameRequestBody = body["application-name"]
+      let releaseNumberRequestBody = body["release-number"]
 
-      /****************************************************************************************
-       * configure application profile with the new application if it is not already exist
-       ****************************************************************************************/
-      let approvalStatus;
+      let profileUuid = await profile.getUuidListAsync(profile.profileNameEnum.FILE_PROFILE);
+      for (let profileUuidIndex = 0; profileUuidIndex < profileUuid.length; profileUuidIndex++) {
+        uuid = profileUuid[profileUuidIndex];
+        filePath =  await fileProfile.getFilePath(uuid)
 
-      let isApplicationExists = await applicationProfile.isProfileExistsAsync(applicationName, releaseNumber);
-
-      if (!isApplicationExists) {
-        approvalStatus = applicationProfile.ApplicationProfilePac.ApplicationProfileConfiguration.approvalStatusEnum.REGISTERED;
-        let profile = await applicationProfile.createProfileAsync(applicationName, releaseNumber, approvalStatus);
-        await ProfileCollection.addProfileAsync(profile);
-      } else {
-        let profileUuid = await applicationProfile.getProfileUuidAsync(applicationName, releaseNumber);
-        approvalStatus = await applicationProfile.getApprovalStatusAsync(profileUuid);
-      }
-
-      let approvalStatusEnum = applicationProfile.ApplicationProfilePac.ApplicationProfileConfiguration.approvalStatusEnum;
-      for (let approvalStatusKey in approvalStatusEnum) {
-        if (approvalStatusEnum[approvalStatusKey] == approvalStatus) {
-          approvalStatus = approvalStatusKey;
+        applicationData = await prepareApplicationData.readApplicationData(filePath)
+        checkApplicationExists = await prepareApplicationData.isApplicationExist(applicationData, applicationNameRequestBody, releaseNumberRequestBody)
+        if(!checkApplicationExists['is-application-exist']){
+          approvalStatus = "REGISTERED"
+          let newApplicationData = {
+            "application-name": applicationNameRequestBody,
+            "application-release-number": releaseNumberRequestBody,
+            "approval-status": approvalStatus
+          }
+          // Add new application data from request body
+          applicationData["applications"].push(newApplicationData)
+          await prepareApplicationData.addAndUpdateApplicationData(filePath, applicationData) 
+        }else{
+          approvalStatus = checkApplicationExists['approval-status']
         }
       }
+
       /****************************************************************************************
        * Prepare attributes to automate forwarding-construct
        ****************************************************************************************/
-
-
       let forwardingAutomationInputList = await prepareForwardingAutomation.regardApplication(
-        applicationName,
-        releaseNumber,
+        applicationNameRequestBody,
+        releaseNumberRequestBody,
         approvalStatus
       );
       ForwardingAutomationService.automateForwardingConstructAsync(
