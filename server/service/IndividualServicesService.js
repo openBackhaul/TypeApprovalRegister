@@ -205,16 +205,29 @@ exports.disregardApplication = function (body, user, originator, xCorrelator, tr
       /****************************************************************************************
        * Setting up required local variables from the request body
        ****************************************************************************************/
-      let applicationName = body["application-name"];
-      let releaseNumber = body["application-release-number"];
+      let applicationData = []
+      let uuid
+      let filePath
+      let applicationNameRequestBody = body["application-name"];
+      let releaseNumberRequestBody = body["release-number"];
+      let checkApplicationExists
 
       /****************************************************************************************
-       * configure application profile with the new application if it is not already exist
-       ****************************************************************************************/
-      let isApplicationExists = await applicationProfile.isProfileExistsAsync(applicationName, releaseNumber);
-      if (isApplicationExists) {
-        let profileUuid = await applicationProfile.getProfileUuidAsync(applicationName, releaseNumber);
-        await ProfileCollection.deleteProfileAsync(profileUuid);
+       * Preparing response-value-list for response body
+       ****************************************************************************************/      
+      let profileUuid = await profile.getUuidListAsync(profile.profileNameEnum.FILE_PROFILE);
+      for (let profileUuidIndex = 0; profileUuidIndex < profileUuid.length; profileUuidIndex++) {
+        uuid = profileUuid[profileUuidIndex];
+        filePath = await fileProfile.getFilePath(uuid)        
+        applicationData = await prepareApplicationData.readApplicationData(filePath)
+        checkApplicationExists = await prepareApplicationData.isApplicationExist(applicationData, applicationNameRequestBody, releaseNumberRequestBody)
+        if(checkApplicationExists['is-application-exist']){
+          prepareApplicationData.deleteApplication(applicationData["applications"], checkApplicationExists['application-name'])
+          let applicationDataToJson = {
+            "applications": applicationData["applications"]
+          }
+          prepareApplicationData.addAndUpdateApplicationData(filePath,applicationDataToJson)
+        }
       }
       resolve();
     } catch (error) {
@@ -222,8 +235,6 @@ exports.disregardApplication = function (body, user, originator, xCorrelator, tr
     }
   });
 }
-
-
 
 /**
  * Creates or updates the approval status of an application
