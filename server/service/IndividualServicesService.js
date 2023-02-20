@@ -35,13 +35,14 @@ const FcPort = require('onf-core-model-ap/applicationPattern/onfModel/models/FcP
 const profile = require('onf-core-model-ap/applicationPattern/onfModel/models/Profile');
 const applicationProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/ApplicationProfile');
 const ProfileCollection = require('onf-core-model-ap/applicationPattern/onfModel/models/ProfileCollection');
+const responseProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/ResponseProfile');
 
 const softwareUpgrade = require('./individualServices/SoftwareUpgrade');
 const TcpServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpServerInterface');
 const fileProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/FileProfile');
 const prepareApplicationData = require('./individualServices/PrepareApplicationData')
 /**
- * Initiates process of embedding a new release
+ * Initiates process of embedding a new releasefv
  *
  * body V1_bequeathyourdataanddie_body 
  * user String User identifier from the system starting the service call
@@ -381,45 +382,58 @@ exports.listApplications = function (user, originator, xCorrelator, traceIndicat
  * customerJourney String Holds information supporting customer’s journey to which the execution applies
  * returns inline_response_200_2
  **/
-exports.listApprovedApplicationsInGenericRepresentation = function (user, originator, xCorrelator, traceIndicator, customerJourney) {
+exports.listApprovedApplicationsInGenericRepresentation = function (user, originator, xCorrelator, traceIndicator, customerJourney, operationServerName) {
   return new Promise(async function (resolve, reject) {
     let response = {};
     try {
       /****************************************************************************************
        * Preparing consequent-action-list for response body
        ****************************************************************************************/
-      let consequentActionList = [];
+      let consequentActionList = []
+      let responseValueList = []
+      let applicationData = []
+      let filePath
+      let approvalStatus
+      let applicationName
+      let releaseNumber
+      let reponseValue
+      let getOperation
+      let getDataType
+ 
+      getDataType = await prepareApplicationData.getDataType(operationServerName)
 
-      /****************************************************************************************
-       * Preparing response-value-list for response body
-       ****************************************************************************************/
-      let responseValueList = [];
-      let applicationProfileList = await profile.getUuidListAsync(applicationProfile.profileNameEnum.APPLICATION_PROFILE);
-      for (let i = 0; i < applicationProfileList.length; i++) {
-        let uuid = applicationProfileList[i];
-        let approvalStatus = await applicationProfile.getApprovalStatusAsync(uuid);
-        if (approvalStatus == applicationProfile.ApplicationProfilePac.ApplicationProfileConfiguration.approvalStatusEnum.APPROVED) {
-          let applicationName = await applicationProfile.getApplicationNameAsync(uuid);
-          let releaseNumber = await applicationProfile.getApplicationReleaseNumberAsync(uuid);
-          let reponseValue = new responseValue(applicationName, releaseNumber, typeof applicationName);
-          responseValueList.push(reponseValue);
-        }
+      // get profile uuid
+      let profileUuid = await profile.getUuidListAsync(applicationProfile.profileNameEnum.FILE_PROFILE);
+      for (let profileUuidIndex = 0; profileUuidIndex < profileUuid.length; profileUuidIndex++) {
+        let uuid = profileUuid[profileUuidIndex];
+        filePath = await fileProfile.getFilePath(uuid)        
+        applicationData = await prepareApplicationData.readApplicationData(filePath)
+
+        // Preparing response-value-list for response body
+        applicationData["applications"].forEach(applicationDataItem => {
+          approvalStatus = applicationDataItem["approval-status"];
+          if (approvalStatus == "APPROVED") {
+            applicationName = applicationDataItem["application-name"]
+            releaseNumber = applicationDataItem["application-release-number"]
+            reponseValue = new responseValue(applicationName, releaseNumber, getDataType);
+            responseValueList.push(reponseValue);            }
+        });
       }
 
       /****************************************************************************************
        * Setting 'application/json' response body
        ****************************************************************************************/
-      response['application/json'] = onfAttributeFormatter.modifyJsonObjectKeysToKebabCase({
+        response['application/json'] = onfAttributeFormatter.modifyJsonObjectKeysToKebabCase({
         consequentActionList,
         responseValueList
       });
+      if (Object.keys(response).length > 0) {
+        resolve(response[Object.keys(response)[0]]);
+      } else {
+        resolve();
+      }
     } catch (error) {
       console.log(error);
-    }
-    if (Object.keys(response).length > 0) {
-      resolve(response[Object.keys(response)[0]]);
-    } else {
-      resolve();
     }
   });
 }
