@@ -1,7 +1,7 @@
 'use strict';
 
-const LogicalTerminatinPointConfigurationInput = require('onf-core-model-ap/applicationPattern/onfModel/services/models/logicalTerminationPoint/ConfigurationInput');
-const LogicalTerminationPointService = require('onf-core-model-ap/applicationPattern/onfModel/services/LogicalTerminationPointServices');
+const LogicalTerminatinPointConfigurationInput = require('onf-core-model-ap/applicationPattern/onfModel/services/models/logicalTerminationPoint/ConfigurationInputWithMapping');
+const LogicalTerminationPointService = require('onf-core-model-ap/applicationPattern/onfModel/services/LogicalTerminationPointWithMappingServices');
 const LogicalTerminationPointConfigurationStatus = require('onf-core-model-ap/applicationPattern/onfModel/services/models/logicalTerminationPoint/ConfigurationStatus');
 const layerProtocol = require('onf-core-model-ap/applicationPattern/onfModel/models/LayerProtocol');
 
@@ -39,8 +39,7 @@ const responseProfile = require('onf-core-model-ap/applicationPattern/onfModel/m
 
 const softwareUpgrade = require('./individualServices/SoftwareUpgrade');
 const TcpServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpServerInterface');
-const fileProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/FileProfile');
-const prepareApplicationData = require('./individualServices/PrepareApplicationData')
+const individualServicesOperationsMapping = require('./individualServices/IndividualServicesOperationsMapping');
 /**
  * Initiates process of embedding a new releasefv
  *
@@ -462,23 +461,32 @@ exports.redirectInfoAboutApprovalStatusChanges = function (body, user, originato
       let applicationAddress = body["subscriber-address"];
       let applicationPort = body["subscriber-port"];
       let subscriberOperation = body["subscriber-operation"];
+      let applicationProtocol = body["subscriber-protocol"];
 
       /****************************************************************************************
        * Prepare logicalTerminatinPointConfigurationInput object to 
        * configure logical-termination-point
        ****************************************************************************************/
 
-      let operationList = [
-        subscriberOperation
+      let operationNamesByAttributes = new Map();
+      operationNamesByAttributes.set("subscriber-operation", subscriberOperation);
+
+      let tcpObjectList = [
+        {
+          "protocol" : applicationProtocol,
+          "address": applicationAddress,
+          "port": applicationPort
+        }
       ];
       let logicalTerminatinPointConfigurationInput = new LogicalTerminatinPointConfigurationInput(
         applicationName,
         releaseNumber,
-        applicationAddress,
-        applicationPort,
-        operationList
+        tcpObjectList,
+        operationServerName,
+        operationNamesByAttributes,
+        individualServicesOperationsMapping.individualServicesOperationsMapping
       );
-      let logicalTerminationPointconfigurationStatus = await LogicalTerminationPointService.createOrUpdateApplicationInformationAsync(
+      let logicalTerminationPointconfigurationStatus = await LogicalTerminationPointService.findAndUpdateApplicationInformationAsync(
         logicalTerminatinPointConfigurationInput
       );
 
