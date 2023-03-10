@@ -103,7 +103,7 @@ exports.getTcpServerLocalProtocol = function (url) {
  * Documents address of the server
  * no response value expected for this operation
  **/
-exports.putTcpServerLocalAddress = function (url, body) {
+exports.putTcpServerLocalAddress = function (url, body, uuid) {
   return new Promise(async function (resolve, reject) {
     try {
       let isUpdated = await fileOperation.writeToDatabaseAsync(url, body, false);
@@ -129,7 +129,7 @@ exports.putTcpServerLocalAddress = function (url, body) {
  * Documents Description of the server
  * no response value expected for this operation
  **/
-exports.putTcpServerDescription = function (url, body) {
+exports.putTcpServerDescription = function (url, body, uuid) {
   return new Promise(async function (resolve, reject) {
     try {
       let isUpdated = await fileOperation.writeToDatabaseAsync(url, body, false);
@@ -155,7 +155,7 @@ exports.putTcpServerDescription = function (url, body) {
  * Documents protocol of the server
  * no response value expected for this operation
  **/
-exports.putTcpServerLocalProtocol = function (url, body) {
+exports.putTcpServerLocalProtocol = function (url, body, uuid) {
   return new Promise(async function (resolve, reject) {
     try {
       let isUpdated = await fileOperation.writeToDatabaseAsync(url, body, false);
@@ -185,7 +185,7 @@ exports.putTcpServerLocalProtocol = function (url, body) {
  * uuid String 
  * no response value expected for this operation
  **/
-exports.putTcpServerLocalPort = function (url, body) {
+exports.putTcpServerLocalPort = function (url, body, uuid) {
   return new Promise(async function (resolve, reject) {
     try {
       let isUpdated = await fileOperation.writeToDatabaseAsync(url, body, false);

@@ -33,7 +33,7 @@ module.exports.getHttpClientReleaseNumber = async function getHttpClientReleaseN
 
 module.exports.putHttpClientReleaseNumber = async function putHttpClientReleaseNumber(req, res, next, body, uuid) {
   let responseCode = responseCodeEnum.code.NO_CONTENT;
-  await HttpClient.putHttpClientReleaseNumber(body, req.url)
+  await HttpClient.putHttpClientReleaseNumber(body, req.url, uuid)
     .then(function (response) {
       responseBuilder.buildResponse(res, responseCode, response);
     })
@@ -47,7 +47,7 @@ module.exports.putHttpClientReleaseNumber = async function putHttpClientReleaseN
 
 module.exports.putHttpClientApplicationName = async function putHttpClientApplicationName(req, res, next, body, uuid) {
   let responseCode = responseCodeEnum.code.NO_CONTENT;
-  await HttpClient.putHttpClientApplicationName(body, req.url)
+  await HttpClient.putHttpClientApplicationName(body, req.url, uuid)
     .then(function (response) {
       responseBuilder.buildResponse(res, responseCode, response);
     })

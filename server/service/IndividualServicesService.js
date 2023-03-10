@@ -40,6 +40,8 @@ const responseProfile = require('onf-core-model-ap/applicationPattern/onfModel/m
 const softwareUpgrade = require('./individualServices/SoftwareUpgrade');
 const TcpServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpServerInterface');
 const individualServicesOperationsMapping = require('./individualServices/IndividualServicesOperationsMapping');
+const fileProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/FileProfile');
+const prepareApplicationData = require('./individualServices/PrepareApplicationData')
 /**
  * Initiates process of embedding a new releasefv
  *
