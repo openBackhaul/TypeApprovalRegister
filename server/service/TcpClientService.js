@@ -87,7 +87,7 @@ exports.getTcpClientRemotePort = function (url) {
  * uuid String 
  * no response value expected for this operation
  **/
-exports.putTcpClientRemoteAddress = function (url, body) {
+exports.putTcpClientRemoteAddress = function (url, body, uuid) {
   return new Promise(async function (resolve, reject) {
     try {
       let isUpdated = await fileOperation.writeToDatabaseAsync(url, body, false);
@@ -117,7 +117,7 @@ exports.putTcpClientRemoteAddress = function (url, body) {
  * uuid String 
  * no response value expected for this operation
  **/
-exports.putTcpClientRemotePort = function (url, body) {
+exports.putTcpClientRemotePort = function (url, body, uuid) {
   return new Promise(async function (resolve, reject) {
     try {
       let isUpdated = await fileOperation.writeToDatabaseAsync(url, body, false);
@@ -146,7 +146,7 @@ exports.putTcpClientRemotePort = function (url, body) {
  * uuid String 
  * no response value expected for this operation
  **/
-exports.putTcpClientRemoteProtocol = function (url, body) {
+exports.putTcpClientRemoteProtocol = function (url, body, uuid) {
   return new Promise(async function (resolve, reject) {
     try {
       let isUpdated = await fileOperation.writeToDatabaseAsync(url, body, false);

@@ -60,7 +60,7 @@ exports.getHttpClientReleaseNumber = function (url) {
  * uuid String 
  * no response value expected for this operation
  **/
-exports.putHttpClientReleaseNumber = function (body, url) {
+exports.putHttpClientReleaseNumber = function (body, url, uuid) {
   return new Promise(async function (resolve, reject) {
     try {
       let isUpdated = await fileOperation.writeToDatabaseAsync(url, body, false);
@@ -85,7 +85,7 @@ exports.putHttpClientReleaseNumber = function (body, url) {
  * Configures application name 
  * no response value expected for this operation
  **/
-exports.putHttpClientApplicationName = function (body, url) {
+exports.putHttpClientApplicationName = function (body, url, uuid) {
   return new Promise(async function (resolve, reject) {
     try {
       let isUpdated = await fileOperation.writeToDatabaseAsync(url, body, false);

@@ -88,7 +88,7 @@ exports.getOperationServerOperationName = function (url) {
  * uuid String 
  * no response value expected for this operation
  **/
-exports.putOperationServerLifeCycleState = function (url, body) {
+exports.putOperationServerLifeCycleState = function (url, body, uuid) {
   return new Promise(async function (resolve, reject) {
     try {
       let isUpdated = await fileOperation.writeToDatabaseAsync(url, body, false);
