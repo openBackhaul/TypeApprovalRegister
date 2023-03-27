@@ -25,7 +25,7 @@ exports.regardApplication = function (applicationName, releaseNumber, approvalSt
             let approvalStatusContext;
             let approvalStatusRequestBody = {};
             approvalStatusRequestBody.applicationName = applicationName;
-            approvalStatusRequestBody.applicationReleaseNumber = releaseNumber;
+            approvalStatusRequestBody.releaseNumber = releaseNumber;
 
             let approvalStatusJsonObject = ApplicationProfile.ApplicationProfilePac.ApplicationProfileConfiguration.approvalStatusEnum;
             for (let approvalStatusKey in approvalStatusJsonObject) {
@@ -87,7 +87,7 @@ exports.documentApprovalStatus = function (applicationName, releaseNumber, appro
             let approvalStatusContext;
             let approvalStatusRequestBody = {};
             approvalStatusRequestBody.applicationName = applicationName;
-            approvalStatusRequestBody.applicationReleaseNumber = releaseNumber;
+            approvalStatusRequestBody.releaseNumber = releaseNumber;
 
             let approvalStatusJsonObject = ApplicationProfile.ApplicationProfilePac.ApplicationProfileConfiguration.approvalStatusEnum;
             for (let approvalStatusKey in approvalStatusJsonObject) {
