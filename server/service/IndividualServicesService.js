@@ -222,6 +222,9 @@ exports.disregardApplication = function (body, user, originator, xCorrelator, tr
         uuid = profileUuid[profileUuidIndex];
         filePath = await fileProfile.getFilePath(uuid)        
         applicationData = await prepareApplicationData.readApplicationData(filePath)
+        if(applicationData == undefined){
+          throw new Error("File path does not exist")
+        }
         checkApplicationExists = await prepareApplicationData.isApplicationExist(applicationData, applicationNameRequestBody, releaseNumberRequestBody)
         if(checkApplicationExists['is-application-exist']){
           prepareApplicationData.deleteApplication(applicationData["applications"], checkApplicationExists['application-name'])
@@ -272,6 +275,9 @@ exports.documentApprovalStatus = function (body, user, originator, xCorrelator, 
         filePath = await fileProfile.getFilePath(uuid)     
         
         applicationData = await prepareApplicationData.readApplicationData(filePath)
+        if(applicationData == undefined){
+          throw new Error("File path does not exist")
+        }
         applicationStatus = await prepareApplicationData.isApplicationExist(applicationData, applicationNameFromRequestBody, releaseNumberFromRequestBody)
 
 
@@ -349,12 +355,15 @@ exports.listApplications = function (user, originator, xCorrelator, traceIndicat
         uuid = profileUuid[profileUuidIndex];
         filePath = await fileProfile.getFilePath(uuid)
         applicationData = await prepareApplicationData.readApplicationData(filePath)
-
+        if(applicationData != undefined){
         applicationDataUpdateReleaseNumberKey = applicationData['applications'].map(function(applicationDataItem) {
           applicationDataItem['release-number'] = applicationDataItem['application-release-number']; // Assign new key
           delete applicationDataItem['application-release-number']; // Delete old key
           return applicationDataItem;
         });
+      }else{
+          throw new Error("File path does not exist")
+      }
           }
 
       /****************************************************************************************
@@ -409,7 +418,8 @@ exports.listApprovedApplicationsInGenericRepresentation = function (user, origin
         let uuid = profileUuid[profileUuidIndex];
         filePath = await fileProfile.getFilePath(uuid)        
         applicationData = await prepareApplicationData.readApplicationData(filePath)
-
+        if(applicationData != undefined){
+        
         // Preparing response-value-list for response body
         applicationData["applications"].forEach(applicationDataItem => {
           approvalStatus = applicationDataItem["approval-status"];
@@ -420,7 +430,7 @@ exports.listApprovedApplicationsInGenericRepresentation = function (user, origin
             responseValueList.push(reponseValue);            }
         });
       }
-
+    }
       /****************************************************************************************
        * Setting 'application/json' response body
        ****************************************************************************************/
@@ -568,6 +578,9 @@ exports.regardApplication = function (body, user, originator, xCorrelator, trace
         filePath =  await fileProfile.getFilePath(uuid)
 
         applicationData = await prepareApplicationData.readApplicationData(filePath)
+        if(applicationData == undefined){
+          throw new Error("File path does not exist")
+        }
         checkApplicationExists = await prepareApplicationData.isApplicationExist(applicationData, applicationNameRequestBody, releaseNumberRequestBody)
         if(!checkApplicationExists['is-application-exist']){
           approvalStatus = "REGISTERED"
