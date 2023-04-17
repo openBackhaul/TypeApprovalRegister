@@ -131,7 +131,7 @@ async function PromptForBequeathingDataCausesNewTARbeingRequestedToRedirectInfoA
             /***********************************************************************************
              * Preparing requestBody and transfering the data one by one
              ************************************************************************************/
-
+            let forwardingKindNameOfTheBequeathOperation = "PromptForBequeathingDataCausesNewTARbeingRequestedToRedirectInfoAboutApprovals";
             let inquiryForApplicationTypeApprovalFCName = "RegisteringCausesInfoAboutApprovalStatusToRegistryOffice";
             let forwardingConstructInstance = await ForwardingDomain.getForwardingConstructForTheForwardingNameAsync(inquiryForApplicationTypeApprovalFCName);
             let operationClientUuidList = getFcPortOutputLogicalTerminationPointList(forwardingConstructInstance);
@@ -277,6 +277,7 @@ async function PromptForBequeathingDataCausesRObeingRequestedToInquireForApplica
                 let regardApplicationOperation = await OperationServerInterface.getOperationNameAsync("tar-2-0-1-op-s-is-001");
                 let applicationAddress = await tcpClientInterface.getRemoteAddressAsync(newReleaseTcpClientUuid);
                 let applicationPort = await tcpClientInterface.getRemotePortAsync(newReleaseTcpClientUuid);
+                let applicationProtocol = await tcpClientInterface.getRemoteProtocolAsync(newReleaseTcpClientUuid);
 
                 /***********************************************************************************
                  * PromptForBequeathingDataCausesRObeingRequestedToInquireForApplicationTypeApprovalsAtNewTAR
@@ -288,6 +289,7 @@ async function PromptForBequeathingDataCausesRObeingRequestedToInquireForApplica
                 requestBody.approvalOperation = regardApplicationOperation;
                 requestBody.approvalApplicationAddress = applicationAddress;
                 requestBody.approvalApplicationPort = applicationPort;
+                requestBody.approvalApplicationProtocol = applicationProtocol;
                 requestBody = onfAttributeFormatter.modifyJsonObjectKeysToKebabCase(requestBody);
                 result = await forwardRequest(
                     forwardingKindNameOfTheBequeathOperation,
@@ -423,7 +425,7 @@ async function PromptForBequeathingDataCausesEndingSubscriptionsToOldRelease(use
                     let requestBody = {};
                     requestBody.subscriberApplication = applicationName;
                     requestBody.subscriberReleaseNumber = releaseNumber;
-                    requestBody.subscription = subscriptionName.toString();
+                    requestBody.subscription = subscriptionName;
                     requestBody = onfAttributeFormatter.modifyJsonObjectKeysToKebabCase(requestBody);
                     result = await forwardRequest(
                         forwardingKindNameOfTheBequeathOperation,
