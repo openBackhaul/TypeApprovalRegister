@@ -26,10 +26,11 @@ exports.addAndUpdateApplicationData = async (filePath, applicationData) => {
 exports.readApplicationData = async (filePath)=>{
     return new Promise(async function (resolve, reject) {
         try{
+            let applicationData;
             if(fileSystem.existsSync(filePath)){
-                let applicationData = JSON.parse(fileSystem.readFileSync(filePath, 'utf8'));
-                resolve(applicationData)
+                 applicationData = JSON.parse(fileSystem.readFileSync(filePath, 'utf8'));
             }
+            resolve(applicationData)
         }catch (error) {
             reject(error);
         }

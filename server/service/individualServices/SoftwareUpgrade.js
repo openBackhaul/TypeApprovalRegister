@@ -210,7 +210,10 @@ async function PromptForBequeathingDataCausesTransferOfListOfAlreadyGrantedTypeA
             for (let profileUuidIndex = 0; profileUuidIndex < profileUuid.length; profileUuidIndex++) {
                 uuid = profileUuid[profileUuidIndex];
                 filePath = await fileProfile.getFilePath(uuid)
-                applicationData = await prepareApplicationData.readApplicationData(filePath)
+              let  applicationData = await prepareApplicationData.readApplicationData(filePath)
+                if(applicationData == undefined){
+                    throw new Error("File path does not exist")
+                  }
                 
                 applicationDataUpdateReleaseNumberKey = applicationData['applications'].map(async function(applicationDataItem) {
                     applicationName = applicationDataItem['application-name']; 
