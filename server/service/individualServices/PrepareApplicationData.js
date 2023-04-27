@@ -27,9 +27,7 @@ exports.readApplicationData = async (filePath)=>{
     return new Promise(async function (resolve, reject) {
         try{
             let applicationData;
-            if(fileSystem.existsSync(filePath)){
-                 applicationData = JSON.parse(fileSystem.readFileSync(filePath, 'utf8'));
-            }
+            applicationData = JSON.parse(fileSystem.readFileSync(filePath, 'utf8'));
             resolve(applicationData)
         }catch (error) {
             reject(error);
