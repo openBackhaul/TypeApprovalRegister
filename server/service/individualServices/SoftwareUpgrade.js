@@ -205,44 +205,38 @@ async function PromptForBequeathingDataCausesTransferOfListOfAlreadyGrantedTypeA
              * Preparing requestBody and transfering the data one by one
              ************************************************************************************/
             
-            let profileUuid = await profile.getUuidListAsync(profile.profileNameEnum.FILE_PROFILE);
-
-            for (let profileUuidIndex = 0; profileUuidIndex < profileUuid.length; profileUuidIndex++) {
-                uuid = profileUuid[profileUuidIndex];
-                filePath = await fileProfile.getFilePath(uuid)
-              let  applicationData = await prepareApplicationData.readApplicationData(filePath)
-                if(applicationData == undefined){
-                    throw new Error("File path does not exist")
-                  }
-                
-                applicationDataUpdateReleaseNumberKey = applicationData['applications'].map(async function(applicationDataItem) {
-                    applicationName = applicationDataItem['application-name']; 
-                    releaseNumber = applicationDataItem['application-release-number'];
-                    approvalStatus = applicationDataItem['approval-status'];     
-
-                    /***********************************************************************************
-                     * PromptForBequeathingDataCausesTransferOfListOfAlreadyGrantedTypeApprovals
-                     *   /v1/document-approval-status
-                     ************************************************************************************/
-                    let requestBody = {};
-                    requestBody.applicationName = applicationName;
-                    requestBody.releaseNumber = releaseNumber;
-                    requestBody.approvalStatus = approvalStatus;
-                    requestBody = onfAttributeFormatter.modifyJsonObjectKeysToKebabCase(requestBody);
-                    result = await forwardRequest(
-                        forwardingKindNameOfTheBequeathOperation,
-                        requestBody,
-                        user,
-                        xCorrelator,
-                        traceIndicator,
-                        customerJourney
-                    );
-                    if (!result) {
-                        throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + requestBody;
-                    }
-                });
-
+            filePath = await fileProfile.getApplicationDataFileContent()
+            let applicationData = await prepareApplicationData.readApplicationData(filePath)
+            if (applicationData == undefined) {
+                throw new Error("Application data does not exist")
             }
+
+            applicationDataUpdateReleaseNumberKey = applicationData['applications'].map(async function (applicationDataItem) {
+                applicationName = applicationDataItem['application-name'];
+                releaseNumber = applicationDataItem['application-release-number'];
+                approvalStatus = applicationDataItem['approval-status'];
+
+                /***********************************************************************************
+                 * PromptForBequeathingDataCausesTransferOfListOfAlreadyGrantedTypeApprovals
+                 *   /v1/document-approval-status
+                 ************************************************************************************/
+                let requestBody = {};
+                requestBody.applicationName = applicationName;
+                requestBody.releaseNumber = releaseNumber;
+                requestBody.approvalStatus = approvalStatus;
+                requestBody = onfAttributeFormatter.modifyJsonObjectKeysToKebabCase(requestBody);
+                result = await forwardRequest(
+                    forwardingKindNameOfTheBequeathOperation,
+                    requestBody,
+                    user,
+                    xCorrelator,
+                    traceIndicator,
+                    customerJourney
+                );
+                if (!result) {
+                    throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + requestBody;
+                }
+            });
             resolve(result);
         } catch (error) {
             reject(error);

@@ -27,9 +27,7 @@ exports.readApplicationData = async (filePath)=>{
     return new Promise(async function (resolve, reject) {
         try{
             let applicationData;
-            if(fileSystem.existsSync(filePath)){
-                 applicationData = JSON.parse(fileSystem.readFileSync(filePath, 'utf8'));
-            }
+            applicationData = JSON.parse(fileSystem.readFileSync(filePath, 'utf8'));
             resolve(applicationData)
         }catch (error) {
             reject(error);
@@ -42,7 +40,7 @@ exports.readApplicationData = async (filePath)=>{
 * if application exist function return below values
 * true,approval-status,application index, application-name
 */
-exports.isApplicationExist = async (applicationData, applicationNameFromRequestBody, releaseNumberFromRequestBody)=>{
+exports.getApplicationDetails = async (applicationData, applicationNameFromRequestBody, releaseNumberFromRequestBody)=>{
     return new Promise(async function (resolve, reject) {
         try{
             if(applicationData){

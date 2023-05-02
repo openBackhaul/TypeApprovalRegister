@@ -213,31 +213,26 @@ exports.disregardApplication = function (body, user, originator, xCorrelator, tr
        * Setting up required local variables from the request body
        ****************************************************************************************/
       let applicationData = []
-      let uuid
       let filePath
       let applicationNameRequestBody = body["application-name"];
       let releaseNumberRequestBody = body["release-number"];
-      let checkApplicationExists
+      let applicationDetails
 
       /****************************************************************************************
        * Preparing response-value-list for response body
        ****************************************************************************************/      
-      let profileUuid = await profile.getUuidListAsync(profile.profileNameEnum.FILE_PROFILE);
-      for (let profileUuidIndex = 0; profileUuidIndex < profileUuid.length; profileUuidIndex++) {
-        uuid = profileUuid[profileUuidIndex];
-        filePath = await fileProfile.getFilePath(uuid)        
-        applicationData = await prepareApplicationData.readApplicationData(filePath)
-        if(applicationData == undefined){
-          throw new Error("File path does not exist")
+      filePath = await fileProfile.getApplicationDataFileContent()
+      applicationData = await prepareApplicationData.readApplicationData(filePath)
+      if (applicationData == undefined) {
+        throw new Error("Application data does not exist")
+      }
+      applicationDetails = await prepareApplicationData.getApplicationDetails(applicationData, applicationNameRequestBody, releaseNumberRequestBody)
+      if (applicationDetails['is-application-exist']) {
+        prepareApplicationData.deleteApplication(applicationData["applications"], applicationDetails['application-name'])
+        let applicationDataToJson = {
+          "applications": applicationData["applications"]
         }
-        checkApplicationExists = await prepareApplicationData.isApplicationExist(applicationData, applicationNameRequestBody, releaseNumberRequestBody)
-        if(checkApplicationExists['is-application-exist']){
-          prepareApplicationData.deleteApplication(applicationData["applications"], checkApplicationExists['application-name'])
-          let applicationDataToJson = {
-            "applications": applicationData["applications"]
-          }
-          prepareApplicationData.addAndUpdateApplicationData(filePath,applicationDataToJson)
-        }
+        prepareApplicationData.addAndUpdateApplicationData(filePath, applicationDataToJson)
       }
       resolve();
     } catch (error) {
@@ -264,45 +259,37 @@ exports.documentApprovalStatus = function (body, user, originator, xCorrelator, 
        * Setting up required local variables from the request body
        ****************************************************************************************/
       let applicationData = []
-      let uuid
       let filePath
       let applicationNameFromRequestBody = body["application-name"];
       let releaseNumberFromRequestBody = body["release-number"];
       let approvalStatusFromRequestBody = body["approval-status"];
-      let applicationStatus
+      let applicationDetails
 
       /****************************************************************************************
        * Preparing response-value-list for response body
        ****************************************************************************************/      
-      let profileUuid = await profile.getUuidListAsync(profile.profileNameEnum.FILE_PROFILE);
-      for (let profileUuidIndex = 0; profileUuidIndex < profileUuid.length; profileUuidIndex++) {
-        uuid = profileUuid[profileUuidIndex];
-        filePath = await fileProfile.getFilePath(uuid)     
-        
-        applicationData = await prepareApplicationData.readApplicationData(filePath)
-        if(applicationData == undefined){
-          throw new Error("File path does not exist")
-        }
-        applicationStatus = await prepareApplicationData.isApplicationExist(applicationData, applicationNameFromRequestBody, releaseNumberFromRequestBody)
-
-
-        if(applicationStatus['is-application-exist']){
-          // If there is instance available for this application + release-number combination, update the “approval-status” of the instance
-          if(approvalStatusFromRequestBody != applicationStatus['approval-status']){
-            let applicationStatusIndex = applicationStatus['index']
-            applicationData["applications"][applicationStatusIndex]["approval-status"] = approvalStatusFromRequestBody
-            prepareApplicationData.addAndUpdateApplicationData(filePath, applicationData)
-          }
-        }else{
-          // If there is no instance available for this application + release-number combination, create a instances
-          let newApplicationData = {
-            "application-name": applicationNameFromRequestBody,
-            "application-release-number": releaseNumberFromRequestBody,
-            "approval-status": approvalStatusFromRequestBody
-          }
-          applicationData["applications"].push(newApplicationData)
+      filePath = await fileProfile.getApplicationDataFileContent()
+      applicationData = await prepareApplicationData.readApplicationData(filePath)
+      if (applicationData == undefined) {
+        throw new Error("Application data does not exist")
+      }
+      applicationDetails = await prepareApplicationData.getApplicationDetails(applicationData, applicationNameFromRequestBody, releaseNumberFromRequestBody)
+      if (applicationDetails['is-application-exist']) {
+        // If there is instance available for this application + release-number combination, update the “approval-status” of the instance
+        if (approvalStatusFromRequestBody != applicationDetails['approval-status']) {
+          let applicationDetailsIndex = applicationDetails['index']
+          applicationData["applications"][applicationDetailsIndex]["approval-status"] = approvalStatusFromRequestBody
           prepareApplicationData.addAndUpdateApplicationData(filePath, applicationData)
         }
+      } else {
+        // If there is no instance available for this application + release-number combination, create a instances
+        let newApplicationData = {
+          "application-name": applicationNameFromRequestBody,
+          "application-release-number": releaseNumberFromRequestBody,
+          "approval-status": approvalStatusFromRequestBody
+        }
+        applicationData["applications"].push(newApplicationData)
+        prepareApplicationData.addAndUpdateApplicationData(filePath, applicationData)
       }
 
       /****************************************************************************************
@@ -348,28 +335,23 @@ exports.listApplications = function (user, originator, xCorrelator, traceIndicat
        * Preparing response body
        ****************************************************************************************/
       let applicationData = []
-      let uuid
       let filePath
       let applicationDataUpdateReleaseNumberKey
 
       /****************************************************************************************
        * Preparing response-value-list for response body
        ****************************************************************************************/      
-      let profileUuid = await profile.getUuidListAsync(profile.profileNameEnum.FILE_PROFILE);
-      for (let profileUuidIndex = 0; profileUuidIndex < profileUuid.length; profileUuidIndex++) {
-        uuid = profileUuid[profileUuidIndex];
-        filePath = await fileProfile.getFilePath(uuid)
-        applicationData = await prepareApplicationData.readApplicationData(filePath)
-        if(applicationData != undefined){
-        applicationDataUpdateReleaseNumberKey = applicationData['applications'].map(function(applicationDataItem) {
+      filePath = await fileProfile.getApplicationDataFileContent()
+      applicationData = await prepareApplicationData.readApplicationData(filePath)
+      if (applicationData != undefined) {
+        applicationDataUpdateReleaseNumberKey = applicationData['applications'].map(function (applicationDataItem) {
           applicationDataItem['release-number'] = applicationDataItem['application-release-number']; // Assign new key
           delete applicationDataItem['application-release-number']; // Delete old key
           return applicationDataItem;
         });
-      }else{
-          throw new Error("File path does not exist")
+      } else {
+        throw new Error("Application data does not exist")
       }
-          }
 
       /****************************************************************************************
        * Setting 'application/json' response body
@@ -412,19 +394,12 @@ exports.listApprovedApplicationsInGenericRepresentation = function (user, origin
       let applicationName
       let releaseNumber
       let reponseValue
-      let getOperation
       let getDataType
  
       getDataType = await prepareApplicationData.getDataType(operationServerName)
-
-      // get profile uuid
-      let profileUuid = await profile.getUuidListAsync(applicationProfile.profileNameEnum.FILE_PROFILE);
-      for (let profileUuidIndex = 0; profileUuidIndex < profileUuid.length; profileUuidIndex++) {
-        let uuid = profileUuid[profileUuidIndex];
-        filePath = await fileProfile.getFilePath(uuid)        
-        applicationData = await prepareApplicationData.readApplicationData(filePath)
-        if(applicationData != undefined){
-        
+      filePath = await fileProfile.getApplicationDataFileContent()
+      applicationData = await prepareApplicationData.readApplicationData(filePath)
+      if (applicationData != undefined) {
         // Preparing response-value-list for response body
         applicationData["applications"].forEach(applicationDataItem => {
           approvalStatus = applicationDataItem["approval-status"];
@@ -432,10 +407,10 @@ exports.listApprovedApplicationsInGenericRepresentation = function (user, origin
             applicationName = applicationDataItem["application-name"]
             releaseNumber = applicationDataItem["application-release-number"]
             reponseValue = new responseValue(applicationName, releaseNumber, getDataType);
-            responseValueList.push(reponseValue);            }
+            responseValueList.push(reponseValue);
+          }
         });
       }
-    }
       /****************************************************************************************
        * Setting 'application/json' response body
        ****************************************************************************************/
@@ -566,9 +541,8 @@ exports.regardApplication = function (body, user, originator, xCorrelator, trace
   return new Promise(async function (resolve, reject) {
     try {
       let applicationData = []
-      let uuid
       let filePath
-      let checkApplicationExists = false
+      let applicationDetails = false
       let approvalStatus
 
       /****************************************************************************************
@@ -577,29 +551,24 @@ exports.regardApplication = function (body, user, originator, xCorrelator, trace
       let applicationNameRequestBody = body["application-name"]
       let releaseNumberRequestBody = body["release-number"]
 
-      let profileUuid = await profile.getUuidListAsync(profile.profileNameEnum.FILE_PROFILE);
-      for (let profileUuidIndex = 0; profileUuidIndex < profileUuid.length; profileUuidIndex++) {
-        uuid = profileUuid[profileUuidIndex];
-        filePath =  await fileProfile.getFilePath(uuid)
-
-        applicationData = await prepareApplicationData.readApplicationData(filePath)
-        if(applicationData == undefined){
-          throw new Error("File path does not exist")
+      filePath = await fileProfile.getApplicationDataFileContent()
+      applicationData = await prepareApplicationData.readApplicationData(filePath)
+      if (applicationData == undefined) {
+        throw new Error("Application data does not exist")
+      }
+      applicationDetails = await prepareApplicationData.getApplicationDetails(applicationData, applicationNameRequestBody, releaseNumberRequestBody)
+      if (!applicationDetails['is-application-exist']) {
+        approvalStatus = "REGISTERED"
+        let newApplicationData = {
+          "application-name": applicationNameRequestBody,
+          "application-release-number": releaseNumberRequestBody,
+          "approval-status": approvalStatus
         }
-        checkApplicationExists = await prepareApplicationData.isApplicationExist(applicationData, applicationNameRequestBody, releaseNumberRequestBody)
-        if(!checkApplicationExists['is-application-exist']){
-          approvalStatus = "REGISTERED"
-          let newApplicationData = {
-            "application-name": applicationNameRequestBody,
-            "application-release-number": releaseNumberRequestBody,
-            "approval-status": approvalStatus
-          }
-          // Add new application data from request body
-          applicationData["applications"].push(newApplicationData)
-          await prepareApplicationData.addAndUpdateApplicationData(filePath, applicationData) 
-        }else{
-          approvalStatus = checkApplicationExists['approval-status']
-        }
+        // Add new application data from request body
+        applicationData["applications"].push(newApplicationData)
+        await prepareApplicationData.addAndUpdateApplicationData(filePath, applicationData)
+      } else {
+        approvalStatus = applicationDetails['approval-status']
       }
 
       /****************************************************************************************
