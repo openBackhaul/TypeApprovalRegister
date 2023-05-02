@@ -216,7 +216,7 @@ exports.disregardApplication = function (body, user, originator, xCorrelator, tr
       let filePath
       let applicationNameRequestBody = body["application-name"];
       let releaseNumberRequestBody = body["release-number"];
-      let checkApplicationExists
+      let applicationDetails
 
       /****************************************************************************************
        * Preparing response-value-list for response body
@@ -226,9 +226,9 @@ exports.disregardApplication = function (body, user, originator, xCorrelator, tr
       if (applicationData == undefined) {
         throw new Error("Application data does not exist")
       }
-      checkApplicationExists = await prepareApplicationData.isApplicationExist(applicationData, applicationNameRequestBody, releaseNumberRequestBody)
-      if (checkApplicationExists['is-application-exist']) {
-        prepareApplicationData.deleteApplication(applicationData["applications"], checkApplicationExists['application-name'])
+      applicationDetails = await prepareApplicationData.getApplicationDetails(applicationData, applicationNameRequestBody, releaseNumberRequestBody)
+      if (applicationDetails['is-application-exist']) {
+        prepareApplicationData.deleteApplication(applicationData["applications"], applicationDetails['application-name'])
         let applicationDataToJson = {
           "applications": applicationData["applications"]
         }
@@ -263,7 +263,7 @@ exports.documentApprovalStatus = function (body, user, originator, xCorrelator, 
       let applicationNameFromRequestBody = body["application-name"];
       let releaseNumberFromRequestBody = body["release-number"];
       let approvalStatusFromRequestBody = body["approval-status"];
-      let applicationStatus
+      let applicationDetails
 
       /****************************************************************************************
        * Preparing response-value-list for response body
@@ -273,12 +273,12 @@ exports.documentApprovalStatus = function (body, user, originator, xCorrelator, 
       if (applicationData == undefined) {
         throw new Error("Application data does not exist")
       }
-      applicationStatus = await prepareApplicationData.isApplicationExist(applicationData, applicationNameFromRequestBody, releaseNumberFromRequestBody)
-      if (applicationStatus['is-application-exist']) {
+      applicationDetails = await prepareApplicationData.getApplicationDetails(applicationData, applicationNameFromRequestBody, releaseNumberFromRequestBody)
+      if (applicationDetails['is-application-exist']) {
         // If there is instance available for this application + release-number combination, update the “approval-status” of the instance
-        if (approvalStatusFromRequestBody != applicationStatus['approval-status']) {
-          let applicationStatusIndex = applicationStatus['index']
-          applicationData["applications"][applicationStatusIndex]["approval-status"] = approvalStatusFromRequestBody
+        if (approvalStatusFromRequestBody != applicationDetails['approval-status']) {
+          let applicationDetailsIndex = applicationDetails['index']
+          applicationData["applications"][applicationDetailsIndex]["approval-status"] = approvalStatusFromRequestBody
           prepareApplicationData.addAndUpdateApplicationData(filePath, applicationData)
         }
       } else {
@@ -542,7 +542,7 @@ exports.regardApplication = function (body, user, originator, xCorrelator, trace
     try {
       let applicationData = []
       let filePath
-      let checkApplicationExists = false
+      let applicationDetails = false
       let approvalStatus
 
       /****************************************************************************************
@@ -556,8 +556,8 @@ exports.regardApplication = function (body, user, originator, xCorrelator, trace
       if (applicationData == undefined) {
         throw new Error("Application data does not exist")
       }
-      checkApplicationExists = await prepareApplicationData.isApplicationExist(applicationData, applicationNameRequestBody, releaseNumberRequestBody)
-      if (!checkApplicationExists['is-application-exist']) {
+      applicationDetails = await prepareApplicationData.getApplicationDetails(applicationData, applicationNameRequestBody, releaseNumberRequestBody)
+      if (!applicationDetails['is-application-exist']) {
         approvalStatus = "REGISTERED"
         let newApplicationData = {
           "application-name": applicationNameRequestBody,
@@ -568,7 +568,7 @@ exports.regardApplication = function (body, user, originator, xCorrelator, trace
         applicationData["applications"].push(newApplicationData)
         await prepareApplicationData.addAndUpdateApplicationData(filePath, applicationData)
       } else {
-        approvalStatus = checkApplicationExists['approval-status']
+        approvalStatus = applicationDetails['approval-status']
       }
 
       /****************************************************************************************
