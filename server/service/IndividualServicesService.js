@@ -70,11 +70,18 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
        * Prepare logicalTerminatinPointConfigurationInput object to 
        * configure logical-termination-point
        ****************************************************************************************/
+      const LtpUuidsForOldReleaseFromForwarding = await resolveHttpClient('PromptForEmbeddingCausesRequestForBequeathingData');
+      let oldReleaseHttpClientLtpUuid = LtpUuidsForOldReleaseFromForwarding[0];
+      if (oldReleaseHttpClientLtpUuid != undefined) {
+        let oldReleaseApplicationName = await httpClientInterface.getApplicationNameAsync(oldReleaseHttpClientLtpUuid)
+        if(oldReleaseApplicationName === "OldRelease"){
+          throw new Error(`/v1/bequeath-your-data-and-die could not be addressed as the client application name is still OldRelease`)
+        }
+      }
       
-      const HttpClientLtpUuidFromForwarding = await resolveHttpClient('PromptForBequeathingDataCausesNewTARbeingRequestedToRedirectInfoAboutApprovals');
-      if (HttpClientLtpUuidFromForwarding == undefined) {
-        reject(new Error(`The NewRelease ${applicationName} was not found.`));
-        return;
+      const LtpUuidsForNewReleaseFromForwarding = await resolveHttpClient('PromptForBequeathingDataCausesNewTARbeingRequestedToRedirectInfoAboutApprovals');
+      if (LtpUuidsForNewReleaseFromForwarding == undefined) {
+        throw new Error(`The NewRelease ${applicationName} was not found.`)
       }
 
       let isdataTransferRequired = true;
@@ -85,7 +92,7 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
       let isPortUpdated = false;
 
       let logicalTerminationPointConfigurationStatus = {};
-      let newReleaseHttpClientLtpUuid = HttpClientLtpUuidFromForwarding[0];
+      let newReleaseHttpClientLtpUuid = LtpUuidsForNewReleaseFromForwarding[0];
       if (newReleaseHttpClientLtpUuid != undefined) {
         
         let currentReleaseNumber = await httpClientInterface.getReleaseNumberAsync(newReleaseHttpClientLtpUuid)
