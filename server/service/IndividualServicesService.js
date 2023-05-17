@@ -70,7 +70,7 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
        * Prepare logicalTerminatinPointConfigurationInput object to 
        * configure logical-termination-point
        ****************************************************************************************/
-      const LtpUuidsForOldReleaseFromForwarding = await resolveHttpClient('PromptForEmbeddingCausesRequestForBequeathingData');
+      const LtpUuidsForOldReleaseFromForwarding = await resolveLtpDetails('PromptForEmbeddingCausesRequestForBequeathingData');
       let oldReleaseHttpClientLtpUuid = LtpUuidsForOldReleaseFromForwarding[0];
       if (oldReleaseHttpClientLtpUuid != undefined) {
         let oldReleaseApplicationName = await httpClientInterface.getApplicationNameAsync(oldReleaseHttpClientLtpUuid)
@@ -79,7 +79,7 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
         }
       }
       
-      const LtpUuidsForNewReleaseFromForwarding = await resolveHttpClient('PromptForBequeathingDataCausesNewTARbeingRequestedToRedirectInfoAboutApprovals');
+      const LtpUuidsForNewReleaseFromForwarding = await resolveLtpDetails('PromptForBequeathingDataCausesNewTARbeingRequestedToRedirectInfoAboutApprovals');
       if (LtpUuidsForNewReleaseFromForwarding == undefined) {
         throw new Error(`The NewRelease ${applicationName} was not found.`)
       }
@@ -168,9 +168,9 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
 }
 
 /*
-  function to get Http Client LTP UUID using forwarding name
+  function to get LTP Details using forwarding name
 */
-var resolveHttpClient = exports.resolveHttpClientLtpUuidFromForwardingName = function (forwardingName) {
+var resolveLtpDetails = exports.resolveLtpDetailsFromForwardingName= function (forwardingName) {
   return new Promise(async function (resolve, reject) {
     try {
       let ForwardConstructName = await ForwardingDomain.getForwardingConstructForTheForwardingNameAsync(forwardingName)
