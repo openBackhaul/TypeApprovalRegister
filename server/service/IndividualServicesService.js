@@ -70,7 +70,7 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
        * Prepare logicalTerminatinPointConfigurationInput object to 
        * configure logical-termination-point
        ****************************************************************************************/
-      
+
       const HttpClientLtpUuidFromForwarding = await resolveHttpClient('PromptForBequeathingDataCausesNewTARbeingRequestedToRedirectInfoAboutApprovals');
       if (HttpClientLtpUuidFromForwarding == undefined) {
         reject(new Error(`The NewRelease ${applicationName} was not found.`));
@@ -87,15 +87,15 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
       let logicalTerminationPointConfigurationStatus = {};
       let newReleaseHttpClientLtpUuid = HttpClientLtpUuidFromForwarding[0];
       if (newReleaseHttpClientLtpUuid != undefined) {
-        
+
         let currentReleaseNumber = await httpClientInterface.getReleaseNumberAsync(newReleaseHttpClientLtpUuid)
         let currentApplicationName = await httpClientInterface.getApplicationNameAsync(newReleaseHttpClientLtpUuid)
-        
-        if(currentReleaseNumber != releaseNumber){
+
+        if (currentReleaseNumber != releaseNumber) {
           isReleaseUpdated = await httpClientInterface.setReleaseNumberAsync(newReleaseHttpClientLtpUuid, releaseNumber);
         }
 
-        if(currentApplicationName != applicationName){
+        if (currentApplicationName != applicationName) {
           isApplicationNameUpdated = await httpClientInterface.setApplicationNameAsync(newReleaseHttpClientLtpUuid, applicationName);
         }
 
@@ -114,15 +114,15 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
         let currentRemoteAddress = await tcpClientInterface.getRemoteAddressAsync(newReleaseTcpClientUuid)
         let currentRemotePort = await tcpClientInterface.getRemotePortAsync(newReleaseTcpClientUuid)
 
-        if(currentRemoteProtocol != applicationProtocol){
+        if (currentRemoteProtocol != applicationProtocol) {
           isProtocolUpdated = await tcpClientInterface.setRemoteProtocolAsync(newReleaseTcpClientUuid, applicationProtocol);
         }
 
-        if(JSON.stringify(currentRemoteAddress) != JSON.stringify(applicationAddress)){
+        if (JSON.stringify(currentRemoteAddress) != JSON.stringify(applicationAddress)) {
           isAddressUpdated = await tcpClientInterface.setRemoteAddressAsync(newReleaseTcpClientUuid, applicationAddress);
         }
 
-        if(currentRemotePort != applicationPort){
+        if (currentRemotePort != applicationPort) {
           isPortUpdated = await tcpClientInterface.setRemotePortAsync(newReleaseTcpClientUuid, applicationPort);
         }
 
@@ -149,9 +149,9 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
             traceIndicator,
             customerJourney
           );
-         }
-         softwareUpgrade.upgradeSoftwareVersion(isdataTransferRequired, user, xCorrelator, traceIndicator, customerJourney)
-         .catch(err => console.log(`upgradeSoftwareVersion failed with error: ${err}`)); 
+        }
+        softwareUpgrade.upgradeSoftwareVersion(isdataTransferRequired, user, xCorrelator, traceIndicator, customerJourney)
+          .catch(err => console.log(`upgradeSoftwareVersion failed with error: ${err}`));
       }
       resolve();
     } catch (error) {
@@ -215,7 +215,7 @@ exports.disregardApplication = function (body, user, originator, xCorrelator, tr
 
       /****************************************************************************************
        * Preparing response-value-list for response body
-       ****************************************************************************************/      
+       ****************************************************************************************/
       filePath = await fileProfile.getApplicationDataFileContent()
       applicationData = await prepareApplicationData.readApplicationData(filePath)
       if (applicationData == undefined) {
@@ -262,7 +262,7 @@ exports.documentApprovalStatus = function (body, user, originator, xCorrelator, 
 
       /****************************************************************************************
        * Preparing response-value-list for response body
-       ****************************************************************************************/      
+       ****************************************************************************************/
       filePath = await fileProfile.getApplicationDataFileContent()
       applicationData = await prepareApplicationData.readApplicationData(filePath)
       if (applicationData == undefined) {
@@ -335,7 +335,7 @@ exports.listApplications = function (user, originator, xCorrelator, traceIndicat
 
       /****************************************************************************************
        * Preparing response-value-list for response body
-       ****************************************************************************************/      
+       ****************************************************************************************/
       filePath = await fileProfile.getApplicationDataFileContent()
       applicationData = await prepareApplicationData.readApplicationData(filePath)
       if (applicationData != undefined) {
@@ -352,11 +352,11 @@ exports.listApplications = function (user, originator, xCorrelator, traceIndicat
        * Setting 'application/json' response body
        ****************************************************************************************/
       response['application/json'] = applicationDataUpdateReleaseNumberKey;
-    if (Object.keys(response).length > 0) {
-      resolve(response[Object.keys(response)[0]]);
-    } else {
-      resolve();
-    }
+      if (Object.keys(response).length > 0) {
+        resolve(response[Object.keys(response)[0]]);
+      } else {
+        resolve();
+      }
     } catch (error) {
       reject();
     }
@@ -390,7 +390,7 @@ exports.listApprovedApplicationsInGenericRepresentation = function (user, origin
       let releaseNumber
       let reponseValue
       let getDataType
- 
+
       getDataType = await prepareApplicationData.getDataType(operationServerName)
       filePath = await fileProfile.getApplicationDataFileContent()
       applicationData = await prepareApplicationData.readApplicationData(filePath)
@@ -409,7 +409,7 @@ exports.listApprovedApplicationsInGenericRepresentation = function (user, origin
       /****************************************************************************************
        * Setting 'application/json' response body
        ****************************************************************************************/
-        response['application/json'] = onfAttributeFormatter.modifyJsonObjectKeysToKebabCase({
+      response['application/json'] = onfAttributeFormatter.modifyJsonObjectKeysToKebabCase({
         consequentActionList,
         responseValueList
       });
@@ -455,12 +455,21 @@ exports.redirectInfoAboutApprovalStatusChanges = function (body, user, originato
        * configure logical-termination-point
        ****************************************************************************************/
 
+      let forwardingName = "UpdateOfApprovalStatusCausesInfoToRegistryOffice"
+      const HttpClientLtpUuidFromForwarding = await resolveHttpClient(forwardingName);
+      let newReleaseHttpClientLtpUuid = HttpClientLtpUuidFromForwarding[0];
+      let applicatioNameFromForwarding = await httpClientInterface.getApplicationNameAsync(newReleaseHttpClientLtpUuid)
+      if (applicationName !== applicatioNameFromForwarding) {
+        reject(new Error(`The subscriber-application ${applicationName} was not found.`));
+        return;
+      }
+
       let operationNamesByAttributes = new Map();
       operationNamesByAttributes.set("subscriber-operation", subscriberOperation);
 
       let tcpObjectList = [
         {
-          "protocol" : applicationProtocol,
+          "protocol": applicationProtocol,
           "address": applicationAddress,
           "port": applicationPort
         }
@@ -477,7 +486,7 @@ exports.redirectInfoAboutApprovalStatusChanges = function (body, user, originato
         logicalTerminatinPointConfigurationInput
       );
 
-      
+
       /****************************************************************************************
        * Prepare attributes to configure forwarding-construct
        ****************************************************************************************/
@@ -492,10 +501,10 @@ exports.redirectInfoAboutApprovalStatusChanges = function (body, user, originato
           subscriberOperation
         );
         forwardingConstructConfigurationStatus = await ForwardingConfigurationService.
-        configureForwardingConstructAsync(
-          operationServerName,
-          forwardingConfigurationInputList
-        );
+          configureForwardingConstructAsync(
+            operationServerName,
+            forwardingConfigurationInputList
+          );
       }
 
       /****************************************************************************************
