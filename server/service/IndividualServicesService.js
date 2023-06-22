@@ -223,7 +223,7 @@ exports.disregardApplication = function (body, user, originator, xCorrelator, tr
       }
       applicationDetails = await prepareApplicationData.getApplicationDetails(applicationData, applicationNameRequestBody, releaseNumberRequestBody)
       if (applicationDetails['is-application-exist']) {
-        prepareApplicationData.deleteApplication(applicationData["applications"], applicationDetails['application-name'])
+        prepareApplicationData.deleteApplication(applicationData["applications"], applicationDetails['application-name'], applicationDetails["application-release-number"])
         let applicationDataToJson = {
           "applications": applicationData["applications"]
         }
