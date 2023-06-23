@@ -2,6 +2,7 @@ const fileSystem = require('fs')
 const applicationProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/ApplicationProfile');
 const profile = require('onf-core-model-ap/applicationPattern/onfModel/models/Profile');
 const responseProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/ResponseProfile');
+const ProfileCollection = require('onf-core-model-ap/applicationPattern/onfModel/models/ProfileCollection');
 
 /*
 * Add new applications if there is no instance available for this application + release-number combination
@@ -23,16 +24,8 @@ exports.addAndUpdateApplicationData = async (filePath, applicationData) => {
 /*
 * Read application data
 */
-exports.readApplicationData = async (filePath)=>{
-    return new Promise(async function (resolve, reject) {
-        try{
-            let applicationData;
-            applicationData = JSON.parse(fileSystem.readFileSync(filePath, 'utf8'));
-            resolve(applicationData)
-        }catch (error) {
-            reject(error);
-        }
-    });
+exports.readApplicationData = async function(filePath) {
+    return JSON.parse(fileSystem.readFileSync(filePath, 'utf8'));
 }
 
 /*
@@ -88,32 +81,4 @@ exports.deleteApplication = async (applicationData, applicationNameToDelete) => 
         }
     });
   }
-
-  
-/*
-* get data type
-*/
-exports.getDataType = async (operationServerName) => {
-    return new Promise(async function (resolve, reject) {
-        try {
-            let getOperation
-            let getDataType
-            // get response profile uuid
-            let responseProfileUuid = await profile.getUuidListAsync(applicationProfile.profileNameEnum.RESPONSE_PROFILE);
-            for (let responseProfileUuidIndex = 0; responseProfileUuidIndex < responseProfileUuid.length; responseProfileUuidIndex++) {
-                let uuid = responseProfileUuid[responseProfileUuidIndex];
-                getOperation = await responseProfile.getOperationNameAsync(uuid)
-                if (getOperation == operationServerName) {
-                    // get data type when operation name is equal to ​/v1​/list-approved-applications-in-generic-representation
-                    getDataType = await responseProfile.getDataType(uuid)
-                }
-            }
-
-            resolve(getDataType)
-        } catch (error) {
-            reject(error);
-        }
-    });
-}
-
   

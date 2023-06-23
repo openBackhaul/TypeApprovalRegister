@@ -95,7 +95,7 @@ module.exports.listApprovedApplicationsInGenericRepresentation = async function 
     let startTime = process.hrtime();
     let responseCode = responseCodeEnum.code.OK;
     let responseBodyToDocument = {};
-    await IndividualServices.listApprovedApplicationsInGenericRepresentation(user, originator, xCorrelator, traceIndicator, customerJourney, req.url)
+    await IndividualServices.listApprovedApplicationsInGenericRepresentation(req.url)
       .then(async function (responseBody) {
         responseBodyToDocument = responseBody;
         let responseHeader = await restResponseHeader.createResponseHeader(xCorrelator, startTime, req.url);

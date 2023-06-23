@@ -19,7 +19,7 @@ const httpClientInterface = require('onf-core-model-ap/applicationPattern/onfMod
 
 const onfAttributeFormatter = require('onf-core-model-ap/applicationPattern/onfModel/utility/OnfAttributeFormatter');
 const consequentAction = require('onf-core-model-ap/applicationPattern/rest/server/responseBody/ConsequentAction');
-const responseValue = require('onf-core-model-ap/applicationPattern/rest/server/responseBody/ResponseValue');
+const ResponseValue = require('onf-core-model-ap/applicationPattern/rest/server/responseBody/ResponseValue');
 
 const onfPaths = require('onf-core-model-ap/applicationPattern/onfModel/constants/OnfPaths');
 const onfAttributes = require('onf-core-model-ap/applicationPattern/onfModel/constants/OnfAttributes');
@@ -40,7 +40,7 @@ const responseProfile = require('onf-core-model-ap/applicationPattern/onfModel/m
 const softwareUpgrade = require('./individualServices/SoftwareUpgrade');
 const TcpServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpServerInterface');
 const individualServicesOperationsMapping = require('./individualServices/IndividualServicesOperationsMapping');
-const fileProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/FileProfile');
+const FileProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/FileProfile');
 const prepareApplicationData = require('./individualServices/PrepareApplicationData')
 /**
  * Initiates process of embedding a new releasefv
@@ -216,7 +216,7 @@ exports.disregardApplication = function (body, user, originator, xCorrelator, tr
       /****************************************************************************************
        * Preparing response-value-list for response body
        ****************************************************************************************/
-      filePath = await fileProfile.getApplicationDataFileContent()
+      filePath = await FileProfile.getApplicationDataFileContent()
       applicationData = await prepareApplicationData.readApplicationData(filePath)
       if (applicationData == undefined) {
         throw new Error("Application data does not exist")
@@ -263,7 +263,7 @@ exports.documentApprovalStatus = function (body, user, originator, xCorrelator, 
       /****************************************************************************************
        * Preparing response-value-list for response body
        ****************************************************************************************/
-      filePath = await fileProfile.getApplicationDataFileContent()
+      filePath = await FileProfile.getApplicationDataFileContent()
       applicationData = await prepareApplicationData.readApplicationData(filePath)
       if (applicationData == undefined) {
         throw new Error("Application data does not exist")
@@ -336,7 +336,7 @@ exports.listApplications = function (user, originator, xCorrelator, traceIndicat
       /****************************************************************************************
        * Preparing response-value-list for response body
        ****************************************************************************************/
-      filePath = await fileProfile.getApplicationDataFileContent()
+      filePath = await FileProfile.getApplicationDataFileContent()
       applicationData = await prepareApplicationData.readApplicationData(filePath)
       if (applicationData != undefined) {
         applicationDataUpdateReleaseNumberKey = applicationData['applications'].map(function (applicationDataItem) {
@@ -367,60 +367,35 @@ exports.listApplications = function (user, originator, xCorrelator, traceIndicat
 /**
  * Provides list of approved applications in generic representation
  *
- * user String User identifier from the system starting the service call
- * originator String 'Identification for the system consuming the API, as defined in  [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]' 
- * xCorrelator String UUID for the service execution flow that allows to correlate requests and responses
- * traceIndicator String Sequence of request numbers along the flow
- * customerJourney String Holds information supporting customer’s journey to which the execution applies
  * returns inline_response_200_2
  **/
-exports.listApprovedApplicationsInGenericRepresentation = function (user, originator, xCorrelator, traceIndicator, customerJourney, operationServerName) {
-  return new Promise(async function (resolve, reject) {
-    let response = {};
-    try {
-      /****************************************************************************************
-       * Preparing consequent-action-list for response body
-       ****************************************************************************************/
-      let consequentActionList = []
-      let responseValueList = []
-      let applicationData = []
-      let filePath
-      let approvalStatus
-      let applicationName
-      let releaseNumber
-      let reponseValue
-      let getDataType
-
-      getDataType = await prepareApplicationData.getDataType(operationServerName)
-      filePath = await fileProfile.getApplicationDataFileContent()
-      applicationData = await prepareApplicationData.readApplicationData(filePath)
-      if (applicationData != undefined) {
-        // Preparing response-value-list for response body
-        applicationData["applications"].forEach(applicationDataItem => {
-          approvalStatus = applicationDataItem["approval-status"];
-          if (approvalStatus == "APPROVED") {
-            applicationName = applicationDataItem["application-name"]
-            releaseNumber = applicationDataItem["application-release-number"]
-            reponseValue = new responseValue(applicationName, releaseNumber, getDataType);
-            responseValueList.push(reponseValue);
-          }
-        });
+exports.listApprovedApplicationsInGenericRepresentation = async function (operationServerName) {
+  let consequentActionList = [];
+  let responseValueList = [];
+  let operationServerDataType = '';
+  let profiles = await ProfileCollection.getProfileListForProfileNameAsync(applicationProfile.profileNameEnum.RESPONSE_PROFILE);
+  for (let profile of profiles) {
+      let capability = profile["response-profile-1-0:response-profile-pac"]["response-profile-capability"];
+      if (operationServerName === capability["operation-name"]) {
+          // get data type when operation name is equal to ​/v1​/list-approved-applications-in-generic-representation
+          operationServerDataType = capability["datatype"];
+          break;
       }
-      /****************************************************************************************
-       * Setting 'application/json' response body
-       ****************************************************************************************/
-      response['application/json'] = onfAttributeFormatter.modifyJsonObjectKeysToKebabCase({
-        consequentActionList,
-        responseValueList
-      });
-      if (Object.keys(response).length > 0) {
-        resolve(response[Object.keys(response)[0]]);
-      } else {
-        resolve();
+  }
+  let filePath = await FileProfile.getApplicationDataFileContent();
+  let applicationData = await prepareApplicationData.readApplicationData(filePath);
+  if (applicationData !== undefined) {
+    applicationData["applications"].forEach(applicationDataItem => {
+      if ("APPROVED" === applicationDataItem["approval-status"]) {
+        let applicationName = applicationDataItem["application-name"]
+        let releaseNumber = applicationDataItem["application-release-number"]
+        responseValueList.push(new ResponseValue(applicationName, releaseNumber, operationServerDataType));
       }
-    } catch (error) {
-      console.log(error);
-    }
+    });
+  }
+  return onfAttributeFormatter.modifyJsonObjectKeysToKebabCase({
+    consequentActionList,
+    responseValueList
   });
 }
 
@@ -555,7 +530,7 @@ exports.regardApplication = function (body, user, originator, xCorrelator, trace
       let applicationNameRequestBody = body["application-name"]
       let releaseNumberRequestBody = body["release-number"]
 
-      filePath = await fileProfile.getApplicationDataFileContent()
+      filePath = await FileProfile.getApplicationDataFileContent()
       applicationData = await prepareApplicationData.readApplicationData(filePath)
       if (applicationData == undefined) {
         throw new Error("Application data does not exist")
