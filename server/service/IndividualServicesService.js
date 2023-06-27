@@ -2,46 +2,27 @@
 
 const LogicalTerminatinPointConfigurationInput = require('onf-core-model-ap/applicationPattern/onfModel/services/models/logicalTerminationPoint/ConfigurationInputWithMapping');
 const LogicalTerminationPointService = require('onf-core-model-ap/applicationPattern/onfModel/services/LogicalTerminationPointWithMappingServices');
-const LogicalTerminationPointConfigurationStatus = require('onf-core-model-ap/applicationPattern/onfModel/services/models/logicalTerminationPoint/ConfigurationStatus');
-const layerProtocol = require('onf-core-model-ap/applicationPattern/onfModel/models/LayerProtocol');
-
 const ForwardingConfigurationService = require('onf-core-model-ap/applicationPattern/onfModel/services/ForwardingConstructConfigurationServices');
 const ForwardingAutomationService = require('onf-core-model-ap/applicationPattern/onfModel/services/ForwardingConstructAutomationServices');
 const prepareForwardingAutomation = require('./individualServices/PrepareForwardingAutomation');
 const prepareForwardingConfiguration = require('./individualServices/PrepareForwardingConfiguration');
 const ConfigurationStatus = require('onf-core-model-ap/applicationPattern/onfModel/services/models/ConfigurationStatus');
-
-const httpServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/HttpServerInterface');
-const tcpServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpServerInterface');
-const operationServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/OperationServerInterface');
-const operationClientInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/OperationClientInterface');
 const httpClientInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/HttpClientInterface');
-
 const onfAttributeFormatter = require('onf-core-model-ap/applicationPattern/onfModel/utility/OnfAttributeFormatter');
-const consequentAction = require('onf-core-model-ap/applicationPattern/rest/server/responseBody/ConsequentAction');
 const ResponseValue = require('onf-core-model-ap/applicationPattern/rest/server/responseBody/ResponseValue');
-
-const onfPaths = require('onf-core-model-ap/applicationPattern/onfModel/constants/OnfPaths');
 const onfAttributes = require('onf-core-model-ap/applicationPattern/onfModel/constants/OnfAttributes');
-
-
-const fileOperation = require('onf-core-model-ap/applicationPattern/databaseDriver/JSONDriver');
 const logicalTerminationPoint = require('onf-core-model-ap/applicationPattern/onfModel/models/LogicalTerminationPoint');
 const tcpClientInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpClientInterface');
 const ForwardingDomain = require('onf-core-model-ap/applicationPattern/onfModel/models/ForwardingDomain');
 const ForwardingConstruct = require('onf-core-model-ap/applicationPattern/onfModel/models/ForwardingConstruct');
 const FcPort = require('onf-core-model-ap/applicationPattern/onfModel/models/FcPort');
-
-const profile = require('onf-core-model-ap/applicationPattern/onfModel/models/Profile');
 const applicationProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/ApplicationProfile');
 const ProfileCollection = require('onf-core-model-ap/applicationPattern/onfModel/models/ProfileCollection');
-const responseProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/ResponseProfile');
-
 const softwareUpgrade = require('./individualServices/SoftwareUpgrade');
-const TcpServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpServerInterface');
 const individualServicesOperationsMapping = require('./individualServices/IndividualServicesOperationsMapping');
 const FileProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/FileProfile');
 const prepareApplicationData = require('./individualServices/PrepareApplicationData')
+
 /**
  * Initiates process of embedding a new releasefv
  *
@@ -77,7 +58,6 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
         return;
       }
 
-      let isdataTransferRequired = true;
       let isReleaseUpdated = false;
       let isApplicationNameUpdated = false;
       let isProtocolUpdated = false;
@@ -150,7 +130,7 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
             customerJourney
           );
         }
-        softwareUpgrade.upgradeSoftwareVersion(isdataTransferRequired, user, xCorrelator, traceIndicator, customerJourney)
+        softwareUpgrade.upgradeSoftwareVersion(user, xCorrelator, traceIndicator, customerJourney, forwardingAutomationInputList.length)
           .catch(err => console.log(`upgradeSoftwareVersion failed with error: ${err}`));
       }
       resolve();
