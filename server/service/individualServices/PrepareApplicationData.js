@@ -50,6 +50,7 @@ exports.getApplicationDetails = async (applicationData, applicationNameFromReque
                         applicationStatus['approval-status'] = applicationDataItem["approval-status"]
                         applicationStatus['index'] = applicationDataIndex
                         applicationStatus['application-name'] = applicationNameFromFile
+                        applicationStatus['application-release-number'] = releaseNumberFromFile
 
                     }
                 });
@@ -65,11 +66,11 @@ exports.getApplicationDetails = async (applicationData, applicationNameFromReque
 /*
 * Delete application by name from application-data/application-data.json
 */
-exports.deleteApplication = async (applicationData, applicationNameToDelete) => {
+exports.deleteApplication = async (applicationData, applicationNameToDelete, applicationReleaseNumber) => {
     return new Promise(async function (resolve, reject) {
         try{
             const applicationDataIndex = applicationData.findIndex(applicationDataItem => {
-                return applicationDataItem["application-name"] === String(applicationNameToDelete);
+                return (applicationDataItem["application-name"] === String(applicationNameToDelete) && applicationDataItem["application-release-number"] === String(applicationReleaseNumber));
              });
              if(applicationDataIndex === -1){
                 return false;
