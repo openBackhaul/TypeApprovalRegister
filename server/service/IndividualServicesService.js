@@ -22,6 +22,7 @@ const softwareUpgrade = require('./individualServices/SoftwareUpgrade');
 const individualServicesOperationsMapping = require('./individualServices/IndividualServicesOperationsMapping');
 const FileProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/FileProfile');
 const prepareApplicationData = require('./individualServices/PrepareApplicationData')
+const createHttpError = require('http-errors');
 
 /**
  * Initiates process of embedding a new releasefv
@@ -54,7 +55,7 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
 
       const HttpClientLtpUuidFromForwarding = await resolveHttpClient('PromptForBequeathingDataCausesNewTARbeingRequestedToRedirectInfoAboutApprovals');
       if (HttpClientLtpUuidFromForwarding == undefined) {
-        reject(new Error(`The NewRelease ${applicationName} was not found.`));
+        reject(new createHttpError.BadRequest(`The NewRelease ${applicationName} was not found.`));
         return;
       }
 
@@ -199,7 +200,7 @@ exports.disregardApplication = function (body, user, originator, xCorrelator, tr
       filePath = await FileProfile.getApplicationDataFileContent()
       applicationData = await prepareApplicationData.readApplicationData(filePath)
       if (applicationData == undefined) {
-        throw new Error("Application data does not exist")
+        throw new createHttpError.InternalServerError("Application data does not exist")
       }
       applicationDetails = await prepareApplicationData.getApplicationDetails(applicationData, applicationNameRequestBody, releaseNumberRequestBody)
       if (applicationDetails['is-application-exist']) {
@@ -211,7 +212,7 @@ exports.disregardApplication = function (body, user, originator, xCorrelator, tr
       }
       resolve();
     } catch (error) {
-      reject();
+      reject(error);
     }
   });
 }
@@ -246,7 +247,7 @@ exports.documentApprovalStatus = function (body, user, originator, xCorrelator, 
       filePath = await FileProfile.getApplicationDataFileContent()
       applicationData = await prepareApplicationData.readApplicationData(filePath)
       if (applicationData == undefined) {
-        throw new Error("Application data does not exist")
+        throw new createHttpError.InternalServerError("Application data does not exist")
       }
       applicationDetails = await prepareApplicationData.getApplicationDetails(applicationData, applicationNameFromRequestBody, releaseNumberFromRequestBody)
       if (applicationDetails['is-application-exist']) {
@@ -325,7 +326,7 @@ exports.listApplications = function (user, originator, xCorrelator, traceIndicat
           return applicationDataItem;
         });
       } else {
-        throw new Error("Application data does not exist")
+        throw new createHttpError.InternalServerError("Application data does not exist")
       }
 
       /****************************************************************************************
@@ -338,7 +339,7 @@ exports.listApplications = function (user, originator, xCorrelator, traceIndicat
         resolve();
       }
     } catch (error) {
-      reject();
+      reject(error);
     }
   });
 }
@@ -415,7 +416,7 @@ exports.redirectInfoAboutApprovalStatusChanges = function (body, user, originato
       let newReleaseHttpClientLtpUuid = HttpClientLtpUuidFromForwarding[0];
       let applicatioNameFromForwarding = await httpClientInterface.getApplicationNameAsync(newReleaseHttpClientLtpUuid)
       if (applicationName !== applicatioNameFromForwarding) {
-        reject(new Error(`The subscriber-application ${applicationName} was not found.`));
+        reject(new createHttpError.BadRequest(`The subscriber-application ${applicationName} was not found.`));
         return;
       }
 
@@ -513,7 +514,7 @@ exports.regardApplication = function (body, user, originator, xCorrelator, trace
       filePath = await FileProfile.getApplicationDataFileContent()
       applicationData = await prepareApplicationData.readApplicationData(filePath)
       if (applicationData == undefined) {
-        throw new Error("Application data does not exist")
+        throw new createHttpError.InternalServerError("Application data does not exist")
       }
       applicationDetails = await prepareApplicationData.getApplicationDetails(applicationData, applicationNameRequestBody, releaseNumberRequestBody)
       if (!applicationDetails['is-application-exist']) {
@@ -549,7 +550,7 @@ exports.regardApplication = function (body, user, originator, xCorrelator, trace
 
       resolve();
     } catch (error) {
-      reject();
+      reject(error);
     }
   });
 }

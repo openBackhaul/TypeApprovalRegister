@@ -18,6 +18,7 @@ const individualServices = require('../IndividualServicesService')
 const forwardingKindNameForBequeathingDataCausesNewTAR= "PromptForBequeathingDataCausesNewTARbeingRequestedToRedirectInfoAboutApprovals"
 const fileProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/FileProfile');
 const prepareApplicationData = require('./PrepareApplicationData');
+const createHttpError = require('http-errors');
 var traceIncrementer = 1;
 
 /**
@@ -178,7 +179,7 @@ async function PromptForBequeathingDataCausesTransferOfListOfAlreadyGrantedTypeA
             filePath = await fileProfile.getApplicationDataFileContent()
             let applicationData = await prepareApplicationData.readApplicationData(filePath)
             if (applicationData == undefined) {
-                throw new Error("Application data does not exist")
+                throw new createHttpError.InternalServerError("Application data does not exist")
             }
 
             applicationDataUpdateReleaseNumberKey = applicationData['applications'].map(async function (applicationDataItem) {
