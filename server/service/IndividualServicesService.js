@@ -114,12 +114,13 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
             true);
           logicalTerminationPointConfigurationStatus.tcpClientConfigurationStatusList = [configurationStatus];
         }
-
+        
+        let forwardingAutomationInputList
         if (logicalTerminationPointConfigurationStatus != undefined) {
           /****************************************************************************************
            * Prepare attributes to automate forwarding-construct
            ****************************************************************************************/
-          let forwardingAutomationInputList = await prepareForwardingAutomation.bequeathYourDataAndDie(
+          forwardingAutomationInputList = await prepareForwardingAutomation.bequeathYourDataAndDie(
             logicalTerminationPointConfigurationStatus
           );
           ForwardingAutomationService.automateForwardingConstructAsync(
