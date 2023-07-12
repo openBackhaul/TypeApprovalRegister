@@ -12,34 +12,31 @@ const ForwardingDomain = require('onf-core-model-ap/applicationPattern/onfModel/
 const onfAttributeFormatter = require('onf-core-model-ap/applicationPattern/onfModel/utility/OnfAttributeFormatter');
 const onfAttributes = require('onf-core-model-ap/applicationPattern/onfModel/constants/OnfAttributes');
 const OperationServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/OperationServerInterface');
-const profile = require('onf-core-model-ap/applicationPattern/onfModel/models/Profile');
-const applicationProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/ApplicationProfile');
 const FcPort = require('onf-core-model-ap/applicationPattern/onfModel/models/FcPort');
-const OperationClientInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/OperationClientInterface');
 const eventDispatcher = require('onf-core-model-ap/applicationPattern/rest/client/eventDispatcher');
+const individualServices = require('../IndividualServicesService')
+const forwardingKindNameForBequeathingDataCausesNewTAR= "PromptForBequeathingDataCausesNewTARbeingRequestedToRedirectInfoAboutApprovals"
+const fileProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/FileProfile');
+const prepareApplicationData = require('./PrepareApplicationData');
+const createHttpError = require('http-errors');
+var traceIncrementer = 1;
+
 /**
  * This method performs the set of procedure to transfer the data from this version to next version 
  * of the application and bring the new release official
- * @param {boolean} isdataTransferRequired represents true if data transfer is required
  * @param {String} user User identifier from the system starting the service call
  * @param {String} xCorrelator UUID for the service execution flow that allows to correlate requests and responses
  * @param {String} traceIndicator Sequence of request numbers along the flow
  * @param {String} customerJourney Holds information supporting customer’s journey to which the execution applies
  * @returns {Promise} Promise is resolved if the operation succeeded else the Promise is rejected
  * **/
-exports.upgradeSoftwareVersion = async function (isdataTransferRequired, user, xCorrelator, traceIndicator, customerJourney) {
-    return new Promise(async function (resolve, reject) {
-        try {
-            if (isdataTransferRequired) {
-                await transferDataToTheNewRelease(user, xCorrelator, traceIndicator, customerJourney);
-            }
-            await redirectNotificationNewRelease(user, xCorrelator, traceIndicator, customerJourney);
-            await replaceOldReleaseWithNewRelease(user, xCorrelator, traceIndicator, customerJourney);
-            resolve();
-        } catch (error) {
-            reject(error);
-        }
-    });
+exports.upgradeSoftwareVersion = async function (user, xCorrelator, traceIndicator, customerJourney, _traceIncrementer) {
+    if (_traceIncrementer !== 0) {
+        traceIncrementer = _traceIncrementer;
+    }
+    await transferDataToTheNewRelease(user, xCorrelator, traceIndicator, customerJourney);
+    await redirectNotificationNewRelease(user, xCorrelator, traceIndicator, customerJourney);
+    await replaceOldReleaseWithNewRelease(user, xCorrelator, traceIndicator, customerJourney);
 }
 
 /**
@@ -53,15 +50,8 @@ exports.upgradeSoftwareVersion = async function (isdataTransferRequired, user, x
  * 2. PromptForBequeathingDataCausesTransferOfListOfAlreadyGrantedTypeApprovals
  */
 async function transferDataToTheNewRelease(user, xCorrelator, traceIndicator, customerJourney) {
-    return new Promise(async function (resolve, reject) {
-        try {
-            await PromptForBequeathingDataCausesNewTARbeingRequestedToRedirectInfoAboutApprovals(user, xCorrelator, traceIndicator, customerJourney);
-            await PromptForBequeathingDataCausesTransferOfListOfAlreadyGrantedTypeApprovals(user, xCorrelator, traceIndicator, customerJourney);
-            resolve();
-        } catch (error) {
-            reject(error);
-        }
-    });
+    await PromptForBequeathingDataCausesNewTARbeingRequestedToRedirectInfoAboutApprovals(user, xCorrelator, traceIndicator, customerJourney);
+    await PromptForBequeathingDataCausesTransferOfListOfAlreadyGrantedTypeApprovals(user, xCorrelator, traceIndicator, customerJourney);
 }
 
 /**
@@ -77,16 +67,9 @@ async function transferDataToTheNewRelease(user, xCorrelator, traceIndicator, cu
  * 3. PromptForBequeathingDataCausesEndingSubscriptionsToOldRelease
  */
 async function redirectNotificationNewRelease(user, xCorrelator, traceIndicator, customerJourney) {
-    return new Promise(async function (resolve, reject) {
-        try {
-            await PromptForBequeathingDataCausesRObeingRequestedToInquireForApplicationTypeApprovalsAtNewTAR(user, xCorrelator, traceIndicator, customerJourney);
-            await PromptForBequeathingDataCausesSubscriptionForDeregistrationNotifications(user, xCorrelator, traceIndicator, customerJourney);
-            await PromptForBequeathingDataCausesEndingSubscriptionsToOldRelease(user, xCorrelator, traceIndicator, customerJourney);
-            resolve();
-        } catch (error) {
-            reject(error);
-        }
-    });
+    await PromptForBequeathingDataCausesRObeingRequestedToInquireForApplicationTypeApprovalsAtNewTAR(user, xCorrelator, traceIndicator, customerJourney);
+    await PromptForBequeathingDataCausesSubscriptionForDeregistrationNotifications(user, xCorrelator, traceIndicator, customerJourney);
+    await PromptForBequeathingDataCausesEndingSubscriptionsToOldRelease(user, xCorrelator, traceIndicator, customerJourney);
 }
 
 /**
@@ -100,15 +83,8 @@ async function redirectNotificationNewRelease(user, xCorrelator, traceIndicator,
  * 2. PromptForBequeathingDataCausesRequestForDeregisteringOfOldRelease
  */
 async function replaceOldReleaseWithNewRelease(user, xCorrelator, traceIndicator, customerJourney) {
-    return new Promise(async function (resolve, reject) {
-        try {
-            await promptForBequeathingDataCausesRequestForBroadcastingInfoAboutServerReplacement(user, xCorrelator, traceIndicator, customerJourney);
-            await promptForBequeathingDataCausesRequestForDeregisteringOfOldRelease(user, xCorrelator, traceIndicator, customerJourney);
-            resolve();
-        } catch (error) {
-            reject(error);
-        }
-    });
+    await promptForBequeathingDataCausesRequestForBroadcastingInfoAboutServerReplacement(user, xCorrelator, traceIndicator, customerJourney);
+    await promptForBequeathingDataCausesRequestForDeregisteringOfOldRelease(user, xCorrelator, traceIndicator, customerJourney);
 }
 
 /**
@@ -123,12 +99,10 @@ async function PromptForBequeathingDataCausesNewTARbeingRequestedToRedirectInfoA
     return new Promise(async function (resolve, reject) {
         try {
             let result = true;
-            let forwardingKindNameOfTheBequeathOperation = "PromptForBequeathingDataCausesNewTARbeingRequestedToRedirectInfoAboutApprovals";
-
             /***********************************************************************************
              * Preparing requestBody and transfering the data one by one
              ************************************************************************************/
-
+            let forwardingKindNameOfTheBequeathOperation = "PromptForBequeathingDataCausesNewTARbeingRequestedToRedirectInfoAboutApprovals";
             let inquiryForApplicationTypeApprovalFCName = "RegisteringCausesInfoAboutApprovalStatusToRegistryOffice";
             let forwardingConstructInstance = await ForwardingDomain.getForwardingConstructForTheForwardingNameAsync(inquiryForApplicationTypeApprovalFCName);
             let operationClientUuidList = getFcPortOutputLogicalTerminationPointList(forwardingConstructInstance);
@@ -143,6 +117,7 @@ async function PromptForBequeathingDataCausesNewTARbeingRequestedToRedirectInfoA
                     let releaseNumber = await httpClientInterface.getReleaseNumberAsync(httpClientUuid);
                     let applicationAddress = await tcpClientInterface.getRemoteAddressAsync(tcpClientUuid);
                     let applicationPort = await tcpClientInterface.getRemotePortAsync(tcpClientUuid);
+                    let applicationProtocol = await tcpClientInterface.getRemoteProtocolAsync(tcpClientUuid);
                     let regardUpdatedApprovalOperation = await operationClientInterface.getOperationNameAsync(operationClientUuid);
                     /***********************************************************************************
                      * PromptForBequeathingDataCausesNewTARbeingRequestedToRedirectInfoAboutApprovals
@@ -154,17 +129,18 @@ async function PromptForBequeathingDataCausesNewTARbeingRequestedToRedirectInfoA
                     requestBody.subscriberOperation = regardUpdatedApprovalOperation;
                     requestBody.subscriberAddress = applicationAddress;
                     requestBody.subscriberPort = applicationPort;
+                    requestBody.subscriberProtocol = applicationProtocol
                     requestBody = onfAttributeFormatter.modifyJsonObjectKeysToKebabCase(requestBody);
                     result = await forwardRequest(
                         forwardingKindNameOfTheBequeathOperation,
                         requestBody,
                         user,
                         xCorrelator,
-                        traceIndicator,
+                        traceIndicator + "." + traceIncrementer++,
                         customerJourney
                     );
                     if (!result) {
-                        throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + requestBody;
+                        throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + JSON.stringify(requestBody);
                     }
 
                 } catch (error) {
@@ -191,52 +167,47 @@ async function PromptForBequeathingDataCausesTransferOfListOfAlreadyGrantedTypeA
     return new Promise(async function (resolve, reject) {
         try {
             let result = true;
+            let applicationName 
+            let releaseNumber
+            let approvalStatus
             let forwardingKindNameOfTheBequeathOperation = "PromptForBequeathingDataCausesTransferOfListOfAlreadyGrantedTypeApprovals";
 
             /***********************************************************************************
              * Preparing requestBody and transfering the data one by one
              ************************************************************************************/
-
-            let applicationProfileList = await profile.getUuidListAsync(applicationProfile.profileNameEnum.APPLICATION_PROFILE);
-            for (let i = 0; i < applicationProfileList.length; i++) {
-                try {
-                    let uuid = applicationProfileList[i];
-                    let applicationName = await applicationProfile.getApplicationNameAsync(uuid);
-                    let releaseNumber = await applicationProfile.getApplicationReleaseNumberAsync(uuid);
-                    let approvalStatus = await applicationProfile.getApprovalStatusAsync(uuid);
-                    let approvalStatusJsonObject = applicationProfile.ApplicationProfilePac.ApplicationProfileConfiguration.approvalStatusEnum;
-                    for (let approvalStatusKey in approvalStatusJsonObject) {
-                        if (approvalStatusJsonObject[approvalStatusKey] == approvalStatus) {
-                            approvalStatus = approvalStatusKey;
-                        }
-                    }
-
-                    /***********************************************************************************
-                     * PromptForBequeathingDataCausesTransferOfListOfAlreadyGrantedTypeApprovals
-                     *   /v1/document-approval-status
-                     ************************************************************************************/
-                    let requestBody = {};
-                    requestBody.applicationName = applicationName;
-                    requestBody.applicationReleaseNumber = releaseNumber;
-                    requestBody.approvalStatus = approvalStatus;
-                    requestBody = onfAttributeFormatter.modifyJsonObjectKeysToKebabCase(requestBody);
-                    result = await forwardRequest(
-                        forwardingKindNameOfTheBequeathOperation,
-                        requestBody,
-                        user,
-                        xCorrelator,
-                        traceIndicator,
-                        customerJourney
-                    );
-                    if (!result) {
-                        throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + requestBody;
-                    }
-
-                } catch (error) {
-                    console.log(error);
-                    throw "operation is not success";
-                }
+            
+            filePath = await fileProfile.getApplicationDataFileContent()
+            let applicationData = await prepareApplicationData.readApplicationData(filePath)
+            if (applicationData == undefined) {
+                throw new createHttpError.InternalServerError("Application data does not exist")
             }
+
+            applicationDataUpdateReleaseNumberKey = applicationData['applications'].map(async function (applicationDataItem) {
+                applicationName = applicationDataItem['application-name'];
+                releaseNumber = applicationDataItem['application-release-number'];
+                approvalStatus = applicationDataItem['approval-status'];
+
+                /***********************************************************************************
+                 * PromptForBequeathingDataCausesTransferOfListOfAlreadyGrantedTypeApprovals
+                 *   /v1/document-approval-status
+                 ************************************************************************************/
+                let requestBody = {};
+                requestBody.applicationName = applicationName;
+                requestBody.releaseNumber = releaseNumber;
+                requestBody.approvalStatus = approvalStatus;
+                requestBody = onfAttributeFormatter.modifyJsonObjectKeysToKebabCase(requestBody);
+                result = await forwardRequest(
+                    forwardingKindNameOfTheBequeathOperation,
+                    requestBody,
+                    user,
+                    xCorrelator,
+                    traceIndicator + "." + traceIncrementer++,
+                    customerJourney
+                );
+                if (!result) {
+                    throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + JSON.stringify(requestBody);
+                }
+            });
             resolve(result);
         } catch (error) {
             reject(error);
@@ -257,20 +228,24 @@ async function PromptForBequeathingDataCausesRObeingRequestedToInquireForApplica
         try {
             let result = true;
             let forwardingKindNameOfTheBequeathOperation = "PromptForBequeathingDataCausesRObeingRequestedToInquireForApplicationTypeApprovalsAtNewTAR";
-
             /***********************************************************************************
              * Preparing requestBody 
              ************************************************************************************/
             try {
-
-                let newReleaseHttpClientUuid = await httpClientInterface.getHttpClientUuidAsync("NewRelease");
-                let newReleaseTcpClientUuid = (await logicalTerminationPoint.getServerLtpListAsync(newReleaseHttpClientUuid))[0];
+                let HttpClientLtpUuidFromForwarding  = await individualServices.resolveHttpClientLtpUuidFromForwardingName(forwardingKindNameForBequeathingDataCausesNewTAR)
+                if (HttpClientLtpUuidFromForwarding == undefined) {
+                    reject(new Error(`The NewRelease ${applicationName} was not found.`));
+                    return;
+                }
+                let newReleaseHttpClientLtpUuid = HttpClientLtpUuidFromForwarding[0];
+                let newReleaseTcpClientUuid = (await logicalTerminationPoint.getServerLtpListAsync(newReleaseHttpClientLtpUuid))[0];
 
                 let applicationName = await httpServerInterface.getApplicationNameAsync();
-                let releaseNumber = await httpClientInterface.getReleaseNumberAsync(newReleaseHttpClientUuid);
-                let regardApplicationOperation = await OperationServerInterface.getOperationNameAsync("tar-0-0-1-op-s-3001");
+                let releaseNumber = await httpClientInterface.getReleaseNumberAsync(newReleaseHttpClientLtpUuid);
+                let regardApplicationOperation = await OperationServerInterface.getOperationNameAsync("tar-2-0-1-op-s-is-001");
                 let applicationAddress = await tcpClientInterface.getRemoteAddressAsync(newReleaseTcpClientUuid);
                 let applicationPort = await tcpClientInterface.getRemotePortAsync(newReleaseTcpClientUuid);
+                let applicationProtocol = await tcpClientInterface.getRemoteProtocolAsync(newReleaseTcpClientUuid);
 
                 /***********************************************************************************
                  * PromptForBequeathingDataCausesRObeingRequestedToInquireForApplicationTypeApprovalsAtNewTAR
@@ -282,17 +257,18 @@ async function PromptForBequeathingDataCausesRObeingRequestedToInquireForApplica
                 requestBody.approvalOperation = regardApplicationOperation;
                 requestBody.approvalApplicationAddress = applicationAddress;
                 requestBody.approvalApplicationPort = applicationPort;
+                requestBody.approvalApplicationProtocol = applicationProtocol;
                 requestBody = onfAttributeFormatter.modifyJsonObjectKeysToKebabCase(requestBody);
                 result = await forwardRequest(
                     forwardingKindNameOfTheBequeathOperation,
                     requestBody,
                     user,
                     xCorrelator,
-                    traceIndicator,
+                    traceIndicator + "." + traceIncrementer++,
                     customerJourney
                 );
                 if (!result) {
-                    throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + requestBody;
+                    throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + JSON.stringify(requestBody);
                 }
 
             } catch (error) {
@@ -320,20 +296,24 @@ async function PromptForBequeathingDataCausesSubscriptionForDeregistrationNotifi
         try {
             let result = true;
             let forwardingKindNameOfTheBequeathOperation = "PromptForBequeathingDataCausesSubscriptionForDeregistrationNotifications";
-
             /***********************************************************************************
              * Preparing requestBody 
              ************************************************************************************/
             try {
-
-                let newReleaseHttpClientUuid = await httpClientInterface.getHttpClientUuidAsync("NewRelease");
-                let newReleaseTcpClientUuid = (await logicalTerminationPoint.getServerLtpListAsync(newReleaseHttpClientUuid))[0];
+                let HttpClientLtpUuidFromForwarding  = await individualServices.resolveHttpClientLtpUuidFromForwardingName(forwardingKindNameForBequeathingDataCausesNewTAR)
+                if (HttpClientLtpUuidFromForwarding == undefined) {
+                    reject(new Error(`The NewRelease ${applicationName} was not found.`));
+                    return;
+                }
+                let newReleaseHttpClientLtpUuid = HttpClientLtpUuidFromForwarding[0];
+                let newReleaseTcpClientUuid = (await logicalTerminationPoint.getServerLtpListAsync(newReleaseHttpClientLtpUuid))[0];
 
                 let applicationName = await httpServerInterface.getApplicationNameAsync();
-                let releaseNumber = await httpClientInterface.getReleaseNumberAsync(newReleaseHttpClientUuid);
-                let disregardApplicationOperation = await OperationServerInterface.getOperationNameAsync("tar-0-0-1-op-s-3002");
+                let releaseNumber = await httpClientInterface.getReleaseNumberAsync(newReleaseHttpClientLtpUuid);
+                let disregardApplicationOperation = await OperationServerInterface.getOperationNameAsync("tar-2-0-1-op-s-is-002");
                 let applicationAddress = await tcpClientInterface.getRemoteAddressAsync(newReleaseTcpClientUuid);
                 let applicationPort = await tcpClientInterface.getRemotePortAsync(newReleaseTcpClientUuid);
+                let applicationProtocol = await tcpClientInterface.getRemoteProtocolAsync(newReleaseTcpClientUuid)
 
                 /***********************************************************************************
                  * PromptForBequeathingDataCausesSubscriptionForDeregistrationNotifications
@@ -345,17 +325,18 @@ async function PromptForBequeathingDataCausesSubscriptionForDeregistrationNotifi
                 requestBody.subscriberOperation = disregardApplicationOperation;
                 requestBody.subscriberAddress = applicationAddress;
                 requestBody.subscriberPort = applicationPort;
+                requestBody.subscriberProtocol = applicationProtocol
                 requestBody = onfAttributeFormatter.modifyJsonObjectKeysToKebabCase(requestBody);
                 result = await forwardRequest(
                     forwardingKindNameOfTheBequeathOperation,
                     requestBody,
                     user,
                     xCorrelator,
-                    traceIndicator,
+                    traceIndicator + "." + traceIncrementer++,
                     customerJourney
                 );
                 if (!result) {
-                    throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + requestBody;
+                    throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + JSON.stringify(requestBody);
                 }
 
             } catch (error) {
@@ -383,10 +364,16 @@ async function PromptForBequeathingDataCausesEndingSubscriptionsToOldRelease(use
         try {
             let result = true;
             let forwardingKindNameOfTheBequeathOperation = "PromptForBequeathingDataCausesEndingSubscriptionsToOldRelease";
-
+            let forwardingKindNameOfTheNotifyApprovals= "PromptForBequeathingDataCausesRObeingRequestedToInquireForApplicationTypeApprovalsAtNewTAR";
+            let forwardingKindNameOfTheNotifyWithdrawnApprovals= "PromptForBequeathingDataCausesSubscriptionForDeregistrationNotifications";
+            
+            let operationClientUuidValueOfnotifyApprovals = await individualServices.resolveHttpClientLtpUuidFromForwardingName(forwardingKindNameOfTheNotifyApprovals);
+            let operationClientUuidOfnotifyApprovals = operationClientUuidValueOfnotifyApprovals[1];
+            let operationClientUuidValuenotifyWithdrawnApprovals = await individualServices.resolveHttpClientLtpUuidFromForwardingName(forwardingKindNameOfTheNotifyWithdrawnApprovals)
+            let operationClientUuidOfnotifyWithdrawnApprovals = operationClientUuidValuenotifyWithdrawnApprovals[1];
             let listOfOperationToBeUnsubscribed = [];
-            let approvalOperationName = await operationClientInterface.getOperationNameAsync("tar-0-0-1-op-c-3020");
-            let deregistrationOperationName = await operationClientInterface.getOperationNameAsync("tar-0-0-1-op-c-3021");
+            let approvalOperationName = await operationClientInterface.getOperationNameAsync(operationClientUuidOfnotifyApprovals);
+            let deregistrationOperationName = await operationClientInterface.getOperationNameAsync(operationClientUuidOfnotifyWithdrawnApprovals);
             listOfOperationToBeUnsubscribed.push(approvalOperationName);
             listOfOperationToBeUnsubscribed.push(deregistrationOperationName);
             /***********************************************************************************
@@ -413,11 +400,11 @@ async function PromptForBequeathingDataCausesEndingSubscriptionsToOldRelease(use
                         requestBody,
                         user,
                         xCorrelator,
-                        traceIndicator,
+                        traceIndicator + "." + traceIncrementer++,
                         customerJourney
                     );
                     if (!result) {
-                        throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + requestBody;
+                        throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + JSON.stringify(requestBody);
                     }
                 }
 
@@ -451,37 +438,45 @@ async function promptForBequeathingDataCausesRequestForBroadcastingInfoAboutServ
              * Preparing requestBody 
              ************************************************************************************/
             try {
-
-                let newReleaseHttpClientUuid = await httpClientInterface.getHttpClientUuidAsync("NewRelease");
-                let newReleaseTcpClientUuid = (await logicalTerminationPoint.getServerLtpListAsync(newReleaseHttpClientUuid))[0];
+                let HttpClientLtpUuidFromForwarding  = await individualServices.resolveHttpClientLtpUuidFromForwardingName(forwardingKindNameForBequeathingDataCausesNewTAR)
+                if (HttpClientLtpUuidFromForwarding == undefined) {
+                    reject(new Error(`The NewRelease ${applicationName} was not found.`));
+                    return;
+                }
+                let newReleaseHttpClientLtpUuid = HttpClientLtpUuidFromForwarding[0];
+                let newReleaseTcpClientUuid = (await logicalTerminationPoint.getServerLtpListAsync(newReleaseHttpClientLtpUuid))[0];
 
                 let applicationName = await httpServerInterface.getApplicationNameAsync();
                 let oldReleaseNumber = await httpServerInterface.getReleaseNumberAsync();
-                let newReleaseNumber = await httpClientInterface.getReleaseNumberAsync(newReleaseHttpClientUuid);
+                let newApplicationName = await httpClientInterface.getApplicationNameAsync(newReleaseHttpClientLtpUuid)
+                let newReleaseNumber = await httpClientInterface.getReleaseNumberAsync(newReleaseHttpClientLtpUuid);
                 let applicationAddress = await tcpClientInterface.getRemoteAddressAsync(newReleaseTcpClientUuid);
                 let applicationPort = await tcpClientInterface.getRemotePortAsync(newReleaseTcpClientUuid);
-
+                let applicationProtocol = await tcpClientInterface.getRemoteProtocolAsync(newReleaseTcpClientUuid);
                 /***********************************************************************************
                  * PromptForBequeathingDataCausesRequestForBroadcastingInfoAboutServerReplacement
                  *   /v1/relay-server-replacement
                  ************************************************************************************/
                 let requestBody = {};
-                requestBody.applicationName = applicationName;
-                requestBody.oldApplicationReleaseNumber = oldReleaseNumber;
-                requestBody.newApplicationReleaseNumber = newReleaseNumber;
-                requestBody.newApplicationAddress = applicationAddress;
-                requestBody.newApplicationPort = applicationPort;
+                requestBody.currentApplicationName = applicationName;
+                requestBody.currentReleaseNumber = oldReleaseNumber;
+                requestBody.futureReleaseNumber = newReleaseNumber;
+                requestBody.futureApplicationName = newApplicationName;
+                requestBody.futureAddress = applicationAddress;
+                requestBody.futurePort= applicationPort;
+                requestBody.futureProtocol= applicationProtocol;
+
                 requestBody = onfAttributeFormatter.modifyJsonObjectKeysToKebabCase(requestBody);
                 result = await forwardRequest(
                     forwardingKindNameOfTheBequeathOperation,
                     requestBody,
                     user,
                     xCorrelator,
-                    traceIndicator,
+                    traceIndicator + "." + traceIncrementer++,
                     customerJourney
                 );
                 if (!result) {
-                    throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + requestBody;
+                    throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + JSON.stringify(requestBody);
                 }
 
             } catch (error) {
@@ -513,30 +508,48 @@ async function promptForBequeathingDataCausesRequestForDeregisteringOfOldRelease
             /***********************************************************************************
              * Preparing requestBody 
              ************************************************************************************/
-            try {
-                let newReleaseHttpClientUuid = await httpClientInterface.getHttpClientUuidAsync("NewRelease");
-                let oldApplicationName = await httpServerInterface.getApplicationNameAsync();
+            try {              
+                let HttpClientLtpUuidFromForwarding  = await individualServices.resolveHttpClientLtpUuidFromForwardingName(forwardingKindNameForBequeathingDataCausesNewTAR)
+                if (HttpClientLtpUuidFromForwarding == undefined) {
+                    reject(new Error(`The NewRelease ${applicationName} was not found.`));
+                    return;
+                }
+                let newReleaseHttpClientLtpUuid = HttpClientLtpUuidFromForwarding[0];
+                let newReleaseTcpClientUuid = (await logicalTerminationPoint.getServerLtpListAsync(newReleaseHttpClientLtpUuid))[0];
+
+                let applicationName = await httpServerInterface.getApplicationNameAsync();
                 let oldReleaseNumber = await httpServerInterface.getReleaseNumberAsync();
-                let newReleaseNumber = await httpClientInterface.getReleaseNumberAsync(newReleaseHttpClientUuid);
+                let newApplicationName = await httpClientInterface.getApplicationNameAsync(newReleaseHttpClientLtpUuid)
+                let newReleaseNumber= await httpServerInterface.getReleaseNumberAsync(newReleaseHttpClientLtpUuid)
+                let applicationAddress = await tcpClientInterface.getRemoteAddressAsync(newReleaseTcpClientUuid);
+                let applicationPort = await tcpClientInterface.getRemotePortAsync(newReleaseTcpClientUuid);
+                let applicationProtocol = await tcpClientInterface.getRemoteProtocolAsync(newReleaseTcpClientUuid);
+
                 if (oldReleaseNumber != newReleaseNumber) {
                     /***********************************************************************************
                      * PromptForBequeathingDataCausesRequestForBroadcastingInfoAboutServerReplacement
                      *   /v1/relay-server-replacement
                      ************************************************************************************/
                     let requestBody = {};
-                    requestBody.applicationName = oldApplicationName;
-                    requestBody.applicationReleaseNumber = oldReleaseNumber;
+                    requestBody.currentApplicationName = applicationName;
+                    requestBody.currentReleaseNumber = oldReleaseNumber;
+                    requestBody.futureReleaseNumber = newReleaseNumber;
+                    requestBody.futureApplicationName = newApplicationName;
+                    requestBody.futureAddress = applicationAddress;
+                    requestBody.futurePort= applicationPort;
+                    requestBody.futureProtocol= applicationProtocol;
+
                     requestBody = onfAttributeFormatter.modifyJsonObjectKeysToKebabCase(requestBody);
                     result = await forwardRequest(
                         forwardingKindNameOfTheBequeathOperation,
                         requestBody,
                         user,
                         xCorrelator,
-                        traceIndicator,
+                        traceIndicator + "." + traceIncrementer++,
                         customerJourney
                     );
                     if (!result) {
-                        throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + requestBody;
+                        throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + JSON.stringify(requestBody);
                     }
                 }
             } catch (error) {
