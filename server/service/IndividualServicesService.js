@@ -2,46 +2,28 @@
 
 const LogicalTerminatinPointConfigurationInput = require('onf-core-model-ap/applicationPattern/onfModel/services/models/logicalTerminationPoint/ConfigurationInputWithMapping');
 const LogicalTerminationPointService = require('onf-core-model-ap/applicationPattern/onfModel/services/LogicalTerminationPointWithMappingServices');
-const LogicalTerminationPointConfigurationStatus = require('onf-core-model-ap/applicationPattern/onfModel/services/models/logicalTerminationPoint/ConfigurationStatus');
-const layerProtocol = require('onf-core-model-ap/applicationPattern/onfModel/models/LayerProtocol');
-
 const ForwardingConfigurationService = require('onf-core-model-ap/applicationPattern/onfModel/services/ForwardingConstructConfigurationServices');
 const ForwardingAutomationService = require('onf-core-model-ap/applicationPattern/onfModel/services/ForwardingConstructAutomationServices');
 const prepareForwardingAutomation = require('./individualServices/PrepareForwardingAutomation');
 const prepareForwardingConfiguration = require('./individualServices/PrepareForwardingConfiguration');
 const ConfigurationStatus = require('onf-core-model-ap/applicationPattern/onfModel/services/models/ConfigurationStatus');
-
-const httpServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/HttpServerInterface');
-const tcpServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpServerInterface');
-const operationServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/OperationServerInterface');
-const operationClientInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/OperationClientInterface');
 const httpClientInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/HttpClientInterface');
-
 const onfAttributeFormatter = require('onf-core-model-ap/applicationPattern/onfModel/utility/OnfAttributeFormatter');
-const consequentAction = require('onf-core-model-ap/applicationPattern/rest/server/responseBody/ConsequentAction');
-const responseValue = require('onf-core-model-ap/applicationPattern/rest/server/responseBody/ResponseValue');
-
-const onfPaths = require('onf-core-model-ap/applicationPattern/onfModel/constants/OnfPaths');
+const ResponseValue = require('onf-core-model-ap/applicationPattern/rest/server/responseBody/ResponseValue');
 const onfAttributes = require('onf-core-model-ap/applicationPattern/onfModel/constants/OnfAttributes');
-
-
-const fileOperation = require('onf-core-model-ap/applicationPattern/databaseDriver/JSONDriver');
 const logicalTerminationPoint = require('onf-core-model-ap/applicationPattern/onfModel/models/LogicalTerminationPoint');
 const tcpClientInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpClientInterface');
 const ForwardingDomain = require('onf-core-model-ap/applicationPattern/onfModel/models/ForwardingDomain');
 const ForwardingConstruct = require('onf-core-model-ap/applicationPattern/onfModel/models/ForwardingConstruct');
 const FcPort = require('onf-core-model-ap/applicationPattern/onfModel/models/FcPort');
-
-const profile = require('onf-core-model-ap/applicationPattern/onfModel/models/Profile');
 const applicationProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/ApplicationProfile');
 const ProfileCollection = require('onf-core-model-ap/applicationPattern/onfModel/models/ProfileCollection');
-const responseProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/ResponseProfile');
-
 const softwareUpgrade = require('./individualServices/SoftwareUpgrade');
-const TcpServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpServerInterface');
 const individualServicesOperationsMapping = require('./individualServices/IndividualServicesOperationsMapping');
-const fileProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/FileProfile');
+const FileProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/FileProfile');
 const prepareApplicationData = require('./individualServices/PrepareApplicationData')
+const createHttpError = require('http-errors');
+
 /**
  * Initiates process of embedding a new releasefv
  *
@@ -70,14 +52,13 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
        * Prepare logicalTerminatinPointConfigurationInput object to 
        * configure logical-termination-point
        ****************************************************************************************/
-      
+
       const HttpClientLtpUuidFromForwarding = await resolveHttpClient('PromptForBequeathingDataCausesNewTARbeingRequestedToRedirectInfoAboutApprovals');
       if (HttpClientLtpUuidFromForwarding == undefined) {
-        reject(new Error(`The NewRelease ${applicationName} was not found.`));
+        reject(new createHttpError.BadRequest(`The NewRelease ${applicationName} was not found.`));
         return;
       }
 
-      let isdataTransferRequired = true;
       let isReleaseUpdated = false;
       let isApplicationNameUpdated = false;
       let isProtocolUpdated = false;
@@ -87,15 +68,15 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
       let logicalTerminationPointConfigurationStatus = {};
       let newReleaseHttpClientLtpUuid = HttpClientLtpUuidFromForwarding[0];
       if (newReleaseHttpClientLtpUuid != undefined) {
-        
+
         let currentReleaseNumber = await httpClientInterface.getReleaseNumberAsync(newReleaseHttpClientLtpUuid)
         let currentApplicationName = await httpClientInterface.getApplicationNameAsync(newReleaseHttpClientLtpUuid)
-        
-        if(currentReleaseNumber != releaseNumber){
+
+        if (currentReleaseNumber != releaseNumber) {
           isReleaseUpdated = await httpClientInterface.setReleaseNumberAsync(newReleaseHttpClientLtpUuid, releaseNumber);
         }
 
-        if(currentApplicationName != applicationName){
+        if (currentApplicationName != applicationName) {
           isApplicationNameUpdated = await httpClientInterface.setApplicationNameAsync(newReleaseHttpClientLtpUuid, applicationName);
         }
 
@@ -114,21 +95,16 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
         let currentRemoteAddress = await tcpClientInterface.getRemoteAddressAsync(newReleaseTcpClientUuid)
         let currentRemotePort = await tcpClientInterface.getRemotePortAsync(newReleaseTcpClientUuid)
 
-        if(currentRemoteProtocol != applicationProtocol){
+        if (currentRemoteProtocol != applicationProtocol) {
           isProtocolUpdated = await tcpClientInterface.setRemoteProtocolAsync(newReleaseTcpClientUuid, applicationProtocol);
         }
 
-        if(JSON.stringify(currentRemoteAddress) != JSON.stringify(applicationAddress)){
+        if (JSON.stringify(currentRemoteAddress) != JSON.stringify(applicationAddress)) {
           isAddressUpdated = await tcpClientInterface.setRemoteAddressAsync(newReleaseTcpClientUuid, applicationAddress);
         }
 
-        if(currentRemotePort != applicationPort){
+        if (currentRemotePort != applicationPort) {
           isPortUpdated = await tcpClientInterface.setRemotePortAsync(newReleaseTcpClientUuid, applicationPort);
-        }
-        let serverAddress = await tcpServerInterface.getLocalAddressOfTheProtocol(applicationProtocol);
-        let serverPort = await tcpServerInterface.getLocalPortOfTheProtocol(applicationProtocol);
-        if (JSON.stringify(applicationAddress ) == JSON.stringify(serverAddress) && applicationPort === serverPort) {
-          isdataTransferRequired = false;
         }
 
         if (isProtocolUpdated || isAddressUpdated || isPortUpdated) {
@@ -138,12 +114,13 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
             true);
           logicalTerminationPointConfigurationStatus.tcpClientConfigurationStatusList = [configurationStatus];
         }
-
+        
+        let forwardingAutomationInputList
         if (logicalTerminationPointConfigurationStatus != undefined) {
           /****************************************************************************************
            * Prepare attributes to automate forwarding-construct
            ****************************************************************************************/
-          let forwardingAutomationInputList = await prepareForwardingAutomation.bequeathYourDataAndDie(
+          forwardingAutomationInputList = await prepareForwardingAutomation.bequeathYourDataAndDie(
             logicalTerminationPointConfigurationStatus
           );
           ForwardingAutomationService.automateForwardingConstructAsync(
@@ -154,9 +131,9 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
             traceIndicator,
             customerJourney
           );
-         }
-         softwareUpgrade.upgradeSoftwareVersion(isdataTransferRequired, user, xCorrelator, traceIndicator, customerJourney)
-         .catch(err => console.log(`upgradeSoftwareVersion failed with error: ${err}`)); 
+        }
+        softwareUpgrade.upgradeSoftwareVersion(user, xCorrelator, traceIndicator, customerJourney, forwardingAutomationInputList.length)
+          .catch(err => console.log(`upgradeSoftwareVersion failed with error: ${err}`));
       }
       resolve();
     } catch (error) {
@@ -213,35 +190,30 @@ exports.disregardApplication = function (body, user, originator, xCorrelator, tr
        * Setting up required local variables from the request body
        ****************************************************************************************/
       let applicationData = []
-      let uuid
       let filePath
       let applicationNameRequestBody = body["application-name"];
       let releaseNumberRequestBody = body["release-number"];
-      let checkApplicationExists
+      let applicationDetails
 
       /****************************************************************************************
        * Preparing response-value-list for response body
-       ****************************************************************************************/      
-      let profileUuid = await profile.getUuidListAsync(profile.profileNameEnum.FILE_PROFILE);
-      for (let profileUuidIndex = 0; profileUuidIndex < profileUuid.length; profileUuidIndex++) {
-        uuid = profileUuid[profileUuidIndex];
-        filePath = await fileProfile.getFilePath(uuid)        
-        applicationData = await prepareApplicationData.readApplicationData(filePath)
-        if(applicationData == undefined){
-          throw new Error("File path does not exist")
+       ****************************************************************************************/
+      filePath = await FileProfile.getApplicationDataFileContent()
+      applicationData = await prepareApplicationData.readApplicationData(filePath)
+      if (applicationData == undefined) {
+        throw new createHttpError.InternalServerError("Application data does not exist")
+      }
+      applicationDetails = await prepareApplicationData.getApplicationDetails(applicationData, applicationNameRequestBody, releaseNumberRequestBody)
+      if (applicationDetails['is-application-exist']) {
+        prepareApplicationData.deleteApplication(applicationData["applications"], applicationDetails['application-name'], applicationDetails["application-release-number"])
+        let applicationDataToJson = {
+          "applications": applicationData["applications"]
         }
-        checkApplicationExists = await prepareApplicationData.isApplicationExist(applicationData, applicationNameRequestBody, releaseNumberRequestBody)
-        if(checkApplicationExists['is-application-exist']){
-          prepareApplicationData.deleteApplication(applicationData["applications"], checkApplicationExists['application-name'])
-          let applicationDataToJson = {
-            "applications": applicationData["applications"]
-          }
-          prepareApplicationData.addAndUpdateApplicationData(filePath,applicationDataToJson)
-        }
+        prepareApplicationData.addAndUpdateApplicationData(filePath, applicationDataToJson)
       }
       resolve();
     } catch (error) {
-      reject();
+      reject(error);
     }
   });
 }
@@ -264,45 +236,37 @@ exports.documentApprovalStatus = function (body, user, originator, xCorrelator, 
        * Setting up required local variables from the request body
        ****************************************************************************************/
       let applicationData = []
-      let uuid
       let filePath
       let applicationNameFromRequestBody = body["application-name"];
       let releaseNumberFromRequestBody = body["release-number"];
       let approvalStatusFromRequestBody = body["approval-status"];
-      let applicationStatus
+      let applicationDetails
 
       /****************************************************************************************
        * Preparing response-value-list for response body
-       ****************************************************************************************/      
-      let profileUuid = await profile.getUuidListAsync(profile.profileNameEnum.FILE_PROFILE);
-      for (let profileUuidIndex = 0; profileUuidIndex < profileUuid.length; profileUuidIndex++) {
-        uuid = profileUuid[profileUuidIndex];
-        filePath = await fileProfile.getFilePath(uuid)     
-        
-        applicationData = await prepareApplicationData.readApplicationData(filePath)
-        if(applicationData == undefined){
-          throw new Error("File path does not exist")
-        }
-        applicationStatus = await prepareApplicationData.isApplicationExist(applicationData, applicationNameFromRequestBody, releaseNumberFromRequestBody)
-
-
-        if(applicationStatus['is-application-exist']){
-          // If there is instance available for this application + release-number combination, update the “approval-status” of the instance
-          if(approvalStatusFromRequestBody != applicationStatus['approval-status']){
-            let applicationStatusIndex = applicationStatus['index']
-            applicationData["applications"][applicationStatusIndex]["approval-status"] = approvalStatusFromRequestBody
-            prepareApplicationData.addAndUpdateApplicationData(filePath, applicationData)
-          }
-        }else{
-          // If there is no instance available for this application + release-number combination, create a instances
-          let newApplicationData = {
-            "application-name": applicationNameFromRequestBody,
-            "application-release-number": releaseNumberFromRequestBody,
-            "approval-status": approvalStatusFromRequestBody
-          }
-          applicationData["applications"].push(newApplicationData)
+       ****************************************************************************************/
+      filePath = await FileProfile.getApplicationDataFileContent()
+      applicationData = await prepareApplicationData.readApplicationData(filePath)
+      if (applicationData == undefined) {
+        throw new createHttpError.InternalServerError("Application data does not exist")
+      }
+      applicationDetails = await prepareApplicationData.getApplicationDetails(applicationData, applicationNameFromRequestBody, releaseNumberFromRequestBody)
+      if (applicationDetails['is-application-exist']) {
+        // If there is instance available for this application + release-number combination, update the “approval-status” of the instance
+        if (approvalStatusFromRequestBody != applicationDetails['approval-status']) {
+          let applicationDetailsIndex = applicationDetails['index']
+          applicationData["applications"][applicationDetailsIndex]["approval-status"] = approvalStatusFromRequestBody
           prepareApplicationData.addAndUpdateApplicationData(filePath, applicationData)
         }
+      } else {
+        // If there is no instance available for this application + release-number combination, create a instances
+        let newApplicationData = {
+          "application-name": applicationNameFromRequestBody,
+          "application-release-number": releaseNumberFromRequestBody,
+          "approval-status": approvalStatusFromRequestBody
+        }
+        applicationData["applications"].push(newApplicationData)
+        prepareApplicationData.addAndUpdateApplicationData(filePath, applicationData)
       }
 
       /****************************************************************************************
@@ -348,40 +312,35 @@ exports.listApplications = function (user, originator, xCorrelator, traceIndicat
        * Preparing response body
        ****************************************************************************************/
       let applicationData = []
-      let uuid
       let filePath
       let applicationDataUpdateReleaseNumberKey
 
       /****************************************************************************************
        * Preparing response-value-list for response body
-       ****************************************************************************************/      
-      let profileUuid = await profile.getUuidListAsync(profile.profileNameEnum.FILE_PROFILE);
-      for (let profileUuidIndex = 0; profileUuidIndex < profileUuid.length; profileUuidIndex++) {
-        uuid = profileUuid[profileUuidIndex];
-        filePath = await fileProfile.getFilePath(uuid)
-        applicationData = await prepareApplicationData.readApplicationData(filePath)
-        if(applicationData != undefined){
-        applicationDataUpdateReleaseNumberKey = applicationData['applications'].map(function(applicationDataItem) {
+       ****************************************************************************************/
+      filePath = await FileProfile.getApplicationDataFileContent()
+      applicationData = await prepareApplicationData.readApplicationData(filePath)
+      if (applicationData != undefined) {
+        applicationDataUpdateReleaseNumberKey = applicationData['applications'].map(function (applicationDataItem) {
           applicationDataItem['release-number'] = applicationDataItem['application-release-number']; // Assign new key
           delete applicationDataItem['application-release-number']; // Delete old key
           return applicationDataItem;
         });
-      }else{
-          throw new Error("File path does not exist")
+      } else {
+        throw new createHttpError.InternalServerError("Application data does not exist")
       }
-          }
 
       /****************************************************************************************
        * Setting 'application/json' response body
        ****************************************************************************************/
       response['application/json'] = applicationDataUpdateReleaseNumberKey;
-    if (Object.keys(response).length > 0) {
-      resolve(response[Object.keys(response)[0]]);
-    } else {
-      resolve();
-    }
+      if (Object.keys(response).length > 0) {
+        resolve(response[Object.keys(response)[0]]);
+      } else {
+        resolve();
+      }
     } catch (error) {
-      reject();
+      reject(error);
     }
   });
 }
@@ -390,67 +349,35 @@ exports.listApplications = function (user, originator, xCorrelator, traceIndicat
 /**
  * Provides list of approved applications in generic representation
  *
- * user String User identifier from the system starting the service call
- * originator String 'Identification for the system consuming the API, as defined in  [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]' 
- * xCorrelator String UUID for the service execution flow that allows to correlate requests and responses
- * traceIndicator String Sequence of request numbers along the flow
- * customerJourney String Holds information supporting customer’s journey to which the execution applies
  * returns inline_response_200_2
  **/
-exports.listApprovedApplicationsInGenericRepresentation = function (user, originator, xCorrelator, traceIndicator, customerJourney, operationServerName) {
-  return new Promise(async function (resolve, reject) {
-    let response = {};
-    try {
-      /****************************************************************************************
-       * Preparing consequent-action-list for response body
-       ****************************************************************************************/
-      let consequentActionList = []
-      let responseValueList = []
-      let applicationData = []
-      let filePath
-      let approvalStatus
-      let applicationName
-      let releaseNumber
-      let reponseValue
-      let getOperation
-      let getDataType
- 
-      getDataType = await prepareApplicationData.getDataType(operationServerName)
-
-      // get profile uuid
-      let profileUuid = await profile.getUuidListAsync(applicationProfile.profileNameEnum.FILE_PROFILE);
-      for (let profileUuidIndex = 0; profileUuidIndex < profileUuid.length; profileUuidIndex++) {
-        let uuid = profileUuid[profileUuidIndex];
-        filePath = await fileProfile.getFilePath(uuid)        
-        applicationData = await prepareApplicationData.readApplicationData(filePath)
-        if(applicationData != undefined){
-        
-        // Preparing response-value-list for response body
-        applicationData["applications"].forEach(applicationDataItem => {
-          approvalStatus = applicationDataItem["approval-status"];
-          if (approvalStatus == "APPROVED") {
-            applicationName = applicationDataItem["application-name"]
-            releaseNumber = applicationDataItem["application-release-number"]
-            reponseValue = new responseValue(applicationName, releaseNumber, getDataType);
-            responseValueList.push(reponseValue);            }
-        });
+exports.listApprovedApplicationsInGenericRepresentation = async function (operationServerName) {
+  let consequentActionList = [];
+  let responseValueList = [];
+  let operationServerDataType = '';
+  let profiles = await ProfileCollection.getProfileListForProfileNameAsync(applicationProfile.profileNameEnum.RESPONSE_PROFILE);
+  for (let profile of profiles) {
+      let capability = profile["response-profile-1-0:response-profile-pac"]["response-profile-capability"];
+      if (operationServerName === capability["operation-name"]) {
+          // get data type when operation name is equal to ​/v1​/list-approved-applications-in-generic-representation
+          operationServerDataType = capability["datatype"];
+          break;
       }
-    }
-      /****************************************************************************************
-       * Setting 'application/json' response body
-       ****************************************************************************************/
-        response['application/json'] = onfAttributeFormatter.modifyJsonObjectKeysToKebabCase({
-        consequentActionList,
-        responseValueList
-      });
-      if (Object.keys(response).length > 0) {
-        resolve(response[Object.keys(response)[0]]);
-      } else {
-        resolve();
+  }
+  let filePath = await FileProfile.getApplicationDataFileContent();
+  let applicationData = await prepareApplicationData.readApplicationData(filePath);
+  if (applicationData !== undefined) {
+    applicationData["applications"].forEach(applicationDataItem => {
+      if ("APPROVED" === applicationDataItem["approval-status"]) {
+        let applicationName = applicationDataItem["application-name"]
+        let releaseNumber = applicationDataItem["application-release-number"]
+        responseValueList.push(new ResponseValue(applicationName, releaseNumber, operationServerDataType));
       }
-    } catch (error) {
-      console.log(error);
-    }
+    });
+  }
+  return onfAttributeFormatter.modifyJsonObjectKeysToKebabCase({
+    consequentActionList,
+    responseValueList
   });
 }
 
@@ -485,12 +412,21 @@ exports.redirectInfoAboutApprovalStatusChanges = function (body, user, originato
        * configure logical-termination-point
        ****************************************************************************************/
 
+      let forwardingName = "UpdateOfApprovalStatusCausesInfoToRegistryOffice"
+      const HttpClientLtpUuidFromForwarding = await resolveHttpClient(forwardingName);
+      let newReleaseHttpClientLtpUuid = HttpClientLtpUuidFromForwarding[0];
+      let applicatioNameFromForwarding = await httpClientInterface.getApplicationNameAsync(newReleaseHttpClientLtpUuid)
+      if (applicationName !== applicatioNameFromForwarding) {
+        reject(new createHttpError.BadRequest(`The subscriber-application ${applicationName} was not found.`));
+        return;
+      }
+
       let operationNamesByAttributes = new Map();
       operationNamesByAttributes.set("subscriber-operation", subscriberOperation);
 
       let tcpObjectList = [
         {
-          "protocol" : applicationProtocol,
+          "protocol": applicationProtocol,
           "address": applicationAddress,
           "port": applicationPort
         }
@@ -507,7 +443,7 @@ exports.redirectInfoAboutApprovalStatusChanges = function (body, user, originato
         logicalTerminatinPointConfigurationInput
       );
 
-      
+
       /****************************************************************************************
        * Prepare attributes to configure forwarding-construct
        ****************************************************************************************/
@@ -522,10 +458,10 @@ exports.redirectInfoAboutApprovalStatusChanges = function (body, user, originato
           subscriberOperation
         );
         forwardingConstructConfigurationStatus = await ForwardingConfigurationService.
-        configureForwardingConstructAsync(
-          operationServerName,
-          forwardingConfigurationInputList
-        );
+          configureForwardingConstructAsync(
+            operationServerName,
+            forwardingConfigurationInputList
+          );
       }
 
       /****************************************************************************************
@@ -566,9 +502,8 @@ exports.regardApplication = function (body, user, originator, xCorrelator, trace
   return new Promise(async function (resolve, reject) {
     try {
       let applicationData = []
-      let uuid
       let filePath
-      let checkApplicationExists = false
+      let applicationDetails = false
       let approvalStatus
 
       /****************************************************************************************
@@ -577,29 +512,24 @@ exports.regardApplication = function (body, user, originator, xCorrelator, trace
       let applicationNameRequestBody = body["application-name"]
       let releaseNumberRequestBody = body["release-number"]
 
-      let profileUuid = await profile.getUuidListAsync(profile.profileNameEnum.FILE_PROFILE);
-      for (let profileUuidIndex = 0; profileUuidIndex < profileUuid.length; profileUuidIndex++) {
-        uuid = profileUuid[profileUuidIndex];
-        filePath =  await fileProfile.getFilePath(uuid)
-
-        applicationData = await prepareApplicationData.readApplicationData(filePath)
-        if(applicationData == undefined){
-          throw new Error("File path does not exist")
+      filePath = await FileProfile.getApplicationDataFileContent()
+      applicationData = await prepareApplicationData.readApplicationData(filePath)
+      if (applicationData == undefined) {
+        throw new createHttpError.InternalServerError("Application data does not exist")
+      }
+      applicationDetails = await prepareApplicationData.getApplicationDetails(applicationData, applicationNameRequestBody, releaseNumberRequestBody)
+      if (!applicationDetails['is-application-exist']) {
+        approvalStatus = "REGISTERED"
+        let newApplicationData = {
+          "application-name": applicationNameRequestBody,
+          "application-release-number": releaseNumberRequestBody,
+          "approval-status": approvalStatus
         }
-        checkApplicationExists = await prepareApplicationData.isApplicationExist(applicationData, applicationNameRequestBody, releaseNumberRequestBody)
-        if(!checkApplicationExists['is-application-exist']){
-          approvalStatus = "REGISTERED"
-          let newApplicationData = {
-            "application-name": applicationNameRequestBody,
-            "application-release-number": releaseNumberRequestBody,
-            "approval-status": approvalStatus
-          }
-          // Add new application data from request body
-          applicationData["applications"].push(newApplicationData)
-          await prepareApplicationData.addAndUpdateApplicationData(filePath, applicationData) 
-        }else{
-          approvalStatus = checkApplicationExists['approval-status']
-        }
+        // Add new application data from request body
+        applicationData["applications"].push(newApplicationData)
+        await prepareApplicationData.addAndUpdateApplicationData(filePath, applicationData)
+      } else {
+        approvalStatus = applicationDetails['approval-status']
       }
 
       /****************************************************************************************
@@ -621,7 +551,7 @@ exports.regardApplication = function (body, user, originator, xCorrelator, trace
 
       resolve();
     } catch (error) {
-      reject();
+      reject(error);
     }
   });
 }

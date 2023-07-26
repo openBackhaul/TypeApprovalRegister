@@ -12,39 +12,31 @@ const ForwardingDomain = require('onf-core-model-ap/applicationPattern/onfModel/
 const onfAttributeFormatter = require('onf-core-model-ap/applicationPattern/onfModel/utility/OnfAttributeFormatter');
 const onfAttributes = require('onf-core-model-ap/applicationPattern/onfModel/constants/OnfAttributes');
 const OperationServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/OperationServerInterface');
-const profile = require('onf-core-model-ap/applicationPattern/onfModel/models/Profile');
-const applicationProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/ApplicationProfile');
 const FcPort = require('onf-core-model-ap/applicationPattern/onfModel/models/FcPort');
-const OperationClientInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/OperationClientInterface');
 const eventDispatcher = require('onf-core-model-ap/applicationPattern/rest/client/eventDispatcher');
 const individualServices = require('../IndividualServicesService')
 const forwardingKindNameForBequeathingDataCausesNewTAR= "PromptForBequeathingDataCausesNewTARbeingRequestedToRedirectInfoAboutApprovals"
 const fileProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/FileProfile');
-const prepareApplicationData = require('./PrepareApplicationData')
+const prepareApplicationData = require('./PrepareApplicationData');
+const createHttpError = require('http-errors');
+var traceIncrementer = 1;
 
 /**
  * This method performs the set of procedure to transfer the data from this version to next version 
  * of the application and bring the new release official
- * @param {boolean} isdataTransferRequired represents true if data transfer is required
  * @param {String} user User identifier from the system starting the service call
  * @param {String} xCorrelator UUID for the service execution flow that allows to correlate requests and responses
  * @param {String} traceIndicator Sequence of request numbers along the flow
  * @param {String} customerJourney Holds information supporting customer’s journey to which the execution applies
  * @returns {Promise} Promise is resolved if the operation succeeded else the Promise is rejected
  * **/
-exports.upgradeSoftwareVersion = async function (isdataTransferRequired, user, xCorrelator, traceIndicator, customerJourney) {
-    return new Promise(async function (resolve, reject) {
-        try {
-            if (isdataTransferRequired) {
-                await transferDataToTheNewRelease(user, xCorrelator, traceIndicator, customerJourney);
-            }
-            await redirectNotificationNewRelease(user, xCorrelator, traceIndicator, customerJourney);
-            await replaceOldReleaseWithNewRelease(user, xCorrelator, traceIndicator, customerJourney);
-            resolve();
-        } catch (error) {
-            reject(error);
-        }
-    });
+exports.upgradeSoftwareVersion = async function (user, xCorrelator, traceIndicator, customerJourney, _traceIncrementer) {
+    if (_traceIncrementer !== 0) {
+        traceIncrementer = _traceIncrementer;
+    }
+    await transferDataToTheNewRelease(user, xCorrelator, traceIndicator, customerJourney);
+    await redirectNotificationNewRelease(user, xCorrelator, traceIndicator, customerJourney);
+    await replaceOldReleaseWithNewRelease(user, xCorrelator, traceIndicator, customerJourney);
 }
 
 /**
@@ -58,15 +50,8 @@ exports.upgradeSoftwareVersion = async function (isdataTransferRequired, user, x
  * 2. PromptForBequeathingDataCausesTransferOfListOfAlreadyGrantedTypeApprovals
  */
 async function transferDataToTheNewRelease(user, xCorrelator, traceIndicator, customerJourney) {
-    return new Promise(async function (resolve, reject) {
-        try {
-            await PromptForBequeathingDataCausesNewTARbeingRequestedToRedirectInfoAboutApprovals(user, xCorrelator, traceIndicator, customerJourney);
-            await PromptForBequeathingDataCausesTransferOfListOfAlreadyGrantedTypeApprovals(user, xCorrelator, traceIndicator, customerJourney);
-            resolve();
-        } catch (error) {
-            reject(error);
-        }
-    });
+    await PromptForBequeathingDataCausesNewTARbeingRequestedToRedirectInfoAboutApprovals(user, xCorrelator, traceIndicator, customerJourney);
+    await PromptForBequeathingDataCausesTransferOfListOfAlreadyGrantedTypeApprovals(user, xCorrelator, traceIndicator, customerJourney);
 }
 
 /**
@@ -82,16 +67,9 @@ async function transferDataToTheNewRelease(user, xCorrelator, traceIndicator, cu
  * 3. PromptForBequeathingDataCausesEndingSubscriptionsToOldRelease
  */
 async function redirectNotificationNewRelease(user, xCorrelator, traceIndicator, customerJourney) {
-    return new Promise(async function (resolve, reject) {
-        try {
-            await PromptForBequeathingDataCausesRObeingRequestedToInquireForApplicationTypeApprovalsAtNewTAR(user, xCorrelator, traceIndicator, customerJourney);
-            await PromptForBequeathingDataCausesSubscriptionForDeregistrationNotifications(user, xCorrelator, traceIndicator, customerJourney);
-            await PromptForBequeathingDataCausesEndingSubscriptionsToOldRelease(user, xCorrelator, traceIndicator, customerJourney);
-            resolve();
-        } catch (error) {
-            reject(error);
-        }
-    });
+    await PromptForBequeathingDataCausesRObeingRequestedToInquireForApplicationTypeApprovalsAtNewTAR(user, xCorrelator, traceIndicator, customerJourney);
+    await PromptForBequeathingDataCausesSubscriptionForDeregistrationNotifications(user, xCorrelator, traceIndicator, customerJourney);
+    await PromptForBequeathingDataCausesEndingSubscriptionsToOldRelease(user, xCorrelator, traceIndicator, customerJourney);
 }
 
 /**
@@ -105,15 +83,8 @@ async function redirectNotificationNewRelease(user, xCorrelator, traceIndicator,
  * 2. PromptForBequeathingDataCausesRequestForDeregisteringOfOldRelease
  */
 async function replaceOldReleaseWithNewRelease(user, xCorrelator, traceIndicator, customerJourney) {
-    return new Promise(async function (resolve, reject) {
-        try {
-            await promptForBequeathingDataCausesRequestForBroadcastingInfoAboutServerReplacement(user, xCorrelator, traceIndicator, customerJourney);
-            await promptForBequeathingDataCausesRequestForDeregisteringOfOldRelease(user, xCorrelator, traceIndicator, customerJourney);
-            resolve();
-        } catch (error) {
-            reject(error);
-        }
-    });
+    await promptForBequeathingDataCausesRequestForBroadcastingInfoAboutServerReplacement(user, xCorrelator, traceIndicator, customerJourney);
+    await promptForBequeathingDataCausesRequestForDeregisteringOfOldRelease(user, xCorrelator, traceIndicator, customerJourney);
 }
 
 /**
@@ -165,11 +136,11 @@ async function PromptForBequeathingDataCausesNewTARbeingRequestedToRedirectInfoA
                         requestBody,
                         user,
                         xCorrelator,
-                        traceIndicator,
+                        traceIndicator + "." + traceIncrementer++,
                         customerJourney
                     );
                     if (!result) {
-                        throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + requestBody;
+                        throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + JSON.stringify(requestBody);
                     }
 
                 } catch (error) {
@@ -205,44 +176,38 @@ async function PromptForBequeathingDataCausesTransferOfListOfAlreadyGrantedTypeA
              * Preparing requestBody and transfering the data one by one
              ************************************************************************************/
             
-            let profileUuid = await profile.getUuidListAsync(profile.profileNameEnum.FILE_PROFILE);
-
-            for (let profileUuidIndex = 0; profileUuidIndex < profileUuid.length; profileUuidIndex++) {
-                uuid = profileUuid[profileUuidIndex];
-                filePath = await fileProfile.getFilePath(uuid)
-              let  applicationData = await prepareApplicationData.readApplicationData(filePath)
-                if(applicationData == undefined){
-                    throw new Error("File path does not exist")
-                  }
-                
-                applicationDataUpdateReleaseNumberKey = applicationData['applications'].map(async function(applicationDataItem) {
-                    applicationName = applicationDataItem['application-name']; 
-                    releaseNumber = applicationDataItem['application-release-number'];
-                    approvalStatus = applicationDataItem['approval-status'];     
-
-                    /***********************************************************************************
-                     * PromptForBequeathingDataCausesTransferOfListOfAlreadyGrantedTypeApprovals
-                     *   /v1/document-approval-status
-                     ************************************************************************************/
-                    let requestBody = {};
-                    requestBody.applicationName = applicationName;
-                    requestBody.releaseNumber = releaseNumber;
-                    requestBody.approvalStatus = approvalStatus;
-                    requestBody = onfAttributeFormatter.modifyJsonObjectKeysToKebabCase(requestBody);
-                    result = await forwardRequest(
-                        forwardingKindNameOfTheBequeathOperation,
-                        requestBody,
-                        user,
-                        xCorrelator,
-                        traceIndicator,
-                        customerJourney
-                    );
-                    if (!result) {
-                        throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + requestBody;
-                    }
-                });
-
+            filePath = await fileProfile.getApplicationDataFileContent()
+            let applicationData = await prepareApplicationData.readApplicationData(filePath)
+            if (applicationData == undefined) {
+                throw new createHttpError.InternalServerError("Application data does not exist")
             }
+
+            applicationDataUpdateReleaseNumberKey = applicationData['applications'].map(async function (applicationDataItem) {
+                applicationName = applicationDataItem['application-name'];
+                releaseNumber = applicationDataItem['application-release-number'];
+                approvalStatus = applicationDataItem['approval-status'];
+
+                /***********************************************************************************
+                 * PromptForBequeathingDataCausesTransferOfListOfAlreadyGrantedTypeApprovals
+                 *   /v1/document-approval-status
+                 ************************************************************************************/
+                let requestBody = {};
+                requestBody.applicationName = applicationName;
+                requestBody.releaseNumber = releaseNumber;
+                requestBody.approvalStatus = approvalStatus;
+                requestBody = onfAttributeFormatter.modifyJsonObjectKeysToKebabCase(requestBody);
+                result = await forwardRequest(
+                    forwardingKindNameOfTheBequeathOperation,
+                    requestBody,
+                    user,
+                    xCorrelator,
+                    traceIndicator + "." + traceIncrementer++,
+                    customerJourney
+                );
+                if (!result) {
+                    throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + JSON.stringify(requestBody);
+                }
+            });
             resolve(result);
         } catch (error) {
             reject(error);
@@ -299,11 +264,11 @@ async function PromptForBequeathingDataCausesRObeingRequestedToInquireForApplica
                     requestBody,
                     user,
                     xCorrelator,
-                    traceIndicator,
+                    traceIndicator + "." + traceIncrementer++,
                     customerJourney
                 );
                 if (!result) {
-                    throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + requestBody;
+                    throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + JSON.stringify(requestBody);
                 }
 
             } catch (error) {
@@ -367,11 +332,11 @@ async function PromptForBequeathingDataCausesSubscriptionForDeregistrationNotifi
                     requestBody,
                     user,
                     xCorrelator,
-                    traceIndicator,
+                    traceIndicator + "." + traceIncrementer++,
                     customerJourney
                 );
                 if (!result) {
-                    throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + requestBody;
+                    throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + JSON.stringify(requestBody);
                 }
 
             } catch (error) {
@@ -435,11 +400,11 @@ async function PromptForBequeathingDataCausesEndingSubscriptionsToOldRelease(use
                         requestBody,
                         user,
                         xCorrelator,
-                        traceIndicator,
+                        traceIndicator + "." + traceIncrementer++,
                         customerJourney
                     );
                     if (!result) {
-                        throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + requestBody;
+                        throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + JSON.stringify(requestBody);
                     }
                 }
 
@@ -484,7 +449,7 @@ async function promptForBequeathingDataCausesRequestForBroadcastingInfoAboutServ
                 let applicationName = await httpServerInterface.getApplicationNameAsync();
                 let oldReleaseNumber = await httpServerInterface.getReleaseNumberAsync();
                 let newApplicationName = await httpClientInterface.getApplicationNameAsync(newReleaseHttpClientLtpUuid)
-                let newReleaseNumber = await httpServerInterface.getReleaseNumberAsync(newReleaseHttpClientLtpUuid);
+                let newReleaseNumber = await httpClientInterface.getReleaseNumberAsync(newReleaseHttpClientLtpUuid);
                 let applicationAddress = await tcpClientInterface.getRemoteAddressAsync(newReleaseTcpClientUuid);
                 let applicationPort = await tcpClientInterface.getRemotePortAsync(newReleaseTcpClientUuid);
                 let applicationProtocol = await tcpClientInterface.getRemoteProtocolAsync(newReleaseTcpClientUuid);
@@ -507,11 +472,11 @@ async function promptForBequeathingDataCausesRequestForBroadcastingInfoAboutServ
                     requestBody,
                     user,
                     xCorrelator,
-                    traceIndicator,
+                    traceIndicator + "." + traceIncrementer++,
                     customerJourney
                 );
                 if (!result) {
-                    throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + requestBody;
+                    throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + JSON.stringify(requestBody);
                 }
 
             } catch (error) {
@@ -580,11 +545,11 @@ async function promptForBequeathingDataCausesRequestForDeregisteringOfOldRelease
                         requestBody,
                         user,
                         xCorrelator,
-                        traceIndicator,
+                        traceIndicator + "." + traceIncrementer++,
                         customerJourney
                     );
                     if (!result) {
-                        throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + requestBody;
+                        throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + JSON.stringify(requestBody);
                     }
                 }
             } catch (error) {

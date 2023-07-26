@@ -12,8 +12,8 @@ module.exports.getApplicationProfileApplicationName = async function getApplicat
         responseBuilder.buildResponse(res, responseCode, response);
       })
       .catch(function (response) {
-        responseCode = responseCodeEnum.code.INTERNAL_SERVER_ERROR;
-        responseBuilder.buildResponse(res, responseCode, response);
+        let sentResp = responseBuilder.buildResponse(res, undefined, response);
+        responseCode = sentResp.code;
       });
   oamLogService.recordOamRequest(req.url, req.body, responseCode, req.headers.authorization, req.method);
 };
@@ -25,8 +25,8 @@ module.exports.getApplicationProfileApprovalStatus = async function getApplicati
         responseBuilder.buildResponse(res, responseCode, response);
       })
       .catch(function (response) {
-        responseCode = responseCodeEnum.code.INTERNAL_SERVER_ERROR;
-        responseBuilder.buildResponse(res, responseCode, response);
+        let sentResp = responseBuilder.buildResponse(res, undefined, response);
+        responseCode = sentResp.code;
       });
   oamLogService.recordOamRequest(req.url, req.body, responseCode, req.headers.authorization, req.method);
 };
@@ -38,8 +38,8 @@ module.exports.getApplicationProfileReleaseNumber = async function getApplicatio
         responseBuilder.buildResponse(res, responseCode, response);
       })
       .catch(function (response) {
-        responseCode = responseCodeEnum.code.INTERNAL_SERVER_ERROR;
-        responseBuilder.buildResponse(res, responseCode, response);
+        let sentResp = responseBuilder.buildResponse(res, undefined, response);
+        responseCode = sentResp.code;
       });
   oamLogService.recordOamRequest(req.url, req.body, responseCode, req.headers.authorization, req.method);
 };
@@ -51,8 +51,8 @@ module.exports.putApplicationProfileApprovalStatus = async function putApplicati
         responseBuilder.buildResponse(res, responseCode, response);
       })
       .catch(function (response) {
-        responseCode = responseCodeEnum.code.INTERNAL_SERVER_ERROR;
-        responseBuilder.buildResponse(res, responseCode, response);
+        let sentResp = responseBuilder.buildResponse(res, undefined, response);
+        responseCode = sentResp.code;
       });
   oamLogService.recordOamRequest(req.url, req.body, responseCode, req.headers.authorization, req.method);
 };
