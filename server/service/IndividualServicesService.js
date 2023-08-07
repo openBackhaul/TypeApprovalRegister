@@ -145,45 +145,34 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
 /*
   function to get Http Client LTP UUID using forwarding name
 */
-var resolveHttpClient = exports.resolveHttpClientLtpUuidFromForwardingName = function (forwardingName) {
-  return new Promise(async function (resolve, reject) {
-    try {
-      let ForwardConstructName = await ForwardingDomain.getForwardingConstructForTheForwardingNameAsync(forwardingName)
-      if (ForwardConstructName === undefined) {
-        return null;
-      }
-      let LogicalTerminationPointlist;
-      let httpClientUuidList = [];
-      let ForwardConstructUuid = ForwardConstructName[onfAttributes.GLOBAL_CLASS.UUID]
-      let ListofUuid = await ForwardingConstruct.getFcPortListAsync(ForwardConstructUuid)
-      for (let i = 0; i < ListofUuid.length; i++) {
-        let PortDirection = ListofUuid[i][[onfAttributes.FC_PORT.PORT_DIRECTION]]
-        if (PortDirection === FcPort.portDirectionEnum.OUTPUT) {
-          LogicalTerminationPointlist = ListofUuid[i][onfAttributes.CONTROL_CONSTRUCT.LOGICAL_TERMINATION_POINT]
-          let httpClientUuid = await logicalTerminationPoint.getServerLtpListAsync(LogicalTerminationPointlist)
-          let tcpClientUuid = await logicalTerminationPoint.getServerLtpListAsync(httpClientUuid[0])
-          httpClientUuidList.push(httpClientUuid[0], LogicalTerminationPointlist, tcpClientUuid[0]);
-        }
-      }
-      resolve(httpClientUuidList)
-    } catch (error) {
-      console.log(error)
+var resolveHttpClient = exports.resolveHttpClientLtpUuidFromForwardingName = async function (forwardingName) {
+  let ForwardConstructName = await ForwardingDomain.getForwardingConstructForTheForwardingNameAsync(forwardingName)
+  if (ForwardConstructName === undefined) {
+    return null;
+  }
+  let LogicalTerminationPointlist;
+  let httpClientUuidList = [];
+  let ForwardConstructUuid = ForwardConstructName[onfAttributes.GLOBAL_CLASS.UUID]
+  let ListofUuid = await ForwardingConstruct.getFcPortListAsync(ForwardConstructUuid)
+  for (let i = 0; i < ListofUuid.length; i++) {
+    let PortDirection = ListofUuid[i][[onfAttributes.FC_PORT.PORT_DIRECTION]]
+    if (PortDirection === FcPort.portDirectionEnum.OUTPUT) {
+      LogicalTerminationPointlist = ListofUuid[i][onfAttributes.CONTROL_CONSTRUCT.LOGICAL_TERMINATION_POINT]
+      let httpClientUuid = await logicalTerminationPoint.getServerLtpListAsync(LogicalTerminationPointlist)
+      let tcpClientUuid = await logicalTerminationPoint.getServerLtpListAsync(httpClientUuid[0])
+      httpClientUuidList.push(httpClientUuid[0], LogicalTerminationPointlist, tcpClientUuid[0]);
     }
-  })
+  }
+  return httpClientUuidList;
 }
 
 /**
  * Deletes the record of an application
  *
  * body V1_disregardapplication_body 
- * user String User identifier from the system starting the service call
- * originator String 'Identification for the system consuming the API, as defined in  [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]' 
- * xCorrelator String UUID for the service execution flow that allows to correlate requests and responses
- * traceIndicator String Sequence of request numbers along the flow
- * customerJourney String Holds information supporting customer’s journey to which the execution applies
  * no response value expected for this operation
  **/
-exports.disregardApplication = function (body, user, originator, xCorrelator, traceIndicator, customerJourney, originalUrl) {
+exports.disregardApplication = function (body) {
   return new Promise(async function (resolve, reject) {
     try {
       /****************************************************************************************
@@ -293,58 +282,26 @@ exports.documentApprovalStatus = function (body, user, originator, xCorrelator, 
   });
 }
 
-
 /**
  * Provides list of applications
  *
- * user String User identifier from the system starting the service call
- * originator String 'Identification for the system consuming the API, as defined in  [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]' 
- * xCorrelator String UUID for the service execution flow that allows to correlate requests and responses
- * traceIndicator String Sequence of request numbers along the flow
- * customerJourney String Holds information supporting customer’s journey to which the execution applies
  * returns List
  **/
-exports.listApplications = function (user, originator, xCorrelator, traceIndicator, customerJourney) {
-  return new Promise(async function (resolve, reject) {
-    var response = {};
-    try {
-      /****************************************************************************************
-       * Preparing response body
-       ****************************************************************************************/
-      let applicationData = []
-      let filePath
-      let applicationDataUpdateReleaseNumberKey
-
-      /****************************************************************************************
-       * Preparing response-value-list for response body
-       ****************************************************************************************/
-      filePath = await FileProfile.getApplicationDataFileContent()
-      applicationData = await prepareApplicationData.readApplicationData(filePath)
-      if (applicationData != undefined) {
-        applicationDataUpdateReleaseNumberKey = applicationData['applications'].map(function (applicationDataItem) {
-          applicationDataItem['release-number'] = applicationDataItem['application-release-number']; // Assign new key
-          delete applicationDataItem['application-release-number']; // Delete old key
-          return applicationDataItem;
-        });
-      } else {
-        throw new createHttpError.InternalServerError("Application data does not exist")
-      }
-
-      /****************************************************************************************
-       * Setting 'application/json' response body
-       ****************************************************************************************/
-      response['application/json'] = applicationDataUpdateReleaseNumberKey;
-      if (Object.keys(response).length > 0) {
-        resolve(response[Object.keys(response)[0]]);
-      } else {
-        resolve();
-      }
-    } catch (error) {
-      reject(error);
-    }
-  });
+exports.listApplications = async function () {
+  let applicationDataUpdateReleaseNumberKey;
+  const filePath = await FileProfile.getApplicationDataFileContent();
+  const applicationData = await prepareApplicationData.readApplicationData(filePath);
+  if (applicationData != undefined) {
+    applicationDataUpdateReleaseNumberKey = applicationData['applications'].map(function (applicationDataItem) {
+      applicationDataItem['release-number'] = applicationDataItem['application-release-number']; // Assign new key
+      delete applicationDataItem['application-release-number']; // Delete old key
+      return applicationDataItem;
+    });
+  } else {
+    throw new createHttpError.InternalServerError("Application data does not exist");
+  }
+  return applicationDataUpdateReleaseNumberKey;
 }
-
 
 /**
  * Provides list of approved applications in generic representation
@@ -359,7 +316,7 @@ exports.listApprovedApplicationsInGenericRepresentation = async function (operat
   for (let profile of profiles) {
       let capability = profile["response-profile-1-0:response-profile-pac"]["response-profile-capability"];
       if (operationServerName === capability["operation-name"]) {
-          // get data type when operation name is equal to ​/v1​/list-approved-applications-in-generic-representation
+          // get data type when operation name is equal to list-approved-applications-in-generic-representation
           operationServerDataType = capability["datatype"];
           break;
       }
