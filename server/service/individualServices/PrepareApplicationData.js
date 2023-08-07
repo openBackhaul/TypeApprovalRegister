@@ -1,8 +1,4 @@
 const fileSystem = require('fs')
-const applicationProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/ApplicationProfile');
-const profile = require('onf-core-model-ap/applicationPattern/onfModel/models/Profile');
-const responseProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/ResponseProfile');
-const ProfileCollection = require('onf-core-model-ap/applicationPattern/onfModel/models/ProfileCollection');
 
 /*
 * Add new applications if there is no instance available for this application + release-number combination
@@ -74,7 +70,7 @@ exports.deleteApplication = async (applicationData, applicationNameToDelete, app
              });
              if(applicationDataIndex === -1){
                 return false;
-             };
+             }
              applicationData.splice(applicationDataIndex, 1);
              resolve(applicationData)
         }catch (error) {
