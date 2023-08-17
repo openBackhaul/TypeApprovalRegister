@@ -1,6 +1,7 @@
 'use strict';
 
 const LogicalTerminatinPointConfigurationInput = require('onf-core-model-ap/applicationPattern/onfModel/services/models/logicalTerminationPoint/ConfigurationInputWithMapping');
+const LogicalTerminationPointConfigurationStatus = require('onf-core-model-ap/applicationPattern/onfModel/services/models/logicalTerminationPoint/ConfigurationStatus');
 const LogicalTerminationPointService = require('onf-core-model-ap/applicationPattern/onfModel/services/LogicalTerminationPointWithMappingServices');
 const ForwardingConfigurationService = require('onf-core-model-ap/applicationPattern/onfModel/services/ForwardingConstructConfigurationServices');
 const ForwardingAutomationService = require('onf-core-model-ap/applicationPattern/onfModel/services/ForwardingConstructAutomationServices');
@@ -80,14 +81,6 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
           isApplicationNameUpdated = await httpClientInterface.setApplicationNameAsync(newReleaseHttpClientLtpUuid, applicationName);
         }
 
-        if (isReleaseUpdated || isApplicationNameUpdated) {
-          let configurationStatus = new ConfigurationStatus(
-            newReleaseHttpClientLtpUuid,
-            undefined,
-            true);
-          logicalTerminationPointConfigurationStatus.httpClientConfigurationStatus = configurationStatus;
-        }
-
         let newReleaseTcpClientUuidList = await logicalTerminationPoint.getServerLtpListAsync(newReleaseHttpClientLtpUuid);
         let newReleaseTcpClientUuid = newReleaseTcpClientUuidList[0];
 
@@ -107,14 +100,22 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
           isPortUpdated = await tcpClientInterface.setRemotePortAsync(newReleaseTcpClientUuid, applicationPort);
         }
 
-        if (isProtocolUpdated || isAddressUpdated || isPortUpdated) {
-          let configurationStatus = new ConfigurationStatus(
-            newReleaseTcpClientUuid,
-            undefined,
-            true);
-          logicalTerminationPointConfigurationStatus.tcpClientConfigurationStatusList = [configurationStatus];
-        }
+        let tcpClientConfigurationStatus = new ConfigurationStatus(
+          newReleaseTcpClientUuid,
+          '',
+          (isProtocolUpdated || isAddressUpdated || isPortUpdated)
+        );
         
+        let httpClientConfigurationStatus = new ConfigurationStatus(
+          newReleaseHttpClientLtpUuid,
+          '',
+          (isReleaseUpdated || isApplicationNameUpdated)
+        );
+        logicalTerminationPointConfigurationStatus = new LogicalTerminationPointConfigurationStatus(
+          false,
+          httpClientConfigurationStatus,
+          [tcpClientConfigurationStatus]
+        );
         let forwardingAutomationInputList
         if (logicalTerminationPointConfigurationStatus != undefined) {
           /****************************************************************************************
