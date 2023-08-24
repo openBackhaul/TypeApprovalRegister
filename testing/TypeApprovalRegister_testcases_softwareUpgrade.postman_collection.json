@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "61838b65-1feb-4631-aa82-31c6fc364093",
+		"_postman_id": "10d73d51-0b0b-4194-8b14-e3ef80ea1d67",
 		"name": "TypeApprovalRegister_testcases_softwareUpgrade",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "27577055"
@@ -29207,7 +29207,10 @@
 															"****************************************************************************************/\r",
 															"try {\r",
 															"    pm.collectionVariables.set(\"dummyApplicationName\", dummyNewApplicationName);\r",
+															"    pm.collectionVariables.set(\"originator\", ORIGINATOR);\r",
 															"    pm.collectionVariables.set(\"xCorrelator\", X_CORRELATOR);\r",
+															"    pm.collectionVariables.set(\"traceIndicator\", TRACE_INDICATOR);\r",
+															"    pm.collectionVariables.set(\"customerJourney\", CUSTOMER_JOURNEY);\r",
 															"\r",
 															"} catch (error) {\r",
 															"    console.log(\"! Collection variables could not be set.\");\r",
