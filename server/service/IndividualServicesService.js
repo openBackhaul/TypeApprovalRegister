@@ -11,13 +11,9 @@ const ConfigurationStatus = require('onf-core-model-ap/applicationPattern/onfMod
 const httpClientInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/HttpClientInterface');
 const onfAttributeFormatter = require('onf-core-model-ap/applicationPattern/onfModel/utility/OnfAttributeFormatter');
 const ResponseValue = require('onf-core-model-ap/applicationPattern/rest/server/responseBody/ResponseValue');
-const onfAttributes = require('onf-core-model-ap/applicationPattern/onfModel/constants/OnfAttributes');
 const logicalTerminationPoint = require('onf-core-model-ap/applicationPattern/onfModel/models/LogicalTerminationPoint');
 const tcpClientInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpClientInterface');
-const ForwardingDomain = require('onf-core-model-ap/applicationPattern/onfModel/models/ForwardingDomain');
-const ForwardingConstruct = require('onf-core-model-ap/applicationPattern/onfModel/models/ForwardingConstruct');
-const FcPort = require('onf-core-model-ap/applicationPattern/onfModel/models/FcPort');
-const applicationProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/ApplicationProfile');
+const Profile = require('onf-core-model-ap/applicationPattern/onfModel/models/Profile');
 const ProfileCollection = require('onf-core-model-ap/applicationPattern/onfModel/models/ProfileCollection');
 const softwareUpgrade = require('./individualServices/SoftwareUpgrade');
 const individualServicesOperationsMapping = require('./individualServices/IndividualServicesOperationsMapping');
@@ -55,7 +51,9 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
        * configure logical-termination-point
        ****************************************************************************************/
 
-      const HttpClientLtpUuidFromForwarding = await resolveHttpClient('PromptForBequeathingDataCausesNewTARbeingRequestedToRedirectInfoAboutApprovals');
+      const HttpClientLtpUuidFromForwarding = await httpClientInterface.getHttpClientUuidFromForwarding(
+        'PromptForBequeathingDataCausesNewTARbeingRequestedToRedirectInfoAboutApprovals'
+      );
       if (HttpClientLtpUuidFromForwarding == undefined) {
         reject(new createHttpError.BadRequest(`The NewRelease ${applicationName} was not found.`));
         return;
@@ -142,30 +140,6 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
       reject(error);
     }
   });
-}
-
-/*
-  function to get Http Client LTP UUID using forwarding name
-*/
-var resolveHttpClient = exports.resolveHttpClientLtpUuidFromForwardingName = async function (forwardingName) {
-  let ForwardConstructName = await ForwardingDomain.getForwardingConstructForTheForwardingNameAsync(forwardingName)
-  if (ForwardConstructName === undefined) {
-    return null;
-  }
-  let LogicalTerminationPointlist;
-  let httpClientUuidList = [];
-  let ForwardConstructUuid = ForwardConstructName[onfAttributes.GLOBAL_CLASS.UUID]
-  let ListofUuid = await ForwardingConstruct.getFcPortListAsync(ForwardConstructUuid)
-  for (let i = 0; i < ListofUuid.length; i++) {
-    let PortDirection = ListofUuid[i][[onfAttributes.FC_PORT.PORT_DIRECTION]]
-    if (PortDirection === FcPort.portDirectionEnum.OUTPUT) {
-      LogicalTerminationPointlist = ListofUuid[i][onfAttributes.CONTROL_CONSTRUCT.LOGICAL_TERMINATION_POINT]
-      let httpClientUuid = await logicalTerminationPoint.getServerLtpListAsync(LogicalTerminationPointlist)
-      let tcpClientUuid = await logicalTerminationPoint.getServerLtpListAsync(httpClientUuid[0])
-      httpClientUuidList.push(httpClientUuid[0], LogicalTerminationPointlist, tcpClientUuid[0]);
-    }
-  }
-  return httpClientUuidList;
 }
 
 /**
@@ -314,7 +288,7 @@ exports.listApprovedApplicationsInGenericRepresentation = async function (operat
   let consequentActionList = [];
   let responseValueList = [];
   let operationServerDataType = '';
-  let profiles = await ProfileCollection.getProfileListForProfileNameAsync(applicationProfile.profileNameEnum.RESPONSE_PROFILE);
+  let profiles = await ProfileCollection.getProfileListForProfileNameAsync(Profile.profileNameEnum.RESPONSE_PROFILE);
   for (let profile of profiles) {
       let capability = profile["response-profile-1-0:response-profile-pac"]["response-profile-capability"];
       if (operationServerName === capability["operation-name"]) {
@@ -366,7 +340,7 @@ exports.redirectInfoAboutApprovalStatusChanges =  async function (body, user, or
    ****************************************************************************************/
 
   let forwardingName = "UpdateOfApprovalStatusCausesInfoToRegistryOffice"
-  const HttpClientLtpUuidFromForwarding = await resolveHttpClient(forwardingName);
+  const HttpClientLtpUuidFromForwarding = await httpClientInterface.getHttpClientUuidFromForwarding(forwardingName);
   let newReleaseHttpClientLtpUuid = HttpClientLtpUuidFromForwarding[0];
   let applicatioNameFromForwarding = await httpClientInterface.getApplicationNameAsync(newReleaseHttpClientLtpUuid)
   if (applicationName !== applicatioNameFromForwarding) {

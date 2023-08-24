@@ -14,7 +14,6 @@ const onfAttributes = require('onf-core-model-ap/applicationPattern/onfModel/con
 const OperationServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/OperationServerInterface');
 const FcPort = require('onf-core-model-ap/applicationPattern/onfModel/models/FcPort');
 const eventDispatcher = require('onf-core-model-ap/applicationPattern/rest/client/eventDispatcher');
-const individualServices = require('../IndividualServicesService')
 const forwardingKindNameForBequeathingDataCausesNewTAR= "PromptForBequeathingDataCausesNewTARbeingRequestedToRedirectInfoAboutApprovals"
 const fileProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/FileProfile');
 const prepareApplicationData = require('./PrepareApplicationData');
@@ -232,7 +231,7 @@ async function PromptForBequeathingDataCausesRObeingRequestedToInquireForApplica
              * Preparing requestBody 
              ************************************************************************************/
             try {
-                let HttpClientLtpUuidFromForwarding  = await individualServices.resolveHttpClientLtpUuidFromForwardingName(forwardingKindNameForBequeathingDataCausesNewTAR)
+                let HttpClientLtpUuidFromForwarding  = await httpClientInterface.getHttpClientUuidFromForwarding(forwardingKindNameForBequeathingDataCausesNewTAR)
                 if (HttpClientLtpUuidFromForwarding == undefined) {
                     reject(new Error(`The NewRelease ${applicationName} was not found.`));
                     return;
@@ -300,7 +299,7 @@ async function PromptForBequeathingDataCausesSubscriptionForDeregistrationNotifi
              * Preparing requestBody 
              ************************************************************************************/
             try {
-                let HttpClientLtpUuidFromForwarding  = await individualServices.resolveHttpClientLtpUuidFromForwardingName(forwardingKindNameForBequeathingDataCausesNewTAR)
+                let HttpClientLtpUuidFromForwarding  = await httpClientInterface.getHttpClientUuidFromForwarding(forwardingKindNameForBequeathingDataCausesNewTAR)
                 if (HttpClientLtpUuidFromForwarding == undefined) {
                     reject(new Error(`The NewRelease ${applicationName} was not found.`));
                     return;
@@ -367,9 +366,9 @@ async function PromptForBequeathingDataCausesEndingSubscriptionsToOldRelease(use
             let forwardingKindNameOfTheNotifyApprovals= "PromptForBequeathingDataCausesRObeingRequestedToInquireForApplicationTypeApprovalsAtNewTAR";
             let forwardingKindNameOfTheNotifyWithdrawnApprovals= "PromptForBequeathingDataCausesSubscriptionForDeregistrationNotifications";
             
-            let operationClientUuidValueOfnotifyApprovals = await individualServices.resolveHttpClientLtpUuidFromForwardingName(forwardingKindNameOfTheNotifyApprovals);
+            let operationClientUuidValueOfnotifyApprovals = await httpClientInterface.getHttpClientUuidFromForwarding(forwardingKindNameOfTheNotifyApprovals);
             let operationClientUuidOfnotifyApprovals = operationClientUuidValueOfnotifyApprovals[1];
-            let operationClientUuidValuenotifyWithdrawnApprovals = await individualServices.resolveHttpClientLtpUuidFromForwardingName(forwardingKindNameOfTheNotifyWithdrawnApprovals)
+            let operationClientUuidValuenotifyWithdrawnApprovals = await httpClientInterface.getHttpClientUuidFromForwarding(forwardingKindNameOfTheNotifyWithdrawnApprovals)
             let operationClientUuidOfnotifyWithdrawnApprovals = operationClientUuidValuenotifyWithdrawnApprovals[1];
             let listOfOperationToBeUnsubscribed = [];
             let approvalOperationName = await operationClientInterface.getOperationNameAsync(operationClientUuidOfnotifyApprovals);
@@ -438,7 +437,7 @@ async function promptForBequeathingDataCausesRequestForBroadcastingInfoAboutServ
              * Preparing requestBody 
              ************************************************************************************/
             try {
-                let HttpClientLtpUuidFromForwarding  = await individualServices.resolveHttpClientLtpUuidFromForwardingName(forwardingKindNameForBequeathingDataCausesNewTAR)
+                let HttpClientLtpUuidFromForwarding  = await httpClientInterface.getHttpClientUuidFromForwarding(forwardingKindNameForBequeathingDataCausesNewTAR)
                 if (HttpClientLtpUuidFromForwarding == undefined) {
                     reject(new Error(`The NewRelease ${applicationName} was not found.`));
                     return;
@@ -509,7 +508,7 @@ async function promptForBequeathingDataCausesRequestForDeregisteringOfOldRelease
              * Preparing requestBody 
              ************************************************************************************/
             try {              
-                let HttpClientLtpUuidFromForwarding  = await individualServices.resolveHttpClientLtpUuidFromForwardingName(forwardingKindNameForBequeathingDataCausesNewTAR)
+                let HttpClientLtpUuidFromForwarding  = await httpClientInterface.getHttpClientUuidFromForwarding(forwardingKindNameForBequeathingDataCausesNewTAR)
                 if (HttpClientLtpUuidFromForwarding == undefined) {
                     reject(new Error(`The NewRelease ${applicationName} was not found.`));
                     return;
