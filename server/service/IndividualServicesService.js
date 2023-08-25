@@ -17,7 +17,7 @@ const tcpClientInterface = require('onf-core-model-ap/applicationPattern/onfMode
 const ForwardingDomain = require('onf-core-model-ap/applicationPattern/onfModel/models/ForwardingDomain');
 const ForwardingConstruct = require('onf-core-model-ap/applicationPattern/onfModel/models/ForwardingConstruct');
 const FcPort = require('onf-core-model-ap/applicationPattern/onfModel/models/FcPort');
-const applicationProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/ApplicationProfile');
+const Profile = require('onf-core-model-ap/applicationPattern/onfModel/models/Profile');
 const ProfileCollection = require('onf-core-model-ap/applicationPattern/onfModel/models/ProfileCollection');
 const softwareUpgrade = require('./individualServices/SoftwareUpgrade');
 const individualServicesOperationsMapping = require('./individualServices/IndividualServicesOperationsMapping');
@@ -313,7 +313,7 @@ exports.listApprovedApplicationsInGenericRepresentation = async function (operat
   let consequentActionList = [];
   let responseValueList = [];
   let operationServerDataType = '';
-  let profiles = await ProfileCollection.getProfileListForProfileNameAsync(applicationProfile.profileNameEnum.RESPONSE_PROFILE);
+  let profiles = await ProfileCollection.getProfileListForProfileNameAsync(Profile.profileNameEnum.RESPONSE_PROFILE);
   for (let profile of profiles) {
       let capability = profile["response-profile-1-0:response-profile-pac"]["response-profile-capability"];
       if (operationServerName === capability["operation-name"]) {
