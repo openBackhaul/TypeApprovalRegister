@@ -1,8 +1,8 @@
 'use strict';
 
-const LogicalTerminatinPointConfigurationInput = require('onf-core-model-ap/applicationPattern/onfModel/services/models/logicalTerminationPoint/ConfigurationInputWithMapping');
+const LogicalTerminationPointConfigurationInput = require('onf-core-model-ap/applicationPattern/onfModel/services/models/logicalTerminationPoint/ConfigurationInput');
 const LogicalTerminationPointConfigurationStatus = require('onf-core-model-ap/applicationPattern/onfModel/services/models/logicalTerminationPoint/ConfigurationStatus');
-const LogicalTerminationPointService = require('onf-core-model-ap/applicationPattern/onfModel/services/LogicalTerminationPointWithMappingServices');
+const LogicalTerminationPointService = require('onf-core-model-ap/applicationPattern/onfModel/services/LogicalTerminationPointServices');
 const ForwardingConfigurationService = require('onf-core-model-ap/applicationPattern/onfModel/services/ForwardingConstructConfigurationServices');
 const ForwardingAutomationService = require('onf-core-model-ap/applicationPattern/onfModel/services/ForwardingConstructAutomationServices');
 const prepareForwardingAutomation = require('./individualServices/PrepareForwardingAutomation');
@@ -24,6 +24,7 @@ const individualServicesOperationsMapping = require('./individualServices/Indivi
 const FileProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/FileProfile');
 const prepareApplicationData = require('./individualServices/PrepareApplicationData')
 const createHttpError = require('http-errors');
+const TcpObject = require('onf-core-model-ap/applicationPattern/onfModel/services/models/TcpObject');
 
 /**
  * Initiates process of embedding a new releasefv
@@ -351,98 +352,80 @@ exports.listApprovedApplicationsInGenericRepresentation = async function (operat
  * customerJourney String Holds information supporting customer’s journey to which the execution applies
  * no response value expected for this operation
  **/
-exports.redirectInfoAboutApprovalStatusChanges = function (body, user, originator, xCorrelator, traceIndicator, customerJourney, operationServerName) {
-  return new Promise(async function (resolve, reject) {
-    try {
+exports.redirectInfoAboutApprovalStatusChanges =  async function (body, user, originator, xCorrelator, traceIndicator, customerJourney, operationServerName) {
+  let applicationName = body["subscriber-application"];
+  let releaseNumber = body["subscriber-release-number"];
+  let applicationAddress = body["subscriber-address"];
+  let applicationPort = body["subscriber-port"];
+  let subscriberOperation = body["subscriber-operation"];
+  let applicationProtocol = body["subscriber-protocol"];
 
-      /****************************************************************************************
-       * Setting up required local variables from the request body
-       ****************************************************************************************/
-      let applicationName = body["subscriber-application"];
-      let releaseNumber = body["subscriber-release-number"];
-      let applicationAddress = body["subscriber-address"];
-      let applicationPort = body["subscriber-port"];
-      let subscriberOperation = body["subscriber-operation"];
-      let applicationProtocol = body["subscriber-protocol"];
+  /****************************************************************************************
+   * Prepare logicalTerminatinPointConfigurationInput object to 
+   * configure logical-termination-point
+   ****************************************************************************************/
 
-      /****************************************************************************************
-       * Prepare logicalTerminatinPointConfigurationInput object to 
-       * configure logical-termination-point
-       ****************************************************************************************/
+  let forwardingName = "UpdateOfApprovalStatusCausesInfoToRegistryOffice"
+  const HttpClientLtpUuidFromForwarding = await resolveHttpClient(forwardingName);
+  let newReleaseHttpClientLtpUuid = HttpClientLtpUuidFromForwarding[0];
+  let applicatioNameFromForwarding = await httpClientInterface.getApplicationNameAsync(newReleaseHttpClientLtpUuid)
+  if (applicationName !== applicatioNameFromForwarding) {
+    throw new createHttpError.BadRequest(`The subscriber-application ${applicationName} was not found.`);
+  }
 
-      let forwardingName = "UpdateOfApprovalStatusCausesInfoToRegistryOffice"
-      const HttpClientLtpUuidFromForwarding = await resolveHttpClient(forwardingName);
-      let newReleaseHttpClientLtpUuid = HttpClientLtpUuidFromForwarding[0];
-      let applicatioNameFromForwarding = await httpClientInterface.getApplicationNameAsync(newReleaseHttpClientLtpUuid)
-      if (applicationName !== applicatioNameFromForwarding) {
-        reject(new createHttpError.BadRequest(`The subscriber-application ${applicationName} was not found.`));
-        return;
-      }
+  let operationNamesByAttributes = new Map();
+  operationNamesByAttributes.set("subscriber-operation", subscriberOperation);
 
-      let operationNamesByAttributes = new Map();
-      operationNamesByAttributes.set("subscriber-operation", subscriberOperation);
+  let tcpObjectList = [new TcpObject(applicationProtocol, applicationAddress, applicationPort)];
+  let httpClientUuid = await httpClientInterface.getHttpClientUuidAsync(
+    applicationName,
+    releaseNumber
+  )
+  let logicalTerminatinPointConfigurationInput = new LogicalTerminationPointConfigurationInput(
+    httpClientUuid,
+    applicationName,
+    releaseNumber,
+    tcpObjectList,
+    operationServerName,
+    operationNamesByAttributes,
+    individualServicesOperationsMapping.individualServicesOperationsMapping
+  );
+  let ltpConfigurationStatus;
+  if (httpClientUuid) {
+    ltpConfigurationStatus = await LogicalTerminationPointService.createOrUpdateApplicationLtpsAsync(
+      logicalTerminatinPointConfigurationInput
+    );
+  }
 
-      let tcpObjectList = [
-        {
-          "protocol": applicationProtocol,
-          "address": applicationAddress,
-          "port": applicationPort
-        }
-      ];
-      let logicalTerminatinPointConfigurationInput = new LogicalTerminatinPointConfigurationInput(
-        applicationName,
-        releaseNumber,
-        tcpObjectList,
+  let forwardingConfigurationInputList = [];
+  let forwardingConstructConfigurationStatus;
+  let operationClientConfigurationStatusList;
+  if (ltpConfigurationStatus) {
+    operationClientConfigurationStatusList = ltpConfigurationStatus.operationClientConfigurationStatusList;
+  }
+  if (operationClientConfigurationStatusList) {
+    forwardingConfigurationInputList = await prepareForwardingConfiguration.redirectInfoAboutApprovalStatusChanges(
+      operationClientConfigurationStatusList,
+      subscriberOperation
+    );
+    forwardingConstructConfigurationStatus = await ForwardingConfigurationService.
+      configureForwardingConstructAsync(
         operationServerName,
-        operationNamesByAttributes,
-        individualServicesOperationsMapping.individualServicesOperationsMapping
+        forwardingConfigurationInputList
       );
-      let logicalTerminationPointconfigurationStatus = await LogicalTerminationPointService.findAndUpdateApplicationInformationAsync(
-        logicalTerminatinPointConfigurationInput
-      );
-
-
-      /****************************************************************************************
-       * Prepare attributes to configure forwarding-construct
-       ****************************************************************************************/
-
-      let forwardingConfigurationInputList = [];
-      let forwardingConstructConfigurationStatus;
-      let operationClientConfigurationStatusList = logicalTerminationPointconfigurationStatus.operationClientConfigurationStatusList;
-
-      if (operationClientConfigurationStatusList) {
-        forwardingConfigurationInputList = await prepareForwardingConfiguration.redirectInfoAboutApprovalStatusChanges(
-          operationClientConfigurationStatusList,
-          subscriberOperation
-        );
-        forwardingConstructConfigurationStatus = await ForwardingConfigurationService.
-          configureForwardingConstructAsync(
-            operationServerName,
-            forwardingConfigurationInputList
-          );
-      }
-
-      /****************************************************************************************
-       * Prepare attributes to automate forwarding-construct
-       ****************************************************************************************/
-      let forwardingAutomationInputList = await prepareForwardingAutomation.redirectInfoAboutApprovalStatusChanges(
-        logicalTerminationPointconfigurationStatus,
-        forwardingConstructConfigurationStatus
-      );
-      ForwardingAutomationService.automateForwardingConstructAsync(
-        operationServerName,
-        forwardingAutomationInputList,
-        user,
-        xCorrelator,
-        traceIndicator,
-        customerJourney
-      );
-
-      resolve();
-    } catch (error) {
-      reject(error);
-    }
-  });
+  }
+  let forwardingAutomationInputList = await prepareForwardingAutomation.redirectInfoAboutApprovalStatusChanges(
+    ltpConfigurationStatus,
+    forwardingConstructConfigurationStatus
+  );
+  ForwardingAutomationService.automateForwardingConstructAsync(
+    operationServerName,
+    forwardingAutomationInputList,
+    user,
+    xCorrelator,
+    traceIndicator,
+    customerJourney
+  );
 }
 
 /**
