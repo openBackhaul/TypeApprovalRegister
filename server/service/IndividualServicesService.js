@@ -381,7 +381,7 @@ exports.redirectInfoAboutApprovalStatusChanges =  async function (body, user, or
     applicationName,
     releaseNumber
   )
-  let logicalTerminatinPointConfigurationInput = new LogicalTerminationPointConfigurationInput(
+  let ltpConfigurationInput = new LogicalTerminationPointConfigurationInput(
     httpClientUuid,
     applicationName,
     releaseNumber,
@@ -393,7 +393,7 @@ exports.redirectInfoAboutApprovalStatusChanges =  async function (body, user, or
   let ltpConfigurationStatus;
   if (httpClientUuid) {
     ltpConfigurationStatus = await LogicalTerminationPointService.createOrUpdateApplicationLtpsAsync(
-      logicalTerminatinPointConfigurationInput
+      ltpConfigurationInput, true
     );
   }
 
