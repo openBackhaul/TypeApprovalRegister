@@ -2,6 +2,7 @@
 
 const LogicalTerminationPointConfigurationInput = require('onf-core-model-ap/applicationPattern/onfModel/services/models/logicalTerminationPoint/ConfigurationInput');
 const LogicalTerminationPointConfigurationStatus = require('onf-core-model-ap/applicationPattern/onfModel/services/models/logicalTerminationPoint/ConfigurationStatus');
+const ServiceUtils = require('onf-core-model-ap-bs/basicServices/utility/LogicalTerminationPoint');
 const LogicalTerminationPointService = require('onf-core-model-ap/applicationPattern/onfModel/services/LogicalTerminationPointServices');
 const ForwardingConfigurationService = require('onf-core-model-ap/applicationPattern/onfModel/services/ForwardingConstructConfigurationServices');
 const ForwardingAutomationService = require('onf-core-model-ap/applicationPattern/onfModel/services/ForwardingConstructAutomationServices');
@@ -11,12 +12,8 @@ const ConfigurationStatus = require('onf-core-model-ap/applicationPattern/onfMod
 const httpClientInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/HttpClientInterface');
 const onfAttributeFormatter = require('onf-core-model-ap/applicationPattern/onfModel/utility/OnfAttributeFormatter');
 const ResponseValue = require('onf-core-model-ap/applicationPattern/rest/server/responseBody/ResponseValue');
-const onfAttributes = require('onf-core-model-ap/applicationPattern/onfModel/constants/OnfAttributes');
 const logicalTerminationPoint = require('onf-core-model-ap/applicationPattern/onfModel/models/LogicalTerminationPoint');
 const tcpClientInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpClientInterface');
-const ForwardingDomain = require('onf-core-model-ap/applicationPattern/onfModel/models/ForwardingDomain');
-const ForwardingConstruct = require('onf-core-model-ap/applicationPattern/onfModel/models/ForwardingConstruct');
-const FcPort = require('onf-core-model-ap/applicationPattern/onfModel/models/FcPort');
 const Profile = require('onf-core-model-ap/applicationPattern/onfModel/models/Profile');
 const ProfileCollection = require('onf-core-model-ap/applicationPattern/onfModel/models/ProfileCollection');
 const softwareUpgrade = require('./individualServices/SoftwareUpgrade');
@@ -55,8 +52,8 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
        * configure logical-termination-point
        ****************************************************************************************/
 
-      const HttpClientLtpUuidFromForwarding = await resolveHttpClient('PromptForBequeathingDataCausesNewTARbeingRequestedToRedirectInfoAboutApprovals');
-      if (HttpClientLtpUuidFromForwarding == undefined) {
+      const newReleaseApplicationName = await ServiceUtils.resolveApplicationNameFromForwardingAsync("PromptForBequeathingDataCausesNewTARbeingRequestedToRedirectInfoAboutApprovals");
+      if (newReleaseApplicationName !== applicationName) {
         reject(new createHttpError.BadRequest(`The NewRelease ${applicationName} was not found.`));
         return;
       }
@@ -68,7 +65,7 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
       let isPortUpdated = false;
 
       let logicalTerminationPointConfigurationStatus = {};
-      let newReleaseHttpClientLtpUuid = HttpClientLtpUuidFromForwarding[0];
+      let newReleaseHttpClientLtpUuid = await httpClientInterface.getHttpClientUuidFromForwarding("PromptForBequeathingDataCausesNewTARbeingRequestedToRedirectInfoAboutApprovals");
       if (newReleaseHttpClientLtpUuid != undefined) {
 
         let currentReleaseNumber = await httpClientInterface.getReleaseNumberAsync(newReleaseHttpClientLtpUuid)
@@ -142,30 +139,6 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
       reject(error);
     }
   });
-}
-
-/*
-  function to get Http Client LTP UUID using forwarding name
-*/
-var resolveHttpClient = exports.resolveHttpClientLtpUuidFromForwardingName = async function (forwardingName) {
-  let ForwardConstructName = await ForwardingDomain.getForwardingConstructForTheForwardingNameAsync(forwardingName)
-  if (ForwardConstructName === undefined) {
-    return null;
-  }
-  let LogicalTerminationPointlist;
-  let httpClientUuidList = [];
-  let ForwardConstructUuid = ForwardConstructName[onfAttributes.GLOBAL_CLASS.UUID]
-  let ListofUuid = await ForwardingConstruct.getFcPortListAsync(ForwardConstructUuid)
-  for (let i = 0; i < ListofUuid.length; i++) {
-    let PortDirection = ListofUuid[i][[onfAttributes.FC_PORT.PORT_DIRECTION]]
-    if (PortDirection === FcPort.portDirectionEnum.OUTPUT) {
-      LogicalTerminationPointlist = ListofUuid[i][onfAttributes.CONTROL_CONSTRUCT.LOGICAL_TERMINATION_POINT]
-      let httpClientUuid = await logicalTerminationPoint.getServerLtpListAsync(LogicalTerminationPointlist)
-      let tcpClientUuid = await logicalTerminationPoint.getServerLtpListAsync(httpClientUuid[0])
-      httpClientUuidList.push(httpClientUuid[0], LogicalTerminationPointlist, tcpClientUuid[0]);
-    }
-  }
-  return httpClientUuidList;
 }
 
 /**
@@ -365,11 +338,8 @@ exports.redirectInfoAboutApprovalStatusChanges =  async function (body, user, or
    * configure logical-termination-point
    ****************************************************************************************/
 
-  let forwardingName = "UpdateOfApprovalStatusCausesInfoToRegistryOffice"
-  const HttpClientLtpUuidFromForwarding = await resolveHttpClient(forwardingName);
-  let newReleaseHttpClientLtpUuid = HttpClientLtpUuidFromForwarding[0];
-  let applicatioNameFromForwarding = await httpClientInterface.getApplicationNameAsync(newReleaseHttpClientLtpUuid)
-  if (applicationName !== applicatioNameFromForwarding) {
+  let roApplicationName = await ServiceUtils.resolveApplicationNameFromForwardingAsync("UpdateOfApprovalStatusCausesInfoToRegistryOffice");
+  if (roApplicationName !== applicationName) {
     throw new createHttpError.BadRequest(`The subscriber-application ${applicationName} was not found.`);
   }
 
