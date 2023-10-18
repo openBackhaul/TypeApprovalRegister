@@ -143,23 +143,6 @@ clients:
         individual:
 
   - http-client:
-      application-name: TypeApprovalRegister
-      release-number: 2.0.1
-      uuid: tar-2-0-1-http-c-tar-2-0-1-000
-    tcp-client:
-      remote-protocol: http
-      ip-address: 1.1.3.9
-      tcp-port: 3009
-      uuid: tar-2-0-1-tcp-c-tar-2-0-1-000
-    operation-clients:
-      own-oam:
-        basic:
-        individual:
-      service:
-        basic:
-        individual:
-
-  - http-client:
       application-name: ExecutionAndTraceLog
       release-number: 1.0.0
       uuid: tar-2-0-1-http-c-eatl-1-0-0-000
@@ -240,40 +223,6 @@ clients:
             uuid: tar-2-0-1-op-c-bm-alt-1-0-0-004
           - operation-name: /v1/delete-fc-port
             uuid: tar-2-0-1-op-c-bm-alt-1-0-0-005
-        individual:
-      service:
-        basic:
-        individual:
-
-  - http-client:
-      application-name: OperationKeyManagement
-      release-number: 1.0.0
-      uuid: tar-2-0-1-http-c-okm-1-0-0-000
-    tcp-client:
-      remote-protocol: http
-      ip-address: 1.1.3.7
-      tcp-port: 3007
-      uuid: tar-2-0-1-tcp-c-okm-1-0-0-000
-    operation-clients:
-      own-oam:
-        basic:
-        individual:
-      service:
-        basic:
-        individual:
-
-  - http-client:
-      application-name: CurrentController
-      release-number: 1.0.0
-      uuid: tar-2-0-1-http-c-cc-1-0-0-000
-    tcp-client:
-      remote-protocol: http
-      ip-address: 1.1.4.1
-      tcp-port: 4001
-      uuid: ro-2-0-1-tcp-c-cc-1-0-0-000
-    operation-clients:
-      own-oam:
-        basic:
         individual:
       service:
         basic:
