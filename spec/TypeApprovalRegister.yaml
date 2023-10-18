@@ -8567,7 +8567,7 @@ paths:
         required: true
         schema:
           type: string
-          pattern: '^([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-op-c-bm-([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{3})$'
+          pattern: '^([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-op-c-bs-([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{3})$'
           example: 'ro-2-0-1-op-c-bs-eatl-2-0-1-000'
     get:
       operationId: getOperationClientDetailedLoggingIsOn
