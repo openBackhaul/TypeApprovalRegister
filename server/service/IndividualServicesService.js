@@ -351,6 +351,9 @@ exports.redirectInfoAboutApprovalStatusChanges =  async function (body, user, or
     applicationName,
     releaseNumber
   )
+  if (!httpClientUuid) {
+    httpClientUuid = await httpClientInterface.getHttpClientUuidAsync(applicationName);
+  }
   let ltpConfigurationInput = new LogicalTerminationPointConfigurationInput(
     httpClientUuid,
     applicationName,
