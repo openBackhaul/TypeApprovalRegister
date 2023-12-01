@@ -145,7 +145,7 @@ forwardings:
       - server-name: /v1/bequeath-your-data-and-die
         uuid: tar-2-0-2-op-s-im-000
     consequent-requests:
-      - client-name: NewRelease:://v1/redirect-info-about-approval-status-changes
+      - client-name: NewRelease://v1/redirect-info-about-approval-status-changes
         uuid: tar-2-0-2-op-c-im-nr-2-0-2-000
 
   - forwarding-name: PromptForBequeathingDataCausesTransferOfListOfApplications
@@ -160,7 +160,7 @@ forwardings:
       - server-name: /v1/bequeath-your-data-and-die
         uuid: tar-2-0-2-op-s-im-000
     consequent-requests:
-      - client-name: NewRelease:://v1/document-approval-status
+      - client-name: NewRelease://v1/document-approval-status
         uuid: tar-2-0-2-op-c-is-nr-2-0-2-000
 
   - forwarding-name: PromptForBequeathingDataCausesRObeingRequestedToInquireForApplicationTypeApprovalsAtNewTAR
