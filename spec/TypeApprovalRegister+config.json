@@ -861,6 +861,30 @@
             ]
           },
           {
+            "uuid": "tar-2-0-2-op-s-is-007",
+            "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
+            "client-ltp": [
+            ],
+            "server-ltp": [
+              "tar-2-0-2-http-s-000"
+            ],
+            "layer-protocol": [
+              {
+                "local-id": "0",
+                "layer-protocol-name": "operation-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+                "operation-server-interface-1-0:operation-server-interface-pac": {
+                  "operation-server-interface-capability": {
+                    "operation-name": "/v1/document-embedding-status"
+                  },
+                  "operation-server-interface-configuration": {
+                    "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_EXPERIMENTAL",
+                    "operation-key": "Operation key not yet provided."
+                  }
+                }
+              }
+            ]
+          },
+          {
             "uuid": "tar-2-0-2-http-s-000",
             "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
             "client-ltp": [
@@ -887,7 +911,8 @@
               "tar-2-0-2-op-s-is-003",
               "tar-2-0-2-op-s-is-004",
               "tar-2-0-2-op-s-is-005",
-              "tar-2-0-2-op-s-is-006"
+              "tar-2-0-2-op-s-is-006",
+              "tar-2-0-2-op-s-is-007"
             ],
             "server-ltp": [
               "tar-2-0-2-tcp-s-000"

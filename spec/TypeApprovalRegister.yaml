@@ -1349,7 +1349,6 @@ paths:
           $ref: '#/components/responses/responseForErroredServiceRequests'
         default:
           $ref: '#/components/responses/responseForErroredServiceRequests'
-
   /v1/redirect-info-about-approval-status-changes:
     parameters:
       - $ref: '#/components/parameters/user'
@@ -1528,8 +1527,18 @@ paths:
                         release-number: '2.0.1'
                         approval-status: 'APPROVED'
               responses:
-                '204':
+                '200':
                   description: 'Approval status updated'
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          process-id:
+                            type: string
+                            description: 'Unique identifier of the request that allows associating the responses that are sent to the receiver service at TAR'
+                        example:
+                          process-id: '2010-11-20T14:00:00+01:00P001'
                   headers:
                     x-correlator:
                       schema:
@@ -1651,6 +1660,116 @@ paths:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
+  /v1/document-embedding-status:
+    parameters:
+      - $ref: '#/components/parameters/user'
+      - $ref: '#/components/parameters/originator'
+      - $ref: '#/components/parameters/x-correlator'
+      - $ref: '#/components/parameters/trace-indicator'
+      - $ref: '#/components/parameters/customer-journey'
+    post:
+      operationId: documentEmbeddingStatus
+      summary: 'Updates the embedding status of an application'
+      tags:
+        - IndividualServices
+      security:
+        - apiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - description: 'IF successfully-embedded == true'
+                  type: object
+                  required:
+                    - process-id
+                    - successfully-embedded
+                  additionalProperties: false
+                  properties:
+                    process-id:
+                      type: string
+                      description: 'Unique identifier of the request that allows associating the responses that are sent to the receiver service at TAR'
+                    successfully-embedded:
+                      type: boolean
+                      description: >
+                        'If true, the application successfully connected with the TinyApplicationController
+                        update in LOADfile'
+                - description: 'IF successfully-embedded == false'
+                  type: object
+                  required:
+                    - process-id
+                    - successfully-embedded
+                    - reason-of-failure
+                  properties:
+                    process-id:
+                      type: string
+                      description: 'Unique identifier of the request that allows associating the responses that are sent to the receiver service at TAR'
+                    successfully-embedded:
+                      type: boolean
+                      description: >
+                        'If false, the application did not successfully connect with the TinyApplicationController
+                        update in LOADfile'
+                    reason-of-failure:
+                      type: string
+                      description: >
+                        'Only exists, if successfully-embedded==false
+                        update in LOADfile'
+            examples:
+              if-successful:
+                value:
+                  process-id: '2010-11-20T14:00:00+01:00P001'
+                  successfully-embedded: true
+              if-unsuccessful:
+                value:
+                  process-id: '2010-11-20T14:00:00+01:00P001'
+                  successfully-embedded: false
+                  reason-of-failure: 'ALT_ALT_SERVING_APPLICATION_RELEASE_NUMBER_UNKNOWN'
+      responses:
+        '204':
+          description: 'Embedding status documented'
+          headers:
+            x-correlator:
+              schema:
+                type: string
+                example: '550e8400-e29b-11d4-a716-446655440000'
+              description: 'UUID for the service execution flow that allows to correlate requests and responses. Its value must be identical at the response compared with its corresponding request'
+            exec-time:
+              schema:
+                type: integer
+                example: 1100
+              description: 'Value written by the service provider, reporting the total elapsed time for the execution, including all the additional processing needed to retrieve the data from the backend service. Expressed in milliseconds'
+            backend-time:
+              schema:
+                type: integer
+                example: 850
+              description: 'Value written by the service provider, reporting the elapsed time for data retrieval from the backend (service invocation, database access…). Expressed in milliseconds'
+            life-cycle-state:
+              schema:
+                type: string
+                enum:
+                  - 'EXPERIMENTAL'
+                  - 'OPERATIONAL'
+                  - 'DEPRECATED'
+                  - 'OBSOLETE'
+                  - 'UNKNOWN'
+                  - 'NOT_YET_DEFINED'
+                example: 'EXPERIMENTAL'
+              description: >
+                  'Life cycle state of the consumed service
+                  find in [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-2-op-s-is-007/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
+        '400':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '401':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '403':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '404':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '500':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        default:
+          $ref: '#/components/responses/responseForErroredServiceRequests'
 
 ########################################
 #   Service Layer - Basic Part

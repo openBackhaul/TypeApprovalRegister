@@ -55,6 +55,8 @@ servers:
           uuid: tar-2-0-2-op-s-is-005
         - operation-name: /v1/redirect-info-about-approval-status-changes
           uuid: tar-2-0-2-op-s-is-006
+        - operation-name: /v1/document-embedding-status
+          uuid: tar-2-0-2-op-s-is-007
   http-server:
     own-application-name: TypeApprovalRegister
     own-release-number: 2.0.2
