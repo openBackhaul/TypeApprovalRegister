@@ -93,6 +93,12 @@ forwardings:
         uuid: tar-2-0-2-op-s-is-005
       - server-name: /v1/redirect-info-about-approval-status-changes
         uuid: tar-2-0-2-op-s-is-006
+      - server-name: /v1/document-embedding-status
+        uuid: tar-2-0-2-op-s-is-007
+      - server-name: /v1/start-gui
+        uuid: tar-2-0-2-op-s-is-070
+      - server-name: /v1/list-applications-in-gui
+        uuid: tar-2-0-2-op-s-is-009
     consequent-requests:
       - client-name: ExecutionAndTraceLog://v1/record-service-request
         uuid: tar-2-0-2-op-c-bs-eatl-2-0-1-000
@@ -492,3 +498,78 @@ forwardings:
     consequent-requests:
       - client-name: RegistryOffice://v1/regard-updated-approval-status
         uuid: tar-2-0-2-op-c-im-ro-2-0-2-002
+
+  - forwarding-name: GuiRequestForVisualizingListOfApplicationsCauses.Authentication
+    uuid: tar-2-0-2-op-fc-is-070
+    forwarding-type: InvariantProcessSnippet
+    management-requests:
+      operation-client-update:
+      fc-port-update:
+      fc-port-deletion:
+      operation-client-deletion:
+    initiating-requests:
+      - server-name: /v1/list-applications-in-gui
+        uuid: tar-2-0-2-op-s-is-071
+    consequent-requests:
+      - client-name: AA://v1/approve-basic-auth-request
+        uuid: tar-2-0-2-op-c-bs-aa-2-0-1-000
+
+  - forwarding-name: GuiRequestForVisualizingListOfApplicationsCauses.RetrievingListOfApplications
+    uuid: tar-2-0-2-op-fc-is-071
+    forwarding-type: InvariantProcessSnippet
+    management-requests:
+      operation-client-update:
+      fc-port-update:
+      fc-port-deletion:
+      operation-client-deletion:
+    initiating-requests:
+      - server-name: /v1/list-applications-in-gui
+        uuid: tar-2-0-2-op-s-is-071
+    consequent-requests:
+      - client-name: TAR://v1/list-applications
+        uuid: tar-2-0-2-op-c-is-tar-2-0-2-000
+
+  - forwarding-name: GuiRequestForDocumentingAnApprovalStatusChangeCauses.Authentication
+    uuid: tar-2-0-2-op-fc-is-075
+    forwarding-type: InvariantProcessSnippet
+    management-requests:
+      operation-client-update:
+      fc-port-update:
+      fc-port-deletion:
+      operation-client-deletion:
+    initiating-requests:
+      - server-name: /v1/approve-application-in-gui
+        uuid: tar-2-0-2-op-s-is-072
+    consequent-requests:
+      - client-name: AA://v1/approve-basic-auth-request
+        uuid: tar-2-0-2-op-c-bs-aa-2-0-1-000
+
+  - forwarding-name: GuiRequestForDocumentingAnApprovalStatusChangeCauses.DocumentingApprovalStatus
+    uuid: tar-2-0-2-op-fc-is-076
+    forwarding-type: InvariantProcessSnippet
+    management-requests:
+      operation-client-update:
+      fc-port-update:
+      fc-port-deletion:
+      operation-client-deletion:
+    initiating-requests:
+      - server-name: /v1/approve-application-in-gui
+        uuid: tar-2-0-2-op-s-is-072
+    consequent-requests:
+      - client-name: TAR://v1/document-approval-status
+        uuid: tar-2-0-2-op-c-is-tar-2-0-2-001
+
+  - forwarding-name: GuiRequestForDocumentingAnApprovalStatusChangeCauses.RetrievingListOfApplications
+    uuid: tar-2-0-2-op-fc-is-077
+    forwarding-type: InvariantProcessSnippet
+    management-requests:
+      operation-client-update:
+      fc-port-update:
+      fc-port-deletion:
+      operation-client-deletion:
+    initiating-requests:
+      - server-name: /v1/approve-application-in-gui
+        uuid: tar-2-0-2-op-s-is-072
+    consequent-requests:
+      - client-name: TAR://v1/list-applications
+        uuid: tar-2-0-2-op-c-is-tar-2-0-2-000

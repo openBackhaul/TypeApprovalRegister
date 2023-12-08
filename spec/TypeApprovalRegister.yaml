@@ -1,7 +1,56 @@
 ﻿openapi: 3.0.0
 info:
   title: TypeApprovalRegister
-  version: 2.0.2
+  version: 2.1.0
+
+x-gui-paths:
+########################################################################################################################
+#   Representation Layer
+########################################################################################################################
+  /docs:
+    get:
+      operationId: docs
+      summary: 'Represents Swagger API description page'
+      tags:
+        - RepresentationServices
+      responses:
+        '200':
+          description: 'Swagger API description page represented'
+            # Not explixitly described
+        '400':
+          $ref: '#/components/responses/responseForErroredOamRequests'
+        '401':
+          $ref: '#/components/responses/responseForErroredOamRequests'
+        '403':
+          $ref: '#/components/responses/responseForErroredOamRequests'
+        '404':
+          $ref: '#/components/responses/responseForErroredOamRequests'
+        '500':
+          $ref: '#/components/responses/responseForErroredOamRequests'
+        default:
+          $ref: '#/components/responses/responseForErroredOamRequests'
+  /v1/start-gui:
+    get:
+      operationId: startGui
+      summary: 'Transfers GUI module to the client side'
+      tags:
+        - RepresentationServices
+      responses:
+        '200':
+          description: 'GUI module transferred to client side'
+            # Not explixitly described
+        '400':
+          $ref: '#/components/responses/responseForErroredOamRequests'
+        '401':
+          $ref: '#/components/responses/responseForErroredOamRequests'
+        '403':
+          $ref: '#/components/responses/responseForErroredOamRequests'
+        '404':
+          $ref: '#/components/responses/responseForErroredOamRequests'
+        '500':
+          $ref: '#/components/responses/responseForErroredOamRequests'
+        default:
+          $ref: '#/components/responses/responseForErroredOamRequests'
 
 paths:
 ########################################
@@ -89,8 +138,8 @@ paths:
                 new-application-protocol: 'HTTP'
                 new-application-address:
                   ip-address:
-                    ipv-4-address: '1.1.3.18'
-                new-application-port: 3018
+                    ipv-4-address: '127.0.0.1'
+                new-application-port: 3025
       responses:
         '204':
           description: 'Process of embedding a new release initiated'
@@ -407,8 +456,8 @@ paths:
                         approval-application-protocol: 'HTTP'
                         approval-application-address:
                           ip-address:
-                            ipv-4-address: '1.1.3.18'
-                        approval-application-port: 3018
+                            ipv-4-address: '127.0.0.1'
+                        approval-application-port: 3025
               responses:
                 '204':
                   description: 'Subscribed for notifications about new registrations'
@@ -721,8 +770,8 @@ paths:
                         new-protocol: 'HTTP'
                         new-address:
                           ip-address:
-                            ipv-4-address: '1.1.3.17'
-                        new-port: 3017
+                            ipv-4-address: '127.0.0.1'
+                        new-port: 3024
               responses:
                 '204':
                   description: 'Will broadcast server replacement'
@@ -1224,6 +1273,8 @@ paths:
                     - application-name
                     - release-number
                     - approval-status
+                    - embedding-status
+                    - reason-of-failure
                   properties:
                     application-name:
                       type: string
@@ -1234,13 +1285,23 @@ paths:
                     approval-status:
                       type: string
                       description: 'from LOADfile'
+                    embedding-status:
+                      type: string
+                      description: 'from LOADfile'
+                    reason-of-failure:
+                      type: string
+                      description: 'from LOADfile'
                 example:
-                  - application-name: 'RegistryOffice'
-                    release-number: '2.0.2'
+                  - application-name: 'EmbeddedApplication'
+                    release-number: '17.3.1'
                     approval-status: 'APPROVED'
-                  - application-name: 'TypeApprovalRegister'
-                    release-number: '2.0.2'
+                    embedding-status: true
+                    reason-of-failure: ''
+                  - application-name: 'NonEmbeddedApplication'
+                    release-number: '34.1.2'
                     approval-status: 'APPROVED'
+                    embedding-status: false
+                    reason-of-failure: 'ALT_ALT_SERVING_APPLICATION_RELEASE_NUMBER_UNKNOWN'
           headers:
             x-correlator:
               schema:
@@ -1439,8 +1500,8 @@ paths:
                 subscriber-protocol: 'HTTP'
                 subscriber-address:
                   ip-address:
-                    ipv-4-address: '1.1.3.17'
-                subscriber-port: 3017
+                    ipv-4-address: '127.0.0.1'
+                subscriber-port: 3024
       responses:
         '204':
           description: 'Subscribed for notifications about approval status updates'
@@ -1771,6 +1832,633 @@ paths:
         default:
           $ref: '#/components/responses/responseForErroredServiceRequests'
 
+  /v1/list-applications-in-gui:
+    parameters:
+      - $ref: '#/components/parameters/user'
+      - $ref: '#/components/parameters/originator'
+      - $ref: '#/components/parameters/x-correlator'
+      - $ref: '#/components/parameters/trace-indicator'
+      - $ref: '#/components/parameters/customer-journey'
+    post:
+      operationId: listApplicationsInGui
+      summary: 'Initiates authentication of the user and listing the applications in the GUI'
+      tags:
+        - IndividualServices
+      security:
+        - basicAuth: []
+      responses:
+        '200':
+          description: 'List of applications provided to GUI'
+          content:
+            application/json:
+              schema:
+                type: array
+                uniqueItems: true
+                items:
+                  type: object
+                  required:
+                    - application-name
+                    - release-number
+                    - approval-status
+                    - embedding-status
+                    - reason-of-failure
+                  properties:
+                    application-name:
+                      type: string
+                      description: 'from {$RetrievingListOfApplications.responses.body#application-name}'
+                    release-number:
+                      type: string
+                      description: 'from {$RetrievingListOfApplications.responses.body#release-number}'
+                    approval-status:
+                      type: string
+                      description: 'from {$RetrievingListOfApplications.responses.body#approval-status}'
+                    embedding-status:
+                      type: string
+                      description: 'from {$RetrievingListOfApplications.responses.body#embedding-status}'
+                    reason-of-failure:
+                      type: string
+                      description: 'from {$RetrievingListOfApplications.responses.body#reason-of-failure}'
+                example:
+                  - application-name: 'EmbeddedApplication'
+                    release-number: '17.3.1'
+                    approval-status: 'APPROVED'
+                    embedding-status: true
+                    reason-of-failure: ''
+                  - application-name: 'NonEmbeddedApplication'
+                    release-number: '34.1.2'
+                    approval-status: 'APPROVED'
+                    embedding-status: false
+                    reason-of-failure: 'ALT_ALT_SERVING_APPLICATION_RELEASE_NUMBER_UNKNOWN'
+          headers:
+            x-correlator:
+              schema:
+                type: string
+                example: '550e8400-e29b-11d4-a716-446655440000'
+              description: 'UUID for the service execution flow that allows to correlate requests and responses. Its value must be identical at the response compared with its corresponding request'
+            exec-time:
+              schema:
+                type: integer
+                example: 1100
+              description: 'Value written by the service provider, reporting the total elapsed time for the execution, including all the additional processing needed to retrieve the data from the backend service. Expressed in milliseconds'
+            backend-time:
+              schema:
+                type: integer
+                example: 850
+              description: 'Value written by the service provider, reporting the elapsed time for data retrieval from the backend (service invocation, database access…). Expressed in milliseconds'
+            life-cycle-state:
+              schema:
+                type: string
+                enum:
+                  - 'EXPERIMENTAL'
+                  - 'OPERATIONAL'
+                  - 'DEPRECATED'
+                  - 'OBSOLETE'
+                  - 'UNKNOWN'
+                  - 'NOT_YET_DEFINED'
+                example: 'EXPERIMENTAL'
+              description: >
+                  'Life cycle state of the consumed service
+                  find in [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-2-op-s-is-071/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
+        '400':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '401':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '403':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '404':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '500':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        default:
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+      callbacks:
+        GuiRequestForVisualizingListOfApplicationsCauses:
+          Authentication: #[/core-model-1-4:control-construct/logical-termination-point=tar-2-0-2-tcp-c-aa-2-0-1-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point=tar-2-0-2-tcp-c-aa-2-0-1-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address or /core-model-1-4:control-construct/logical-termination-point=tar-2-0-2-tcp-c-aa-2-0-1-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name]:[/core-model-1-4:control-construct/logical-termination-point=tar-2-0-2-tcp-c-aa-2-0-1-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/core-model-1-4:control-construct/logical-termination-point=tar-2-0-2-op-c-bs-aa-2-0-1-000/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]
+            post:
+              parameters:
+                - $ref: '#/components/parameters/user'
+                - $ref: '#/components/parameters/originator'
+                - $ref: '#/components/parameters/x-correlator'
+                - $ref: '#/components/parameters/trace-indicator'
+                - $ref: '#/components/parameters/customer-journey'
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        Authorization:
+                          type: string
+                          description: >
+                            'Authorization code of administrator, who is using the GUI
+                            from {$request.parameters.basicAuth}'
+                        application-name:
+                          type: string
+                          description: >
+                            'Name of application inquiring for approval of the BasicAuth request
+                            from [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-2-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/application-name]'
+                        release-number:
+                          type: string
+                          description: >
+                            'Release of application inquiring for approval of the BasicAuth request
+                            from [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-2-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/release-number]'
+                        operation-name:
+                          type: string
+                          description: >
+                            'Path (could be service, could be OaM) that has been addressed by the BasicAuth request
+                            from [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-2-op-c-is-tar-2-0-2-000/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]'
+                        method:
+                          type: string
+                          enum:
+                            - 'POST'
+              responses:
+                '200':
+                  description: 'Response on inquiry for approval of a BasicAuth request provided'
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          basic-auth-request-is-approved:
+                            type: boolean
+                          reason-of-objection:
+                            type: string
+                  headers:
+                    x-correlator:
+                      schema:
+                        type: string
+                        example: '550e8400-e29b-11d4-a716-446655440000'
+                      description: 'UUID for the service execution flow that allows to correlate requests and responses. Its value must be identical at the response compared with its corresponding request'
+                    exec-time:
+                      schema:
+                        type: integer
+                        example: 1100
+                      description: 'Value written by the service provider, reporting the total elapsed time for the execution, including all the additional processing needed to retrieve the data from the backend service. Expressed in milliseconds'
+                    backend-time:
+                      schema:
+                        type: integer
+                        example: 850
+                      description: 'Value written by the service provider, reporting the elapsed time for data retrieval from the backend (service invocation, database access…). Expressed in milliseconds'
+                    life-cycle-state:
+                      schema:
+                        type: string
+                        enum:
+                          - 'EXPERIMENTAL'
+                          - 'OPERATIONAL'
+                          - 'DEPRECATED'
+                          - 'OBSOLETE'
+                          - 'UNKNOWN'
+                          - 'NOT_YET_DEFINED'
+                        example: 'EXPERIMENTAL'
+                      description: 'Life cycle state of the consumed service'
+                '400':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '401':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '403':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '404':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '500':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                default:
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+          RetrievingListOfApplications: #[/core-model-1-4:control-construct/logical-termination-point=tar-2-0-2-http-c-tar-2-0-2-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point=tar-2-0-2-http-c-tar-2-0-2-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address or /core-model-1-4:control-construct/logical-termination-point=tar-2-0-2-http-c-tar-2-0-2-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name]:[/core-model-1-4:control-construct/logical-termination-point=tar-2-0-2-http-c-tar-2-0-2-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/core-model-1-4:control-construct/logical-termination-point=tar-2-0-2-op-c-is-tar-2-0-2-000/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]
+            description: 'NOT to be sent, if {$Authentication.responses.body#basic-auth-request-is-approved}==false'
+            post:
+              parameters:
+                - $ref: '#/components/parameters/user'
+                - $ref: '#/components/parameters/originator'
+                - $ref: '#/components/parameters/x-correlator'
+                - $ref: '#/components/parameters/trace-indicator'
+                - $ref: '#/components/parameters/customer-journey'
+              responses:
+                '200':
+                  description: 'List of applications provided'
+                  content:
+                    application/json:
+                      schema:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            application-name:
+                              type: string
+                            release-number:
+                              type: string
+                            approval-status:
+                              type: string
+                            embedding-status:
+                              type: string
+                            reason-of-failure:
+                              type: string
+                  headers:
+                    x-correlator:
+                      schema:
+                        type: string
+                        example: '550e8400-e29b-11d4-a716-446655440000'
+                      description: 'UUID for the service execution flow that allows to correlate requests and responses. Its value must be identical at the response compared with its corresponding request'
+                    exec-time:
+                      schema:
+                        type: integer
+                        example: 1100
+                      description: 'Value written by the service provider, reporting the total elapsed time for the execution, including all the additional processing needed to retrieve the data from the backend service. Expressed in milliseconds'
+                    backend-time:
+                      schema:
+                        type: integer
+                        example: 850
+                      description: 'Value written by the service provider, reporting the elapsed time for data retrieval from the backend (service invocation, database access…). Expressed in milliseconds'
+                    life-cycle-state:
+                      schema:
+                        type: string
+                        enum:
+                          - 'EXPERIMENTAL'
+                          - 'OPERATIONAL'
+                          - 'DEPRECATED'
+                          - 'OBSOLETE'
+                          - 'UNKNOWN'
+                          - 'NOT_YET_DEFINED'
+                        example: 'EXPERIMENTAL'
+                      description: 'Life cycle state of the consumed service'
+                '400':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '401':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '403':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '404':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '500':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                default:
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+  /v1/approve-application-in-gui:
+    parameters:
+      - $ref: '#/components/parameters/user'
+      - $ref: '#/components/parameters/originator'
+      - $ref: '#/components/parameters/x-correlator'
+      - $ref: '#/components/parameters/trace-indicator'
+      - $ref: '#/components/parameters/customer-journey'
+    post:
+      operationId: approveApplicationInGui
+      summary: 'Initiates authentication of the user and listing the applications in the GUI after updating an approval status'
+      tags:
+        - IndividualServices
+      security:
+        - basicAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - application-name
+                - release-number
+                - approval-status
+              properties:
+                application-name:
+                  type: string
+                  description: 'Name of application that shall be subject to the approval status change'
+                release-number:
+                  type: string
+                  pattern: '^([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,2})$'
+                  description: 'Release of application that shall be subject to the approval status change'
+                approval-status:
+                  type: string
+                  enum:
+                    - 'REGISTERED'
+                    - 'APPROVED'
+                    - 'BARRED'
+                    - 'NOT_YET_DEFINED'
+                  description: 'Approval status to be documented'
+              example:
+                application-name: 'ApprovedApplication'
+                release-number: '23.1.1'
+                approval-status: 'APPROVED'
+      responses:
+        '200':
+          description: 'Approval status updated and list of applications provided to GUI'
+          content:
+            application/json:
+              schema:
+                type: array
+                uniqueItems: true
+                items:
+                  type: object
+                  required:
+                    - application-name
+                    - release-number
+                    - approval-status
+                    - embedding-status
+                    - reason-of-failure
+                  properties:
+                    application-name:
+                      type: string
+                      description: 'from {$RetrievingListOfApplications.responses.body#application-name}'
+                    release-number:
+                      type: string
+                      description: 'from {$RetrievingListOfApplications.responses.body#release-number}'
+                    approval-status:
+                      type: string
+                      description: 'from {$RetrievingListOfApplications.responses.body#approval-status}'
+                    embedding-status:
+                      type: string
+                      description: 'from {$RetrievingListOfApplications.responses.body#embedding-status}'
+                    reason-of-failure:
+                      type: string
+                      description: 'from {$RetrievingListOfApplications.responses.body#reason-of-failure}'
+                example:
+                  - application-name: 'EmbeddedApplication'
+                    release-number: '17.3.1'
+                    approval-status: 'APPROVED'
+                    embedding-status: true
+                    reason-of-failure: ''
+                  - application-name: 'NonEmbeddedApplication'
+                    release-number: '34.1.2'
+                    approval-status: 'APPROVED'
+                    embedding-status: false
+                    reason-of-failure: 'ALT_ALT_SERVING_APPLICATION_RELEASE_NUMBER_UNKNOWN'
+          headers:
+            x-correlator:
+              schema:
+                type: string
+                example: '550e8400-e29b-11d4-a716-446655440000'
+              description: 'UUID for the service execution flow that allows to correlate requests and responses. Its value must be identical at the response compared with its corresponding request'
+            exec-time:
+              schema:
+                type: integer
+                example: 1100
+              description: 'Value written by the service provider, reporting the total elapsed time for the execution, including all the additional processing needed to retrieve the data from the backend service. Expressed in milliseconds'
+            backend-time:
+              schema:
+                type: integer
+                example: 850
+              description: 'Value written by the service provider, reporting the elapsed time for data retrieval from the backend (service invocation, database access…). Expressed in milliseconds'
+            life-cycle-state:
+              schema:
+                type: string
+                enum:
+                  - 'EXPERIMENTAL'
+                  - 'OPERATIONAL'
+                  - 'DEPRECATED'
+                  - 'OBSOLETE'
+                  - 'UNKNOWN'
+                  - 'NOT_YET_DEFINED'
+                example: 'EXPERIMENTAL'
+              description: >
+                  'Life cycle state of the consumed service
+                  find in [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-2-op-s-is-072/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
+        '400':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '401':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '403':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '404':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '500':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        default:
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+      callbacks:
+        GuiRequestForDocumentingAnApprovalStatusChangeCauses:
+          Authentication: #[/core-model-1-4:control-construct/logical-termination-point=tar-2-0-2-tcp-c-aa-2-0-1-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point=tar-2-0-2-tcp-c-aa-2-0-1-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address or /core-model-1-4:control-construct/logical-termination-point=tar-2-0-2-tcp-c-aa-2-0-1-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name]:[/core-model-1-4:control-construct/logical-termination-point=tar-2-0-2-tcp-c-aa-2-0-1-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/core-model-1-4:control-construct/logical-termination-point=tar-2-0-2-op-c-bs-aa-2-0-1-000/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]
+            post:
+              parameters:
+                - $ref: '#/components/parameters/user'
+                - $ref: '#/components/parameters/originator'
+                - $ref: '#/components/parameters/x-correlator'
+                - $ref: '#/components/parameters/trace-indicator'
+                - $ref: '#/components/parameters/customer-journey'
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        Authorization:
+                          type: string
+                          description: >
+                            'Authorization code of administrator, who is using the GUI
+                            from {$request.parameters.basicAuth}'
+                        application-name:
+                          type: string
+                          description: >
+                            'Name of application inquiring for approval of the BasicAuth request
+                            from [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-2-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/application-name]'
+                        release-number:
+                          type: string
+                          description: >
+                            'Release of application inquiring for approval of the BasicAuth request
+                            from [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-2-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/release-number]'
+                        operation-name:
+                          type: string
+                          description: >
+                            'Path (could be service, could be OaM) that has been addressed by the BasicAuth request
+                            from [/core-model-1-4:control-construct/logical-termination-point=tar-2-0-2-op-c-is-tar-2-0-2-001/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]'
+                        method:
+                          type: string
+                          enum:
+                            - 'POST'
+              responses:
+                '200':
+                  description: 'Response on inquiry for approval of a BasicAuth request provided'
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          basic-auth-request-is-approved:
+                            type: boolean
+                          reason-of-objection:
+                            type: string
+                  headers:
+                    x-correlator:
+                      schema:
+                        type: string
+                        example: '550e8400-e29b-11d4-a716-446655440000'
+                      description: 'UUID for the service execution flow that allows to correlate requests and responses. Its value must be identical at the response compared with its corresponding request'
+                    exec-time:
+                      schema:
+                        type: integer
+                        example: 1100
+                      description: 'Value written by the service provider, reporting the total elapsed time for the execution, including all the additional processing needed to retrieve the data from the backend service. Expressed in milliseconds'
+                    backend-time:
+                      schema:
+                        type: integer
+                        example: 850
+                      description: 'Value written by the service provider, reporting the elapsed time for data retrieval from the backend (service invocation, database access…). Expressed in milliseconds'
+                    life-cycle-state:
+                      schema:
+                        type: string
+                        enum:
+                          - 'EXPERIMENTAL'
+                          - 'OPERATIONAL'
+                          - 'DEPRECATED'
+                          - 'OBSOLETE'
+                          - 'UNKNOWN'
+                          - 'NOT_YET_DEFINED'
+                        example: 'EXPERIMENTAL'
+                      description: 'Life cycle state of the consumed service'
+                '400':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '401':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '403':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '404':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '500':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                default:
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+          DocumentingApprovalStatus: #[/core-model-1-4:control-construct/logical-termination-point=tar-2-0-2-http-c-tar-2-0-2-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point=tar-2-0-2-http-c-tar-2-0-2-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address or /core-model-1-4:control-construct/logical-termination-point=tar-2-0-2-http-c-tar-2-0-2-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name]:[/core-model-1-4:control-construct/logical-termination-point=tar-2-0-2-http-c-tar-2-0-2-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/core-model-1-4:control-construct/logical-termination-point=tar-2-0-2-op-c-is-tar-2-0-2-001/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]
+            description: 'NOT to be sent, if {$Authentication.responses.body#basic-auth-request-is-approved}==false'
+            post:
+              parameters:
+                - $ref: '#/components/parameters/user'
+                - $ref: '#/components/parameters/originator'
+                - $ref: '#/components/parameters/x-correlator'
+                - $ref: '#/components/parameters/trace-indicator'
+                - $ref: '#/components/parameters/customer-journey'
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        application-name:
+                          type: string
+                          description: >
+                            'Name of application that shall be subject to the status record
+                            from {$request.body#application-name}'
+                        release-number:
+                          type: string
+                          description: >
+                            'Release of application that shall be subject to the status record
+                            from {$request.body#release-number}'
+                        approval-status:
+                          type: string
+                          description: >
+                            'Approval status of application that shall be subject to the status record
+                            from {$request.body#approval-status}'
+              responses:
+                '204':
+                  description: 'Approval status documented'
+                  headers:
+                    x-correlator:
+                      schema:
+                        type: string
+                        example: '550e8400-e29b-11d4-a716-446655440000'
+                      description: 'UUID for the service execution flow that allows to correlate requests and responses. Its value must be identical at the response compared with its corresponding request'
+                    exec-time:
+                      schema:
+                        type: integer
+                        example: 1100
+                      description: 'Value written by the service provider, reporting the total elapsed time for the execution, including all the additional processing needed to retrieve the data from the backend service. Expressed in milliseconds'
+                    backend-time:
+                      schema:
+                        type: integer
+                        example: 850
+                      description: 'Value written by the service provider, reporting the elapsed time for data retrieval from the backend (service invocation, database access…). Expressed in milliseconds'
+                    life-cycle-state:
+                      schema:
+                        type: string
+                        enum:
+                          - 'EXPERIMENTAL'
+                          - 'OPERATIONAL'
+                          - 'DEPRECATED'
+                          - 'OBSOLETE'
+                          - 'UNKNOWN'
+                          - 'NOT_YET_DEFINED'
+                        example: 'EXPERIMENTAL'
+                      description: 'Life cycle state of the consumed service'
+                '400':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '401':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '403':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '404':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '500':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                default:
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+          RetrievingListOfApplications: #[/core-model-1-4:control-construct/logical-termination-point=tar-2-0-2-http-c-tar-2-0-2-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point=tar-2-0-2-http-c-tar-2-0-2-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address or /core-model-1-4:control-construct/logical-termination-point=tar-2-0-2-http-c-tar-2-0-2-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name]:[/core-model-1-4:control-construct/logical-termination-point=tar-2-0-2-http-c-tar-2-0-2-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/core-model-1-4:control-construct/logical-termination-point=tar-2-0-2-op-c-is-tar-2-0-2-000/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]
+            description: 'NOT to be sent, if {$Authentication.responses.body#basic-auth-request-is-approved}==false'
+            post:
+              parameters:
+                - $ref: '#/components/parameters/user'
+                - $ref: '#/components/parameters/originator'
+                - $ref: '#/components/parameters/x-correlator'
+                - $ref: '#/components/parameters/trace-indicator'
+                - $ref: '#/components/parameters/customer-journey'
+              responses:
+                '200':
+                  description: 'List of applications provided'
+                  content:
+                    application/json:
+                      schema:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            application-name:
+                              type: string
+                            release-number:
+                              type: string
+                            approval-status:
+                              type: string
+                            embedding-status:
+                              type: string
+                            reason-of-failure:
+                              type: string
+                  headers:
+                    x-correlator:
+                      schema:
+                        type: string
+                        example: '550e8400-e29b-11d4-a716-446655440000'
+                      description: 'UUID for the service execution flow that allows to correlate requests and responses. Its value must be identical at the response compared with its corresponding request'
+                    exec-time:
+                      schema:
+                        type: integer
+                        example: 1100
+                      description: 'Value written by the service provider, reporting the total elapsed time for the execution, including all the additional processing needed to retrieve the data from the backend service. Expressed in milliseconds'
+                    backend-time:
+                      schema:
+                        type: integer
+                        example: 850
+                      description: 'Value written by the service provider, reporting the elapsed time for data retrieval from the backend (service invocation, database access…). Expressed in milliseconds'
+                    life-cycle-state:
+                      schema:
+                        type: string
+                        enum:
+                          - 'EXPERIMENTAL'
+                          - 'OPERATIONAL'
+                          - 'DEPRECATED'
+                          - 'OBSOLETE'
+                          - 'UNKNOWN'
+                          - 'NOT_YET_DEFINED'
+                        example: 'EXPERIMENTAL'
+                      description: 'Life cycle state of the consumed service'
+                '400':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '401':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '403':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '404':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '500':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                default:
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+
 ########################################
 #   Service Layer - Basic Part
 ########################################
@@ -1950,12 +2638,12 @@ paths:
               registry-office-protocol: 'HTTP'
               registry-office-address:
                 ip-address:
-                  ipv-4-address: '1.1.3.17'
-              registry-office-port: 3017
+                  ipv-4-address: '127.0.0.1'
+              registry-office-port: 3024
               http-address:
                 ip-address:
-                  ipv-4-address: '1.1.3.18'
-              http-port: 3018
+                  ipv-4-address: '127.0.0.1'
+              http-port: 3025
               preceding-application-name: 'TypeApprovalRegister'
               preceding-release-number: '2.0.2'
       responses:
@@ -2111,8 +2799,8 @@ paths:
                           - protocol: 'HTTP'
                             address:
                               ip-address:
-                                ipv-4-address: '1.1.3.18'
-                            port: 3018
+                                ipv-4-address: '127.0.0.1'
+                            port: 3025
               responses:
                 '204':
                   description: 'Application registered'
@@ -2301,8 +2989,8 @@ paths:
                 registry-office-protocol: 'HTTP'
                 registry-office-address:
                   ip-address:
-                    ipv-4-address: '1.1.3.17'
-                registry-office-port: 3017
+                    ipv-4-address: '127.0.0.1'
+                registry-office-port: 3024
                 old-release-protocol: 'HTTP'
                 old-release-address:
                   ip-address:
@@ -3404,8 +4092,8 @@ paths:
                 future-protocol: 'HTTP'
                 future-address:
                   ip-address:
-                    ipv-4-address: '1.1.3.17'
-                future-port: 3017
+                    ipv-4-address: '127.0.0.1'
+                future-port: 3024
       responses:
         '204':
           description: 'Will update connection information'
