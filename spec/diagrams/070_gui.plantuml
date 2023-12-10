@@ -1,7 +1,7 @@
 @startuml 070_gui
 skinparam responseMessageBelowArrow true
 
-title 
+title
 GuiRequestForVisualizingListOfApplicationsCauses
 GuiRequestForDocumentingAnApprovalStatusChangeCauses
 end title
@@ -50,7 +50,7 @@ human <-- listApps : {[applicationName, releaseNumber, approvalStatus,\n embeddi
 deactivate listApps
 
 note over human
-Fill in 
+Fill in
 - ApplicationName
 - ReleaseNumber
 - NewApprovalStatus

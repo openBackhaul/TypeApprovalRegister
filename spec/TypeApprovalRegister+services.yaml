@@ -4,77 +4,85 @@ servers:
     own-oam:
       basic:
         - operation-name: /v1/register-yourself
-          uuid: tar-2-0-2-op-s-bm-000
+          uuid: tar-2-1-0-op-s-bm-000
         - operation-name: /v1/embed-yourself
-          uuid: tar-2-0-2-op-s-bm-001
+          uuid: tar-2-1-0-op-s-bm-001
         - operation-name: /v1/redirect-service-request-information
-          uuid: tar-2-0-2-op-s-bm-002
+          uuid: tar-2-1-0-op-s-bm-002
         - operation-name: /v1/redirect-oam-request-information
-          uuid: tar-2-0-2-op-s-bm-003
+          uuid: tar-2-1-0-op-s-bm-003
         - operation-name: /v1/end-subscription
-          uuid: tar-2-0-2-op-s-bm-004
+          uuid: tar-2-1-0-op-s-bm-004
         - operation-name: /v1/inquire-oam-request-approvals
-          uuid: tar-2-0-2-op-s-bm-005
+          uuid: tar-2-1-0-op-s-bm-005
         - operation-name: /v1/update-client
-          uuid: tar-2-0-2-op-s-bm-007
+          uuid: tar-2-1-0-op-s-bm-007
         - operation-name: /v1/list-ltps-and-fcs
-          uuid: tar-2-0-2-op-s-bm-008
+          uuid: tar-2-1-0-op-s-bm-008
         - operation-name: /v1/redirect-topology-change-information
-          uuid: tar-2-0-2-op-s-bm-009
+          uuid: tar-2-1-0-op-s-bm-009
         - operation-name: /v1/update-operation-key
-          uuid: tar-2-0-2-op-s-bm-010
+          uuid: tar-2-1-0-op-s-bm-010
         - operation-name: /v1/update-operation-client
-          uuid: tar-2-0-2-op-s-bm-011
+          uuid: tar-2-1-0-op-s-bm-011
+        - operation-name: /v1/inquire-basic-auth-approvals
+          uuid: tar-2-1-0-op-s-bm-012
+        - operation-name: /v1/dispose-remainders-of-deregistered-application
+          uuid: tar-2-1-0-op-s-bm-013
+        - operation-name: /v1/inform-about-preceding-release
+          uuid: tar-2-1-0-op-s-bm-014
+        - operation-name: /v1/update-client-of-subsequent-release
+          uuid: tar-2-1-0-op-s-bm-015
       individual:
         - operation-name: /v1/bequeath-your-data-and-die
-          uuid: tar-2-0-2-op-s-im-000
+          uuid: tar-2-1-0-op-s-im-000
     service:
       basic:
         - operation-name: /v1/start-application-in-generic-representation
-          uuid: tar-2-0-2-op-s-bs-000
+          uuid: tar-2-1-0-op-s-bs-000
         - operation-name: /v1/inform-about-application
-          uuid: tar-2-0-2-op-s-bs-001
+          uuid: tar-2-1-0-op-s-bs-001
         - operation-name: /v1/inform-about-application-in-generic-representation
-          uuid: tar-2-0-2-op-s-bs-002
+          uuid: tar-2-1-0-op-s-bs-002
         - operation-name: /v1/inform-about-release-history
-          uuid: tar-2-0-2-op-s-bs-003
+          uuid: tar-2-1-0-op-s-bs-003
         - operation-name: /v1/inform-about-release-history-in-generic-representation
-          uuid: tar-2-0-2-op-s-bs-004
+          uuid: tar-2-1-0-op-s-bs-004
         - operation-name: /docs
-          uuid: tar-2-0-2-op-s-bs-005
+          uuid: tar-2-1-0-op-s-bs-005
       individual:
         - operation-name: /v1/regard-application
-          uuid: tar-2-0-2-op-s-is-001
+          uuid: tar-2-1-0-op-s-is-001
         - operation-name: /v1/disregard-application
-          uuid: tar-2-0-2-op-s-is-002
+          uuid: tar-2-1-0-op-s-is-002
         - operation-name: /v1/document-approval-status
-          uuid: tar-2-0-2-op-s-is-003
+          uuid: tar-2-1-0-op-s-is-003
         - operation-name: /v1/list-applications
-          uuid: tar-2-0-2-op-s-is-004
+          uuid: tar-2-1-0-op-s-is-004
         - operation-name: /v1/list-approved-applications-in-generic-representation
-          uuid: tar-2-0-2-op-s-is-005
+          uuid: tar-2-1-0-op-s-is-005
         - operation-name: /v1/redirect-info-about-approval-status-changes
-          uuid: tar-2-0-2-op-s-is-006
+          uuid: tar-2-1-0-op-s-is-006
         - operation-name: /v1/document-embedding-status
-          uuid: tar-2-0-2-op-s-is-007
+          uuid: tar-2-1-0-op-s-is-007
 
         - operation-name: /v1/start-gui
-          uuid: tar-2-0-2-op-s-is-070
+          uuid: tar-2-1-0-op-s-is-070
         - operation-name: /v1/list-applications-in-gui
-          uuid: tar-2-0-2-op-s-is-071
+          uuid: tar-2-1-0-op-s-is-071
         - operation-name: /v1/approve-application-in-gui
-          uuid: tar-2-0-2-op-s-is-072
+          uuid: tar-2-1-0-op-s-is-072
 
   http-server:
     own-application-name: TypeApprovalRegister
     own-release-number: 2.1.0
-    uuid: tar-2-0-2-http-s-000
+    uuid: tar-2-1-0-http-s-000
   tpc-server:
     - description: Without TLS layer
       local-protocol: http
       own-ip-address: 127.0.0.1
       own-tcp-port: 3025
-      uuid: tar-2-0-2-tcp-s-000
+      uuid: tar-2-1-0-tcp-s-000
 
 
 clients:
@@ -82,17 +90,17 @@ clients:
   - http-client:
       application-name: TypeApprovalRegister
       release-number: 2.0.1
-      uuid: tar-2-0-2-http-c-or-2-0-1-000
+      uuid: tar-2-1-0-http-c-or-2-0-1-000
     tcp-client:
       remote-protocol: http
-      ip-address: 1.1.3.9
+      ip-address: 127.0.0.1
       tcp-port: 3009
-      uuid: tar-2-0-2-tcp-c-or-2-0-1-000
+      uuid: tar-2-1-0-tcp-c-or-2-0-1-000
     operation-clients:
       own-oam:
         basic:
           - operation-name: /v1/bequeath-your-data-and-die
-            uuid: tar-2-0-2-op-c-bm-or-2-0-1-000
+            uuid: tar-2-1-0-op-c-bm-or-2-0-1-000
         individual:
       service:
         basic:
@@ -101,66 +109,66 @@ clients:
   - http-client:
       application-name: NewRelease
       release-number: 2.1.0
-      uuid: tar-2-0-2-http-c-nr-2-0-2-000
+      uuid: tar-2-1-0-http-c-nr-2-1-0-000
     tcp-client:
       remote-protocol: http
       ip-address: 127.0.0.1
       tcp-port: 3025
-      uuid: tar-2-0-2-tcp-c-nr-2-0-2-000
+      uuid: tar-2-1-0-tcp-c-nr-2-1-0-000
     operation-clients:
       own-oam:
         basic:
         individual:
           - operation-name: /v1/redirect-info-about-approval-status-changes
-            uuid: tar-2-0-2-op-c-im-nr-2-0-2-000
+            uuid: tar-2-1-0-op-c-im-nr-2-1-0-000
       service:
         basic:
         individual:
           - operation-name: /v1/document-approval-status
-            uuid: tar-2-0-2-op-c-is-nr-2-0-2-000
+            uuid: tar-2-1-0-op-c-is-nr-2-1-0-000
 
   - http-client:
       application-name: RegistryOffice
       release-number: 2.1.0
-      uuid: tar-2-0-2-http-c-ro-2-0-2-000
+      uuid: tar-2-1-0-http-c-ro-2-1-0-000
     tcp-client:
       remote-protocol: http
       ip-address: 127.0.0.1
       tcp-port: 3024
-      uuid: tar-2-0-2-tcp-c-ro-2-0-2-000
+      uuid: tar-2-1-0-tcp-c-ro-2-1-0-000
     operation-clients:
       own-oam:
         basic:
-          - operation-name: /v1/register-application
-            uuid: tar-2-0-2-op-c-bm-ro-2-0-2-000
+          - operation-name: /v2/register-application
+            uuid: tar-2-1-0-op-c-bm-ro-2-1-0-000
           - operation-name: /v1/relay-server-replacement
-            uuid: tar-2-0-2-op-c-bm-ro-2-0-2-001
+            uuid: tar-2-1-0-op-c-bm-ro-2-1-0-001
           - operation-name: /v1/deregister-application
-            uuid: tar-2-0-2-op-c-bm-ro-2-0-2-002
+            uuid: tar-2-1-0-op-c-bm-ro-2-1-0-002
           - operation-name: /v1/relay-operation-update
-            uuid: tar-2-0-2-op-c-bm-ro-2-0-2-003
+            uuid: tar-2-1-0-op-c-bm-ro-2-1-0-003
         individual:
           - operation-name: /v1/inquire-application-type-approvals
-            uuid: tar-2-0-2-op-c-im-ro-2-0-2-000
+            uuid: tar-2-1-0-op-c-im-ro-2-1-0-000
           - operation-name: /v1/notify-deregistrations
-            uuid: tar-2-0-2-op-c-im-ro-2-0-2-001
+            uuid: tar-2-1-0-op-c-im-ro-2-1-0-001
           - operation-name: /v1/regard-updated-approval-status
-            uuid: tar-2-0-2-op-c-im-ro-2-0-2-002
+            uuid: tar-2-1-0-op-c-im-ro-2-1-0-002
           - operation-name: /v1/end-subscription
-            uuid: tar-2-0-2-op-c-im-ro-2-0-2-003
+            uuid: tar-2-1-0-op-c-im-ro-2-1-0-003
       service:
         basic:
         individual:
 
   - http-client:
       application-name: TypeApprovalRegister
-      release-number: 2.0.1
-      uuid: tar-2-0-2-http-c-tar-2-0-2-000
+      release-number: 2.1.0
+      uuid: tar-2-1-0-http-c-tar-2-1-0-000
     tcp-client:
       remote-protocol: http
-      ip-address: 1.1.3.9
-      tcp-port: 3009
-      uuid: tar-2-0-2-tcp-c-tar-2-0-1-000
+      ip-address: 127.0.0.1
+      tcp-port: 3025
+      uuid: tar-2-1-0-tcp-c-tar-2-1-0-000
     operation-clients:
       own-oam:
         basic:
@@ -169,19 +177,19 @@ clients:
         basic:
         individual:
           - operation-name: /v1/list-applications
-            uuid: tar-2-0-2-op-c-is-tar-2-0-2-000
+            uuid: tar-2-1-0-op-c-is-tar-2-1-0-000
           - operation-name: /v1/document-approval-status
-            uuid: tar-2-0-2-op-c-is-tar-2-0-2-001
+            uuid: tar-2-1-0-op-c-is-tar-2-1-0-001
 
   - http-client:
       application-name: ExecutionAndTraceLog
       release-number: 2.0.1
-      uuid: tar-2-0-2-http-c-eatl-2-0-1-000
+      uuid: tar-2-1-0-http-c-eatl-2-0-1-000
     tcp-client:
       remote-protocol: http
-      ip-address: 1.1.3.10
+      ip-address: 127.0.0.1
       tcp-port: 3010
-      uuid: tar-2-0-2-tcp-c-eatl-2-0-1-000
+      uuid: tar-2-1-0-tcp-c-eatl-2-0-1-000
     operation-clients:
       own-oam:
         basic:
@@ -189,18 +197,18 @@ clients:
       service:
         basic:
           - operation-name: /v1/record-service-request
-            uuid: tar-2-0-2-op-c-bs-eatl-2-0-1-000
+            uuid: tar-2-1-0-op-c-bs-eatl-2-0-1-000
         individual:
 
   - http-client:
       application-name: OamLog
       release-number: 2.0.1
-      uuid: tar-2-0-2-http-c-ol-2-0-1-000
+      uuid: tar-2-1-0-http-c-ol-2-0-1-000
     tcp-client:
       remote-protocol: http
-      ip-address: 1.1.3.11
+      ip-address: 127.0.0.1
       tcp-port: 3011
-      uuid: tar-2-0-2-tcp-c-ol-2-0-1-000
+      uuid: tar-2-1-0-tcp-c-ol-2-0-1-000
     operation-clients:
       own-oam:
         basic:
@@ -208,52 +216,52 @@ clients:
       service:
         basic:
           - operation-name: /v1/record-oam-request
-            uuid: tar-2-0-2-op-c-bs-ol-2-0-1-000
+            uuid: tar-2-1-0-op-c-bs-ol-2-0-1-000
         individual:
 
   - http-client:
-      application-name: AccessAdministration
-      release-number: 2.1.0
-      uuid: tar-2-0-2-http-c-aa-2-0-1-000
+      application-name: AdministratorAdministration
+      release-number: 2.0.1
+      uuid: tar-2-1-0-http-c-aa-2-0-1-000
     tcp-client:
       remote-protocol: http
-      ip-address: 1.1.3.12
+      ip-address: 127.0.0.1
       tcp-port: 3012
-      uuid: tar-2-0-2-tcp-c-aa-2-0-1-000
+      uuid: tar-2-1-0-tcp-c-aa-2-0-1-000
     operation-clients:
       own-oam:
         basic:
         individual:
       service:
         basic:
-          - operation-name: /v1/approve-basic-auth-request
-            uuid: tar-2-0-2-op-c-bs-aa-2-0-1-000
+          - operation-name: /v1/approve-oam-request
+            uuid: tar-2-1-0-op-c-bs-aa-2-0-1-000
         individual:
 
   - http-client:
       application-name: ApplicationLayerTopology
       release-number: 2.0.1
-      uuid: tar-2-0-2-http-c-alt-2-0-1-000
+      uuid: tar-2-1-0-http-c-alt-2-0-1-000
     tcp-client:
       remote-protocol: http
-      ip-address: 1.1.3.13
+      ip-address: 127.0.0.1
       tcp-port: 3013
-      uuid: tar-2-0-2-tcp-c-alt-2-0-1-000
+      uuid: tar-2-1-0-tcp-c-alt-2-0-1-000
     operation-clients:
       own-oam:
         basic:
           - operation-name: /v1/update-all-ltps-and-fcs
-            uuid: tar-2-0-2-op-c-bm-alt-2-0-1-000
+            uuid: tar-2-1-0-op-c-bm-alt-2-0-1-000
           - operation-name: /v1/update-ltp
-            uuid: tar-2-0-2-op-c-bm-alt-2-0-1-001
+            uuid: tar-2-1-0-op-c-bm-alt-2-0-1-001
           - operation-name: /v1/delete-ltp-and-dependents
-            uuid: tar-2-0-2-op-c-bm-alt-2-0-1-002
+            uuid: tar-2-1-0-op-c-bm-alt-2-0-1-002
           - operation-name: /v1/update-fc
-            uuid: tar-2-0-2-op-c-bm-alt-2-0-1-003
+            uuid: tar-2-1-0-op-c-bm-alt-2-0-1-003
           - operation-name: /v1/update-fc-port
-            uuid: tar-2-0-2-op-c-bm-alt-2-0-1-004
+            uuid: tar-2-1-0-op-c-bm-alt-2-0-1-004
           - operation-name: /v1/delete-fc-port
-            uuid: tar-2-0-2-op-c-bm-alt-2-0-1-005
+            uuid: tar-2-1-0-op-c-bm-alt-2-0-1-005
         individual:
       service:
         basic:
