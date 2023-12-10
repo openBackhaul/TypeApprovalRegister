@@ -1,18 +1,13 @@
 const forwardingConstructAutomationInput = require('onf-core-model-ap/applicationPattern/onfModel/services/models/forwardingConstruct/AutomationInput');
-const httpServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/HttpServerInterface');
-const tcpServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpServerInterface');
 const onfFormatter = require('onf-core-model-ap/applicationPattern/onfModel/utility/OnfAttributeFormatter');
 const prepareALTForwardingAutomation = require('onf-core-model-ap-bs/basicServices/services/PrepareALTForwardingAutomation');
-const logicalTerminationPoint = require('onf-core-model-ap/applicationPattern/onfModel/models/LogicalTerminationPoint');
-const LayerProtocol = require('onf-core-model-ap/applicationPattern/onfModel/models/LayerProtocol');
-const operationServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/OperationServerInterface');
-const onfPaths = require('onf-core-model-ap/applicationPattern/onfModel/constants/OnfPaths');
 
-
-const fileOperation = require('onf-core-model-ap/applicationPattern/databaseDriver/JSONDriver');
-const httpClientInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/HttpClientInterface');
-const tcpClientInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpClientInterface');
-const ApplicationProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/ApplicationProfile');
+const approvalStatusEnum = {
+    REGISTERED: "application-profile-1-0:APPROVAL_STATUS_TYPE_REGISTERED",
+    APPROVED: "application-profile-1-0:APPROVAL_STATUS_TYPE_APPROVED",
+    BARRED: "application-profile-1-0:APPROVAL_STATUS_TYPE_BARRED",
+    NOT_YET_DEFINED: "application-profile-1-0:APPROVAL_STATUS_TYPE_NOT_YET_DEFINED"
+}
 
 exports.regardApplication = function (applicationName, releaseNumber, approvalStatus) {
     return new Promise(async function (resolve, reject) {
@@ -27,9 +22,8 @@ exports.regardApplication = function (applicationName, releaseNumber, approvalSt
             approvalStatusRequestBody.applicationName = applicationName;
             approvalStatusRequestBody.releaseNumber = releaseNumber;
 
-            let approvalStatusJsonObject = ApplicationProfile.ApplicationProfilePac.ApplicationProfileConfiguration.approvalStatusEnum;
-            for (let approvalStatusKey in approvalStatusJsonObject) {
-                if (approvalStatusJsonObject[approvalStatusKey] == approvalStatus) {
+            for (let approvalStatusKey in approvalStatusEnum) {
+                if (approvalStatusEnum[approvalStatusKey] == approvalStatus) {
                     approvalStatus = approvalStatusKey;
                 }
             }
@@ -89,9 +83,8 @@ exports.documentApprovalStatus = function (applicationName, releaseNumber, appro
             approvalStatusRequestBody.applicationName = applicationName;
             approvalStatusRequestBody.releaseNumber = releaseNumber;
 
-            let approvalStatusJsonObject = ApplicationProfile.ApplicationProfilePac.ApplicationProfileConfiguration.approvalStatusEnum;
-            for (let approvalStatusKey in approvalStatusJsonObject) {
-                if (approvalStatusJsonObject[approvalStatusKey] == approvalStatus) {
+            for (let approvalStatusKey in approvalStatusEnum) {
+                if (approvalStatusEnum[approvalStatusKey] == approvalStatus) {
                     approvalStatus = approvalStatusKey;
                 }
             }
