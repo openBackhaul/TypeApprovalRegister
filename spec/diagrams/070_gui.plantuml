@@ -1,0 +1,86 @@
+@startuml 070_gui
+skinparam responseMessageBelowArrow true
+
+title
+GuiRequestForVisualizingListOfApplicationsCauses
+GuiRequestForDocumentingAnApprovalStatusChangeCauses
+end title
+
+participant "human" as human
+participant "TAR://v1/start-gui" as startGui
+participant "TAR://v1/list-applications-in-gui" as listApps
+participant "TAR://v1/approve-application-in-gui" as approveApp
+
+participant "AA://v1/approve-basic-auth-request" as aaApproval
+
+participant "TAR://v1/list-applications" as tarList
+participant "TAR://v1/document-approval-status" as docStatus
+
+
+human -> startGui : (no security)
+human <-- startGui : {client-side-gui-application}
+activate human
+
+note over human
+Enter username and password
+end note
+
+note over human
+Press "Update List"
+end note
+human -> listApps : (basicAuth)
+activate listApps
+  note over listApps
+  GuiRequestForVisualizingListOfApplicationsCauses.
+  end note
+
+  note over listApps
+  Authentication
+  end note
+  listApps -> aaApproval : {Authorization, applicationName, releaseNumber, operationName, method} (apiKey)
+  listApps <-- aaApproval : {requestIsApproved, reasonOfObjection}
+
+  note over listApps
+  RetrievingListOfApplications
+  end note
+  listApps -> tarList : (apiKey)
+  listApps <-- tarList : {[applicationName, releaseNumber, approvalStatus, embeddingStatus, reasonOfFailure]}
+
+human <-- listApps : {[applicationName, releaseNumber, approvalStatus,\n embeddingStatus, reasonOfFailure]}
+deactivate listApps
+
+note over human
+Fill in
+- ApplicationName
+- ReleaseNumber
+- NewApprovalStatus
+Press "Update Approval Status"
+end note
+human -> approveApp : {applicationName, releaseNumber, newApprovalStatus} (basicAuth)
+activate approveApp
+  note over approveApp
+  GuiRequestForDocumentingAnApprovalStatusChangeCauses.
+  end note
+
+  note over approveApp
+  Authentication
+  end note
+  approveApp -> aaApproval : {Authorization, applicationName, releaseNumber,\n operationName, method} (apiKey)
+  approveApp <-- aaApproval : {requestIsApproved, reasonOfObjection}
+
+  note over approveApp
+  DocumentingApprovalStatus
+  end note
+  approveApp -> docStatus : {applicationName, releaseNumber, approvalStatus} (apiKey)
+  approveApp <-- docStatus : 204
+
+  note over approveApp
+  RetrievingListOfApplications
+  end note
+  approveApp -> tarList : (apiKey)
+  approveApp <-- tarList : {[applicationName, releaseNumber, approvalStatus, embeddingStatus, reasonOfFailure]}
+
+human <-- approveApp : {[applicationName, releaseNumber, approvalStatus, embeddingStatus, reasonOfFailure]}
+deactivate approveApp
+
+@enduml
