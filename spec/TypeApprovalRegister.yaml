@@ -1280,17 +1280,22 @@ paths:
                     reason-of-failure:
                       type: string
                       description: 'from LOADfile'
+                    x-correlator:
+                      type: string
+                      description: 'from LOADfile'
                 example:
                   - application-name: 'EmbeddedApplication'
                     release-number: '17.3.1'
                     approval-status: 'APPROVED'
                     embedding-status: true
                     reason-of-failure: ''
+                    x-correlator: '550e8400-e29b-11d4-a716-446655440000'
                   - application-name: 'NonEmbeddedApplication'
                     release-number: '34.1.2'
                     approval-status: 'APPROVED'
                     embedding-status: false
                     reason-of-failure: 'ALT_ALT_SERVING_APPLICATION_RELEASE_NUMBER_UNKNOWN'
+                    x-correlator: '856f5862-d25g-33i5-g345-123456789012'
           headers:
             x-correlator:
               schema:
@@ -1714,7 +1719,17 @@ paths:
     parameters:
       - $ref: '#/components/parameters/user'
       - $ref: '#/components/parameters/originator'
-      - $ref: '#/components/parameters/x-correlator'
+      - name: x-correlator
+        in: header
+        required: true
+        schema:
+          type: string
+          pattern: '^[0-9A-Fa-f]{8}(?:-[0-9A-Fa-f]{4}){3}-[0-9A-Fa-f]{12}$'
+          description: 'Empty string accepted from external applications.'
+          example: '550e8400-e29b-11d4-a716-446655440000'
+        description: >
+          'UUID for the service execution flow that allows to correlate requests and responses
+          update in LOADfile'
       - $ref: '#/components/parameters/trace-indicator'
       - $ref: '#/components/parameters/customer-journey'
     post:
@@ -1867,17 +1882,22 @@ paths:
                     reason-of-failure:
                       type: string
                       description: 'from {$RetrievingListOfApplications.responses.body#reason-of-failure}'
+                    x-correlator:
+                      type: string
+                      description: 'from {$RetrievingListOfApplications.responses.body#x-correlator}'
                 example:
                   - application-name: 'EmbeddedApplication'
                     release-number: '17.3.1'
                     approval-status: 'APPROVED'
                     embedding-status: true
                     reason-of-failure: ''
+                    x-correlator: '550e8400-e29b-11d4-a716-446655440000'
                   - application-name: 'NonEmbeddedApplication'
                     release-number: '34.1.2'
                     approval-status: 'APPROVED'
                     embedding-status: false
                     reason-of-failure: 'ALT_ALT_SERVING_APPLICATION_RELEASE_NUMBER_UNKNOWN'
+                    x-correlator: '856f5862-d25g-33i5-g345-123456789012'
           headers:
             x-correlator:
               schema:
@@ -2041,6 +2061,8 @@ paths:
                             embedding-status:
                               type: string
                             reason-of-failure:
+                              type: string
+                            x-correlator:
                               type: string
                   headers:
                     x-correlator:
