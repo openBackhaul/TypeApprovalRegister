@@ -110,7 +110,7 @@ clients:
 
   - http-client:
       application-name: NewRelease
-      release-number: 2.1.0
+      release-number: 2.1.1
       uuid: tar-2-1-0-http-c-nr-2-1-0-000
     tcp-client:
       remote-protocol: http
