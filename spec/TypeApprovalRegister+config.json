@@ -853,7 +853,7 @@
                     "operation-name": "/v1/disregard-application"
                   },
                   "operation-server-interface-configuration": {
-                    "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_EXPERIMENTAL",
+                    "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_DEPRECATED",
                     "operation-key": "Operation key not yet provided."
                   }
                 }
@@ -2827,6 +2827,11 @@
                     "local-id": "100",
                     "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
                     "logical-termination-point": "tar-2-1-0-op-s-bm-013"
+                  },
+                  {
+                    "local-id": "101",
+                    "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
+                    "logical-termination-point": "tar-2-1-0-op-s-is-002"
                   },
                   {
                     "local-id": "200",

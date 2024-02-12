@@ -369,6 +369,8 @@ forwardings:
     initiating-requests:
       - server-name: /v1/dispose-remainders-of-deregistered-application
         uuid: tar-2-1-0-op-s-bm-013
+      - server-name: /v1/disregard-application
+        uuid: tar-2-1-0-op-s-is-002
     consequent-requests:
       - client-name: ApplicationLayerTopology://v1/delete-ltp-and-dependents
         uuid: tar-2-1-0-op-c-bm-alt-2-0-1-002

@@ -1057,6 +1057,9 @@ paths:
         default:
           $ref: '#/components/responses/responseForErroredServiceRequests'
   /v1/disregard-application:
+    description: >
+      'DEPRECATED
+      Service shall be deleted with TAR v3.0.0'
     parameters:
       - $ref: '#/components/parameters/user'
       - $ref: '#/components/parameters/originator'
