@@ -1,7 +1,7 @@
 ﻿openapi: 3.0.0
 info:
   title: TypeApprovalRegister
-  version: 2.1.0
+  version: 2.1.1
 
 x-gui-paths:
 ########################################################################################################################
@@ -1057,6 +1057,9 @@ paths:
         default:
           $ref: '#/components/responses/responseForErroredServiceRequests'
   /v1/disregard-application:
+    description: >
+      'DEPRECATED
+      Service shall be deleted with TAR v3.0.0'
     parameters:
       - $ref: '#/components/parameters/user'
       - $ref: '#/components/parameters/originator'
@@ -1275,9 +1278,12 @@ paths:
                       type: string
                       description: 'from LOADfile'
                     embedding-status:
-                      type: string
+                      type: boolean
                       description: 'from LOADfile'
                     reason-of-failure:
+                      type: string
+                      description: 'from LOADfile'
+                    x-correlator:
                       type: string
                       description: 'from LOADfile'
                 example:
@@ -1286,11 +1292,13 @@ paths:
                     approval-status: 'APPROVED'
                     embedding-status: true
                     reason-of-failure: ''
+                    x-correlator: '550e8400-e29b-11d4-a716-446655440000'
                   - application-name: 'NonEmbeddedApplication'
                     release-number: '34.1.2'
                     approval-status: 'APPROVED'
                     embedding-status: false
                     reason-of-failure: 'ALT_ALT_SERVING_APPLICATION_RELEASE_NUMBER_UNKNOWN'
+                    x-correlator: '856f5862-d25g-33i5-g345-123456789012'
           headers:
             x-correlator:
               schema:
@@ -1714,7 +1722,17 @@ paths:
     parameters:
       - $ref: '#/components/parameters/user'
       - $ref: '#/components/parameters/originator'
-      - $ref: '#/components/parameters/x-correlator'
+      - name: x-correlator
+        in: header
+        required: true
+        schema:
+          type: string
+          pattern: '^[0-9A-Fa-f]{8}(?:-[0-9A-Fa-f]{4}){3}-[0-9A-Fa-f]{12}$'
+          description: 'Empty string accepted from external applications.'
+          example: '550e8400-e29b-11d4-a716-446655440000'
+        description: >
+          'UUID for the service execution flow that allows to correlate requests and responses
+          update in LOADfile'
       - $ref: '#/components/parameters/trace-indicator'
       - $ref: '#/components/parameters/customer-journey'
     post:
@@ -1765,6 +1783,58 @@ paths:
                       description: >
                         'Only exists, if successfully-embedded==false
                         update in LOADfile'
+                - description: 'Manually via GUI IF successfully-embedded == true'
+                  type: object
+                  required:
+                    - application-name
+                    - release-number
+                    - successfully-embedded
+                  additionalProperties: false
+                  properties:
+                    application-name:
+                      type: string
+                      description: >
+                        'Name of application that shall be subject to the embedding status change
+                        find in LOADfile'
+                    release-number:
+                      type: string
+                      description: >
+                        'Release of application that shall be subject to the embedding status change
+                        find in LOADfile'
+                    successfully-embedded:
+                      type: boolean
+                      description: >
+                        'If true, the application successfully embedded into the MW SDN application layer
+                        update in LOADfile'
+                - description: 'Manually via GUI IF successfully-embedded == false'
+                  type: object
+                  required:
+                    - application-name
+                    - release-number
+                    - successfully-embedded
+                    - reason-of-failure
+                  additionalProperties: false
+                  properties:
+                    application-name:
+                      type: string
+                      description: >
+                        'Name of application that shall be subject to the embedding status change
+                        find in LOADfile'
+                    release-number:
+                      type: string
+                      description: >
+                        'Release of application that shall be subject to the embedding status change
+                        find in LOADfile'
+                    successfully-embedded:
+                      type: boolean
+                      description: >
+                        'If false, the application did not successfully embedded into the MW SDN application layer
+                        update in LOADfile'
+                    reason-of-failure:
+                      type: string
+                      description: >
+                        'Only exists, if successfully-embedded==false
+                        update in LOADfile'
             examples:
               if-successful:
                 value:
@@ -1775,6 +1845,17 @@ paths:
                   process-id: '2010-11-20T14:00:00+01:00P001'
                   successfully-embedded: false
                   reason-of-failure: 'ALT_ALT_SERVING_APPLICATION_RELEASE_NUMBER_UNKNOWN'
+              manually-if-successful:
+                value:
+                  application-name: 'EmbeddedApplication'
+                  release-number: '23.1.23'
+                  successfully-embedded: true
+              manually-if-unsuccessful:
+                value:
+                  application-name: 'NotEmbeddedApplication'
+                  release-number: '23.1.34'
+                  successfully-embedded: false
+                  reason-of-failure: 'Additional links have to be created in ALT'
       responses:
         '204':
           description: 'Embedding status documented'
@@ -1867,17 +1948,22 @@ paths:
                     reason-of-failure:
                       type: string
                       description: 'from {$RetrievingListOfApplications.responses.body#reason-of-failure}'
+                    x-correlator:
+                      type: string
+                      description: 'from {$RetrievingListOfApplications.responses.body#x-correlator}'
                 example:
                   - application-name: 'EmbeddedApplication'
                     release-number: '17.3.1'
                     approval-status: 'APPROVED'
                     embedding-status: true
                     reason-of-failure: ''
+                    x-correlator: '550e8400-e29b-11d4-a716-446655440000'
                   - application-name: 'NonEmbeddedApplication'
                     release-number: '34.1.2'
                     approval-status: 'APPROVED'
                     embedding-status: false
                     reason-of-failure: 'ALT_ALT_SERVING_APPLICATION_RELEASE_NUMBER_UNKNOWN'
+                    x-correlator: '856f5862-d25g-33i5-g345-123456789012'
           headers:
             x-correlator:
               schema:
@@ -1936,6 +2022,12 @@ paths:
                   application/json:
                     schema:
                       type: object
+                      required:
+                        - Authorization
+                        - application-name
+                        - release-number
+                        - operation-name
+                        - method
                       properties:
                         Authorization:
                           type: string
@@ -2041,6 +2133,8 @@ paths:
                             embedding-status:
                               type: string
                             reason-of-failure:
+                              type: string
+                            x-correlator:
                               type: string
                   headers:
                     x-correlator:
@@ -2158,17 +2252,22 @@ paths:
                     reason-of-failure:
                       type: string
                       description: 'from {$RetrievingListOfApplications.responses.body#reason-of-failure}'
+                    x-correlator:
+                      type: string
+                      description: 'from {$RetrievingListOfApplications.responses.body#x-correlator}'
                 example:
                   - application-name: 'EmbeddedApplication'
                     release-number: '17.3.1'
                     approval-status: 'APPROVED'
                     embedding-status: true
                     reason-of-failure: ''
+                    x-correlator: '550e8400-e29b-11d4-a716-446655440000'
                   - application-name: 'NonEmbeddedApplication'
                     release-number: '34.1.2'
                     approval-status: 'APPROVED'
                     embedding-status: false
                     reason-of-failure: 'ALT_ALT_SERVING_APPLICATION_RELEASE_NUMBER_UNKNOWN'
+                    x-correlator: '856f5862-d25g-33i5-g345-123456789012'
           headers:
             x-correlator:
               schema:
@@ -2227,6 +2326,12 @@ paths:
                   application/json:
                     schema:
                       type: object
+                      required:
+                        - Authorization
+                        - application-name
+                        - release-number
+                        - operation-name
+                        - method
                       properties:
                         Authorization:
                           type: string
@@ -2313,12 +2418,17 @@ paths:
                 - $ref: '#/components/parameters/x-correlator'
                 - $ref: '#/components/parameters/trace-indicator'
                 - $ref: '#/components/parameters/customer-journey'
+
               requestBody:
                 required: true
                 content:
                   application/json:
                     schema:
                       type: object
+                      required:
+                        - application-name
+                        - release-number
+                        - approval-status
                       properties:
                         application-name:
                           type: string
@@ -2406,6 +2516,448 @@ paths:
                             embedding-status:
                               type: string
                             reason-of-failure:
+                              type: string
+                            x-correlator:
+                              type: string
+                  headers:
+                    x-correlator:
+                      schema:
+                        type: string
+                        example: '550e8400-e29b-11d4-a716-446655440000'
+                      description: 'UUID for the service execution flow that allows to correlate requests and responses. Its value must be identical at the response compared with its corresponding request'
+                    exec-time:
+                      schema:
+                        type: integer
+                        example: 1100
+                      description: 'Value written by the service provider, reporting the total elapsed time for the execution, including all the additional processing needed to retrieve the data from the backend service. Expressed in milliseconds'
+                    backend-time:
+                      schema:
+                        type: integer
+                        example: 850
+                      description: 'Value written by the service provider, reporting the elapsed time for data retrieval from the backend (service invocation, database access…). Expressed in milliseconds'
+                    life-cycle-state:
+                      schema:
+                        type: string
+                        enum:
+                          - 'EXPERIMENTAL'
+                          - 'OPERATIONAL'
+                          - 'DEPRECATED'
+                          - 'OBSOLETE'
+                          - 'UNKNOWN'
+                          - 'NOT_YET_DEFINED'
+                        example: 'EXPERIMENTAL'
+                      description: 'Life cycle state of the consumed service'
+                '400':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '401':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '403':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '404':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '500':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                default:
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+  /v1/document-embedding-status-in-gui:
+    parameters:
+      - $ref: '#/components/parameters/user'
+      - $ref: '#/components/parameters/originator'
+      - $ref: '#/components/parameters/x-correlator'
+      - $ref: '#/components/parameters/trace-indicator'
+      - $ref: '#/components/parameters/customer-journey'
+    post:
+      operationId: documentEmbeddingStatusInGui
+      summary: 'Initiates authentication of the user and listing the applications in the GUI after updating an embedding status'
+      tags:
+        - IndividualServices
+      security:
+        - basicAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - description: 'IF successfully-embedded == true'
+                  type: object
+                  required:
+                    - application-name
+                    - release-number
+                    - successfully-embedded
+                  properties:
+                    application-name:
+                      type: string
+                      description: 'Name of application that shall be subject to the embedding status change'
+                    release-number:
+                      type: string
+                      pattern: '^([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,2})$'
+                      description: 'Release of application that shall be subject to the embedding status change'
+                    successfully-embedded:
+                      type: boolean
+                      description: 'If true, the application successfully connected with the TinyApplicationController'
+                - description: 'IF successfully-embedded == false'
+                  type: object
+                  required:
+                    - application-name
+                    - release-number
+                    - successfully-embedded
+                    - reason-of-failure
+                  properties:
+                    application-name:
+                      type: string
+                      description: 'Name of application that shall be subject to the embedding status change'
+                    release-number:
+                      type: string
+                      pattern: '^([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,2})$'
+                      description: 'Release of application that shall be subject to the embedding status change'
+                    successfully-embedded:
+                      type: boolean
+                      description: 'If false, the application did not successfully connect with the TinyApplicationController'
+                    reason-of-failure:
+                      type: string
+                      description: 'Only exists, if successfully-embedded==false'
+            examples:
+              if-successful:
+                value:
+                  application-name: 'EmbeddedApplication'
+                  release-number: '23.1.23'
+                  successfully-embedded: true
+              if-unsuccessful:
+                value:
+                  application-name: 'NotEmbeddedApplication'
+                  release-number: '23.1.34'
+                  successfully-embedded: false
+                  reason-of-failure: 'Additional links have to be created in ALT'
+      responses:
+        '200':
+          description: 'Embedding status updated and list of applications provided to GUI'
+          content:
+            application/json:
+              schema:
+                type: array
+                uniqueItems: true
+                items:
+                  type: object
+                  required:
+                    - application-name
+                    - release-number
+                    - approval-status
+                    - embedding-status
+                    - reason-of-failure
+                  properties:
+                    application-name:
+                      type: string
+                      description: 'from {$RetrievingListOfApplications.responses.body#application-name}'
+                    release-number:
+                      type: string
+                      description: 'from {$RetrievingListOfApplications.responses.body#release-number}'
+                    approval-status:
+                      type: string
+                      description: 'from {$RetrievingListOfApplications.responses.body#approval-status}'
+                    embedding-status:
+                      type: string
+                      description: 'from {$RetrievingListOfApplications.responses.body#embedding-status}'
+                    reason-of-failure:
+                      type: string
+                      description: 'from {$RetrievingListOfApplications.responses.body#reason-of-failure}'
+                    x-correlator:
+                      type: string
+                      description: 'from {$RetrievingListOfApplications.responses.body#x-correlator}'
+                example:
+                  - application-name: 'EmbeddedApplication'
+                    release-number: '17.3.1'
+                    approval-status: 'APPROVED'
+                    embedding-status: true
+                    reason-of-failure: ''
+                    x-correlator: '550e8400-e29b-11d4-a716-446655440000'
+                  - application-name: 'NonEmbeddedApplication'
+                    release-number: '34.1.2'
+                    approval-status: 'APPROVED'
+                    embedding-status: false
+                    reason-of-failure: 'ALT_ALT_SERVING_APPLICATION_RELEASE_NUMBER_UNKNOWN'
+                    x-correlator: '856f5862-d25g-33i5-g345-123456789012'
+          headers:
+            x-correlator:
+              schema:
+                type: string
+                example: '550e8400-e29b-11d4-a716-446655440000'
+              description: 'UUID for the service execution flow that allows to correlate requests and responses. Its value must be identical at the response compared with its corresponding request'
+            exec-time:
+              schema:
+                type: integer
+                example: 1100
+              description: 'Value written by the service provider, reporting the total elapsed time for the execution, including all the additional processing needed to retrieve the data from the backend service. Expressed in milliseconds'
+            backend-time:
+              schema:
+                type: integer
+                example: 850
+              description: 'Value written by the service provider, reporting the elapsed time for data retrieval from the backend (service invocation, database access…). Expressed in milliseconds'
+            life-cycle-state:
+              schema:
+                type: string
+                enum:
+                  - 'EXPERIMENTAL'
+                  - 'OPERATIONAL'
+                  - 'DEPRECATED'
+                  - 'OBSOLETE'
+                  - 'UNKNOWN'
+                  - 'NOT_YET_DEFINED'
+                example: 'EXPERIMENTAL'
+              description: >
+                  'Life cycle state of the consumed service
+                  find in [/core-model-1-4:control-construct/logical-termination-point=tar-2-1-0-op-s-is-073/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
+        '400':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '401':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '403':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '404':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '500':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        default:
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+      callbacks:
+        GuiRequestForDocumentingAnEmbeddingStatusChangeCauses:
+          Authentication: #[/core-model-1-4:control-construct/logical-termination-point=tar-2-1-0-tcp-c-aa-2-0-1-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point=tar-2-1-0-tcp-c-aa-2-0-1-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address or /core-model-1-4:control-construct/logical-termination-point=tar-2-1-0-tcp-c-aa-2-0-1-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name]:[/core-model-1-4:control-construct/logical-termination-point=tar-2-1-0-tcp-c-aa-2-0-1-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/core-model-1-4:control-construct/logical-termination-point=tar-2-1-0-op-c-bs-aa-2-0-1-000/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]
+            post:
+              parameters:
+                - $ref: '#/components/parameters/user'
+                - $ref: '#/components/parameters/originator'
+                - $ref: '#/components/parameters/x-correlator'
+                - $ref: '#/components/parameters/trace-indicator'
+                - $ref: '#/components/parameters/customer-journey'
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      required:
+                        - Authorization
+                        - application-name
+                        - release-number
+                        - operation-name
+                        - method
+                      properties:
+                        Authorization:
+                          type: string
+                          description: >
+                            'Authorization code of administrator, who is using the GUI
+                            from {$request.parameters.basicAuth}'
+                        application-name:
+                          type: string
+                          description: >
+                            'Name of application inquiring for approval of the BasicAuth request
+                            from [/core-model-1-4:control-construct/logical-termination-point=tar-2-1-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/application-name]'
+                        release-number:
+                          type: string
+                          description: >
+                            'Release of application inquiring for approval of the BasicAuth request
+                            from [/core-model-1-4:control-construct/logical-termination-point=tar-2-1-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/release-number]'
+                        operation-name:
+                          type: string
+                          description: >
+                            'Path (could be service, could be OaM) that has been addressed by the BasicAuth request
+                            from [/core-model-1-4:control-construct/logical-termination-point=tar-2-1-0-op-c-is-tar-2-1-0-001/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]'
+                        method:
+                          type: string
+                          enum:
+                            - 'POST'
+              responses:
+                '200':
+                  description: 'Response on inquiry for approval of a BasicAuth request provided'
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          basic-auth-request-is-approved:
+                            type: boolean
+                          reason-of-objection:
+                            type: string
+                  headers:
+                    x-correlator:
+                      schema:
+                        type: string
+                        example: '550e8400-e29b-11d4-a716-446655440000'
+                      description: 'UUID for the service execution flow that allows to correlate requests and responses. Its value must be identical at the response compared with its corresponding request'
+                    exec-time:
+                      schema:
+                        type: integer
+                        example: 1100
+                      description: 'Value written by the service provider, reporting the total elapsed time for the execution, including all the additional processing needed to retrieve the data from the backend service. Expressed in milliseconds'
+                    backend-time:
+                      schema:
+                        type: integer
+                        example: 850
+                      description: 'Value written by the service provider, reporting the elapsed time for data retrieval from the backend (service invocation, database access…). Expressed in milliseconds'
+                    life-cycle-state:
+                      schema:
+                        type: string
+                        enum:
+                          - 'EXPERIMENTAL'
+                          - 'OPERATIONAL'
+                          - 'DEPRECATED'
+                          - 'OBSOLETE'
+                          - 'UNKNOWN'
+                          - 'NOT_YET_DEFINED'
+                        example: 'EXPERIMENTAL'
+                      description: 'Life cycle state of the consumed service'
+                '400':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '401':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '403':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '404':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '500':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                default:
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+          DocumentingEmbeddingStatus: #[/core-model-1-4:control-construct/logical-termination-point=tar-2-1-0-http-c-tar-2-1-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point=tar-2-1-0-http-c-tar-2-1-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address or /core-model-1-4:control-construct/logical-termination-point=tar-2-1-0-http-c-tar-2-1-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name]:[/core-model-1-4:control-construct/logical-termination-point=tar-2-1-0-http-c-tar-2-1-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/core-model-1-4:control-construct/logical-termination-point=tar-2-1-0-op-c-is-tar-2-1-0-002/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]
+            description: 'NOT to be sent, if {$Authentication.responses.body#basic-auth-request-is-approved}==false'
+            post:
+              parameters:
+                - $ref: '#/components/parameters/user'
+                - $ref: '#/components/parameters/originator'
+                - $ref: '#/components/parameters/x-correlator'
+                - $ref: '#/components/parameters/trace-indicator'
+                - $ref: '#/components/parameters/customer-journey'
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      oneOf:
+                        - description: 'Manually via GUI IF successfully-embedded == true'
+                          type: object
+                          required:
+                            - application-name
+                            - release-number
+                            - successfully-embedded
+                          additionalProperties: false
+                          properties:
+                            application-name:
+                              type: string
+                              description: >
+                                'Name of application that shall be subject to the embedding status change
+                                from {$request.body#application-name}'
+                            release-number:
+                              type: string
+                              description: >
+                                'Release of application that shall be subject to the embedding status change
+                                from {$request.body#release-number}'
+                            successfully-embedded:
+                              type: boolean
+                              description: >
+                                'If true, the application successfully embedded into the MW SDN application layer
+                                from {$request.body#successfully-embedded}'
+                        - description: 'Manually via GUI IF successfully-embedded == false'
+                          type: object
+                          required:
+                            - application-name
+                            - release-number
+                            - successfully-embedded
+                            - reason-of-failure
+                          additionalProperties: false
+                          properties:
+                            application-name:
+                              type: string
+                              description: >
+                                'Name of application that shall be subject to the embedding status change
+                                from {$request.body#application-name}'
+                            release-number:
+                              type: string
+                              description: >
+                                'Release of application that shall be subject to the embedding status change
+                                from {$request.body#release-number}'
+                            successfully-embedded:
+                              type: boolean
+                              description: >
+                                'If false, the application did not successfully embedded into the MW SDN application layer
+                                from {$request.body#successfully-embedded}'
+                            reason-of-failure:
+                              type: string
+                              description: >
+                                'Only exists, if successfully-embedded==false
+                                from {$request.body#reason-of-failure}'
+              responses:
+                '204':
+                  description: 'Embedding status documented'
+                  headers:
+                    x-correlator:
+                      schema:
+                        type: string
+                        example: '550e8400-e29b-11d4-a716-446655440000'
+                      description: 'UUID for the service execution flow that allows to correlate requests and responses. Its value must be identical at the response compared with its corresponding request'
+                    exec-time:
+                      schema:
+                        type: integer
+                        example: 1100
+                      description: 'Value written by the service provider, reporting the total elapsed time for the execution, including all the additional processing needed to retrieve the data from the backend service. Expressed in milliseconds'
+                    backend-time:
+                      schema:
+                        type: integer
+                        example: 850
+                      description: 'Value written by the service provider, reporting the elapsed time for data retrieval from the backend (service invocation, database access…). Expressed in milliseconds'
+                    life-cycle-state:
+                      schema:
+                        type: string
+                        enum:
+                          - 'EXPERIMENTAL'
+                          - 'OPERATIONAL'
+                          - 'DEPRECATED'
+                          - 'OBSOLETE'
+                          - 'UNKNOWN'
+                          - 'NOT_YET_DEFINED'
+                        example: 'EXPERIMENTAL'
+                      description: 'Life cycle state of the consumed service'
+                '400':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '401':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '403':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '404':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '500':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                default:
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+          RetrievingListOfApplications: #[/core-model-1-4:control-construct/logical-termination-point=tar-2-1-0-http-c-tar-2-1-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point=tar-2-1-0-http-c-tar-2-1-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address or /core-model-1-4:control-construct/logical-termination-point=tar-2-1-0-http-c-tar-2-1-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name]:[/core-model-1-4:control-construct/logical-termination-point=tar-2-1-0-http-c-tar-2-1-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/core-model-1-4:control-construct/logical-termination-point=tar-2-1-0-op-c-is-tar-2-1-0-000/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]
+            description: 'NOT to be sent, if {$Authentication.responses.body#basic-auth-request-is-approved}==false'
+            post:
+              parameters:
+                - $ref: '#/components/parameters/user'
+                - $ref: '#/components/parameters/originator'
+                - $ref: '#/components/parameters/x-correlator'
+                - $ref: '#/components/parameters/trace-indicator'
+                - $ref: '#/components/parameters/customer-journey'
+              responses:
+                '200':
+                  description: 'List of applications provided'
+                  content:
+                    application/json:
+                      schema:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            application-name:
+                              type: string
+                            release-number:
+                              type: string
+                            approval-status:
+                              type: string
+                            embedding-status:
+                              type: string
+                            reason-of-failure:
+                              type: string
+                            x-correlator:
                               type: string
                   headers:
                     x-correlator:
@@ -2800,6 +3352,16 @@ paths:
                   application/json:
                     schema:
                       type: object
+                      required:
+                        - application-name
+                        - release-number
+                        - embedding-operation
+                        - client-update-operation
+                        - operation-client-update-operation
+                        - dispose-remainders-operation
+                        - preceding-release-operation
+                        - subsequent-release-operation
+                        - tcp-server
                       properties:
                         application-name:
                           type: string
@@ -3949,6 +4511,12 @@ paths:
                   application/json:
                     schema:
                       type: object
+                      required:
+                        - Authorization
+                        - application-name
+                        - release-number
+                        - operation-name
+                        - method
                       properties:
                         Authorization:
                           type: string
@@ -3983,16 +4551,28 @@ paths:
                   content:
                     application/json:
                       schema:
-                        type: object
-                        properties:
-                          basic-auth-request-is-approved:
-                            type: boolean
-                            description: 'If true, BasicAuth request can be executed'
-                          reason-of-objection:
-                            type: string
-                            description: >
-                              'if AUTHORIZATION_CODE_UNKNOWN BasicAuth request to be aborted and 401 to be sent
-                              else BasicAuth request to be aborted and 403 to be sent'
+                        oneOf:
+                          - description: 'AdministratorAdministration is responding'
+                            type: object
+                            properties:
+                              oam-request-is-approved:
+                                type: boolean
+                              reason-of-objection:
+                                type: string
+                                description: >
+                                  'This attribute to be represented, if response::oam-request-is-approved==false.
+                                  Reasons to be checked and indicated according to the sequence defined in the enumeration.'
+                          - description: 'AccessAdministration is responding'
+                            type: object
+                            properties:
+                              basic-auth-request-is-approved:
+                                type: boolean
+                                description: 'If true, BasicAuth request can be executed'
+                              reason-of-objection:
+                                type: string
+                                description: >
+                                  'if AUTHORIZATION_CODE_UNKNOWN BasicAuth request to be aborted and 401 to be sent
+                                  else BasicAuth request to be aborted and 403 to be sent'
                   headers:
                     x-correlator:
                       schema:
@@ -5639,6 +6219,12 @@ paths:
                   application/json:
                     schema:
                       type: object
+                      required:
+                        - Authorization
+                        - application-name
+                        - release-number
+                        - operation-name
+                        - method
                       properties:
                         Authorization:
                           type: string
@@ -5813,8 +6399,6 @@ paths:
       summary: 'Provides name and number of the preceding release'
       tags:
         - BasicServices
-      security:
-        - apiKeyAuth: []
       responses:
         '200':
           description: 'Name and number of the preceding release provided'
@@ -5946,7 +6530,7 @@ paths:
                       description: >
                         'Domain name to be used during the bequeath-your-data-and-die process
                         update [/core-model-1-4:control-construct/logical-termination-point=tar-2-1-0-tcp-c-nr-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name]'
-                future-port:
+                port:
                   type: integer
                   minimum: 0
                   maximum: 65535

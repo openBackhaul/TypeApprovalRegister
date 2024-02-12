@@ -1,6 +1,25 @@
 forwardings:
 
   - forwarding-name: PromptForRegisteringCausesRegistrationRequest
+    uuid: tar-2-1-0-op-fc-bm-999
+    forwarding-type: InvariantProcessSnippet
+    management-requests:
+      operation-client-update:
+        - server-name: /v1/register-yourself
+          uuid: tar-2-1-0-op-s-bm-000
+      fc-port-update:
+        - server-name: /v1/register-yourself
+          uuid: tar-2-1-0-op-s-bm-000
+      fc-port-deletion:
+      operation-client-deletion:
+    initiating-requests:
+      - server-name: /v1/register-yourself
+        uuid: tar-2-1-0-op-s-bm-000
+    consequent-requests:
+      - client-name: RegistryOffice://v2/register-application
+        uuid: tar-2-1-0-op-c-bm-ro-2-1-0-000
+
+  - forwarding-name: PromptForRegisteringCausesRegistrationRequest2
     uuid: tar-2-1-0-op-fc-bm-000
     forwarding-type: InvariantProcessSnippet
     management-requests:
@@ -71,6 +90,12 @@ forwardings:
         uuid: tar-2-1-0-op-s-bm-011
       - server-name: /v1/inquire-basic-auth-approvals
         uuid: tar-2-1-0-op-s-bm-012
+      - server-name: /v1/dispose-remainders-of-deregistered-application
+        uuid: tar-2-1-0-op-s-bm-013
+      - server-name: /v1/inform-about-preceding-release
+        uuid: tar-2-1-0-op-s-bm-014
+      - server-name: /v1/update-client-of-subsequent-release
+        uuid: tar-2-1-0-op-s-bm-015
       - server-name: /v1/bequeath-your-data-and-die
         uuid: tar-2-1-0-op-s-im-000
       - server-name: /v1/start-application-in-generic-representation
@@ -105,6 +130,8 @@ forwardings:
         uuid: tar-2-1-0-op-s-is-071
       - server-name: /v1/approve-application-in-gui
         uuid: tar-2-1-0-op-s-is-072
+      - server-name: /v1/document-embedding-status-in-gui
+        uuid: tar-2-1-0-op-s-is-073
     consequent-requests:
       - client-name: ExecutionAndTraceLog://v1/record-service-request
         uuid: tar-2-1-0-op-c-bs-eatl-2-0-1-000
@@ -144,7 +171,12 @@ forwardings:
       fc-port-deletion:
       operation-client-deletion:
     initiating-requests:
-      # [all oam requests]
+      - server-name: /v1/list-applications-in-gui
+        uuid: tar-2-1-0-op-s-is-071
+      - server-name: /v1/approve-application-in-gui
+        uuid: tar-2-1-0-op-s-is-072
+      - server-name: /v1/document-embedding-status-in-gui
+        uuid: tar-2-1-0-op-s-is-073
     consequent-requests:
       - client-name: AdministratorAdministration://v1/approve-oam-request
         uuid: tar-2-1-0-op-c-bs-aa-2-0-1-000
@@ -312,6 +344,8 @@ forwardings:
         uuid: tar-2-1-0-op-s-bm-011
       - server-name: /v1/inquire-basic-auth-approvals
         uuid: tar-2-1-0-op-s-bm-012
+      - server-name: /v1/update-client-of-subsequent-release
+        uuid: tar-2-1-0-op-s-bm-015
       - server-name: /v1/bequeath-your-data-and-die
         uuid: tar-2-1-0-op-s-im-000
       - server-name: /v1/redirect-info-about-approval-status-changes
@@ -335,6 +369,8 @@ forwardings:
     initiating-requests:
       - server-name: /v1/dispose-remainders-of-deregistered-application
         uuid: tar-2-1-0-op-s-bm-013
+      - server-name: /v1/disregard-application
+        uuid: tar-2-1-0-op-s-is-002
     consequent-requests:
       - client-name: ApplicationLayerTopology://v1/delete-ltp-and-dependents
         uuid: tar-2-1-0-op-c-bm-alt-2-0-1-002
@@ -527,7 +563,7 @@ forwardings:
       - server-name: /v1/list-applications-in-gui
         uuid: tar-2-1-0-op-s-is-071
     consequent-requests:
-      - client-name: AA://v1/approve-basic-auth-request
+      - client-name: AA://v1/approve-oam-request
         uuid: tar-2-1-0-op-c-bs-aa-2-0-1-000
 
   - forwarding-name: GuiRequestForVisualizingListOfApplicationsCauses.RetrievingListOfApplications
@@ -557,7 +593,7 @@ forwardings:
       - server-name: /v1/approve-application-in-gui
         uuid: tar-2-1-0-op-s-is-072
     consequent-requests:
-      - client-name: AA://v1/approve-basic-auth-request
+      - client-name: AA://v1/approve-oam-request
         uuid: tar-2-1-0-op-c-bs-aa-2-0-1-000
 
   - forwarding-name: GuiRequestForDocumentingAnApprovalStatusChangeCauses.DocumentingApprovalStatus
@@ -586,6 +622,51 @@ forwardings:
     initiating-requests:
       - server-name: /v1/approve-application-in-gui
         uuid: tar-2-1-0-op-s-is-072
+    consequent-requests:
+      - client-name: TAR://v1/list-applications
+        uuid: tar-2-1-0-op-c-is-tar-2-1-0-000
+
+  - forwarding-name: GuiRequestForDocumentingAnEmbeddingStatusChangeCauses.Authentication
+    uuid: tar-2-1-0-op-fc-is-080
+    forwarding-type: InvariantProcessSnippet
+    management-requests:
+      operation-client-update:
+      fc-port-update:
+      fc-port-deletion:
+      operation-client-deletion:
+    initiating-requests:
+      - server-name: /v1/document-embedding-status-in-gui
+        uuid: tar-2-1-0-op-s-is-073
+    consequent-requests:
+      - client-name: AA://v1/approve-oam-request
+        uuid: tar-2-1-0-op-c-bs-aa-2-0-1-000
+
+  - forwarding-name: GuiRequestForDocumentingAnEmbeddingStatusChangeCauses.DocumentingEmbeddingStatus
+    uuid: tar-2-1-0-op-fc-is-081
+    forwarding-type: InvariantProcessSnippet
+    management-requests:
+      operation-client-update:
+      fc-port-update:
+      fc-port-deletion:
+      operation-client-deletion:
+    initiating-requests:
+      - server-name: /v1/document-embedding-status-in-gui
+        uuid: tar-2-1-0-op-s-is-073
+    consequent-requests:
+      - client-name: TAR://v1/document-embedding-status
+        uuid: tar-2-1-0-op-c-is-tar-2-1-0-002
+
+  - forwarding-name: GuiRequestForDocumentingAnEmbeddingStatusChangeCauses.RetrievingListOfApplications
+    uuid: tar-2-1-0-op-fc-is-082
+    forwarding-type: InvariantProcessSnippet
+    management-requests:
+      operation-client-update:
+      fc-port-update:
+      fc-port-deletion:
+      operation-client-deletion:
+    initiating-requests:
+      - server-name: /v1/document-embedding-status-in-gui
+        uuid: tar-2-1-0-op-s-is-073
     consequent-requests:
       - client-name: TAR://v1/list-applications
         uuid: tar-2-1-0-op-c-is-tar-2-1-0-000

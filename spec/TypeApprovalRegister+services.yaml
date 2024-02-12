@@ -72,10 +72,12 @@ servers:
           uuid: tar-2-1-0-op-s-is-071
         - operation-name: /v1/approve-application-in-gui
           uuid: tar-2-1-0-op-s-is-072
+        - operation-name: /v1/document-embedding-status-in-gui
+          uuid: tar-2-1-0-op-s-is-073
 
   http-server:
     own-application-name: TypeApprovalRegister
-    own-release-number: 2.1.0
+    own-release-number: 2.1.1
     uuid: tar-2-1-0-http-s-000
   tpc-server:
     - description: Without TLS layer
@@ -108,7 +110,7 @@ clients:
 
   - http-client:
       application-name: NewRelease
-      release-number: 2.1.0
+      release-number: 2.1.1
       uuid: tar-2-1-0-http-c-nr-2-1-0-000
     tcp-client:
       remote-protocol: http
@@ -180,6 +182,8 @@ clients:
             uuid: tar-2-1-0-op-c-is-tar-2-1-0-000
           - operation-name: /v1/document-approval-status
             uuid: tar-2-1-0-op-c-is-tar-2-1-0-001
+          - operation-name: /v1/document-embedding-status
+            uuid: tar-2-1-0-op-c-is-tar-2-1-0-002
 
   - http-client:
       application-name: ExecutionAndTraceLog
