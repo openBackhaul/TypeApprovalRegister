@@ -27,6 +27,43 @@ const createHttpError = require('http-errors');
 const TcpObject = require('onf-core-model-ap/applicationPattern/onfModel/services/models/TcpObject');
 
 /**
+ * Initiates authentication of the user and listing the applications in the GUI after updating an approval status
+ *
+ * body V1_approveapplicationingui_body 
+ * user String User identifier from the system starting the service call
+ * originator String 'Identification for the system consuming the API, as defined in  [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/application-name]' 
+ * xCorrelator String UUID for the service execution flow that allows to correlate requests and responses
+ * traceIndicator String Sequence of request numbers along the flow
+ * customerJourney String Holds information supporting customer’s journey to which the execution applies
+ * returns List
+ **/
+exports.approveApplicationInGui = function(body,user,originator,xCorrelator,traceIndicator,customerJourney) {
+  return new Promise(function(resolve, reject) {
+    var examples = {};
+    examples['application/json'] = [ {
+  "application-name" : "EmbeddedApplication",
+  "release-number" : "17.3.1",
+  "approval-status" : "APPROVED",
+  "embedding-status" : true,
+  "reason-of-failure" : "",
+  "x-correlator" : "550e8400-e29b-11d4-a716-446655440000"
+}, {
+  "application-name" : "NonEmbeddedApplication",
+  "release-number" : "34.1.2",
+  "approval-status" : "APPROVED",
+  "embedding-status" : false,
+  "reason-of-failure" : "ALT_ALT_SERVING_APPLICATION_RELEASE_NUMBER_UNKNOWN",
+  "x-correlator" : "856f5862-d25g-33i5-g345-123456789012"
+} ];
+    if (Object.keys(examples).length > 0) {
+      resolve(examples[Object.keys(examples)[0]]);
+    } else {
+      resolve();
+    }
+  });
+}
+
+/**
  * Initiates process of embedding a new releasefv
  *
  * body V1_bequeathyourdataanddie_body 
@@ -285,6 +322,60 @@ exports.documentApprovalStatus = function (body, user, originator, xCorrelator, 
 }
 
 /**
+ * Updates the embedding status of an application
+ *
+ * body V1_documentembeddingstatus_body 
+ * user String User identifier from the system starting the service call
+ * originator String 'Identification for the system consuming the API, as defined in  [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/application-name]' 
+ * xCorrelator String 'UUID for the service execution flow that allows to correlate requests and responses update in LOADfile' 
+ * traceIndicator String Sequence of request numbers along the flow
+ * customerJourney String Holds information supporting customer’s journey to which the execution applies
+ * no response value expected for this operation
+ **/
+exports.documentEmbeddingStatus = function(body,user,originator,xCorrelator,traceIndicator,customerJourney) {
+  return new Promise(function(resolve, reject) {
+    resolve();
+  });
+}
+
+/**
+ * Initiates authentication of the user and listing the applications in the GUI after updating an embedding status
+ *
+ * body V1_documentembeddingstatusingui_body 
+ * user String User identifier from the system starting the service call
+ * originator String 'Identification for the system consuming the API, as defined in  [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/application-name]' 
+ * xCorrelator String UUID for the service execution flow that allows to correlate requests and responses
+ * traceIndicator String Sequence of request numbers along the flow
+ * customerJourney String Holds information supporting customer’s journey to which the execution applies
+ * returns List
+ **/
+exports.documentEmbeddingStatusInGui = function(body,user,originator,xCorrelator,traceIndicator,customerJourney) {
+  return new Promise(function(resolve, reject) {
+    var examples = {};
+    examples['application/json'] = [ {
+  "application-name" : "EmbeddedApplication",
+  "release-number" : "17.3.1",
+  "approval-status" : "APPROVED",
+  "embedding-status" : true,
+  "reason-of-failure" : "",
+  "x-correlator" : "550e8400-e29b-11d4-a716-446655440000"
+}, {
+  "application-name" : "NonEmbeddedApplication",
+  "release-number" : "34.1.2",
+  "approval-status" : "APPROVED",
+  "embedding-status" : false,
+  "reason-of-failure" : "ALT_ALT_SERVING_APPLICATION_RELEASE_NUMBER_UNKNOWN",
+  "x-correlator" : "856f5862-d25g-33i5-g345-123456789012"
+} ];
+    if (Object.keys(examples).length > 0) {
+      resolve(examples[Object.keys(examples)[0]]);
+    } else {
+      resolve();
+    }
+  });
+}
+
+/**
  * Provides list of applications
  *
  * returns List
@@ -303,6 +394,42 @@ exports.listApplications = async function () {
     throw new createHttpError.InternalServerError("Application data does not exist");
   }
   return applicationDataUpdateReleaseNumberKey;
+}
+
+/**
+ * Initiates authentication of the user and listing the applications in the GUI
+ *
+ * user String User identifier from the system starting the service call
+ * originator String 'Identification for the system consuming the API, as defined in  [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/application-name]' 
+ * xCorrelator String UUID for the service execution flow that allows to correlate requests and responses
+ * traceIndicator String Sequence of request numbers along the flow
+ * customerJourney String Holds information supporting customer’s journey to which the execution applies
+ * returns List
+ **/
+exports.listApplicationsInGui = function(user,originator,xCorrelator,traceIndicator,customerJourney) {
+  return new Promise(function(resolve, reject) {
+    var examples = {};
+    examples['application/json'] = [ {
+  "application-name" : "EmbeddedApplication",
+  "release-number" : "17.3.1",
+  "approval-status" : "APPROVED",
+  "embedding-status" : true,
+  "reason-of-failure" : "",
+  "x-correlator" : "550e8400-e29b-11d4-a716-446655440000"
+}, {
+  "application-name" : "NonEmbeddedApplication",
+  "release-number" : "34.1.2",
+  "approval-status" : "APPROVED",
+  "embedding-status" : false,
+  "reason-of-failure" : "ALT_ALT_SERVING_APPLICATION_RELEASE_NUMBER_UNKNOWN",
+  "x-correlator" : "856f5862-d25g-33i5-g345-123456789012"
+} ];
+    if (Object.keys(examples).length > 0) {
+      resolve(examples[Object.keys(examples)[0]]);
+    } else {
+      resolve();
+    }
+  });
 }
 
 /**
