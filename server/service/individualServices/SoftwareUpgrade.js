@@ -47,11 +47,11 @@ exports.upgradeSoftwareVersion = async function (user, xCorrelator, traceIndicat
  * @param {String} customerJourney Holds information supporting customer’s journey to which the execution applies
  * The following are the list of forwarding-construct that will be automated to transfer the data from this current release to next release
  * 1. PromptForBequeathingDataCausesNewTARbeingRequestedToRedirectInfoAboutApprovals
- * 2. PromptForBequeathingDataCausesTransferOfListOfAlreadyGrantedTypeApprovals
+ * 2. PromptForBequeathingDataCausesTransferOfListOfApplications
  */
 async function transferDataToTheNewRelease(user, xCorrelator, traceIndicator, customerJourney) {
     await PromptForBequeathingDataCausesNewTARbeingRequestedToRedirectInfoAboutApprovals(user, xCorrelator, traceIndicator, customerJourney);
-    await PromptForBequeathingDataCausesTransferOfListOfAlreadyGrantedTypeApprovals(user, xCorrelator, traceIndicator, customerJourney);
+    await PromptForBequeathingDataCausesTransferOfListOfApplications(user, xCorrelator, traceIndicator, customerJourney);
 }
 
 /**
@@ -156,21 +156,21 @@ async function PromptForBequeathingDataCausesNewTARbeingRequestedToRedirectInfoA
 }
 
 /**
- * Prepare attributes and automate PromptForBequeathingDataCausesTransferOfListOfAlreadyGrantedTypeApprovals<br>
+ * Prepare attributes and automate PromptForBequeathingDataCausesTransferOfListOfApplications<br>
  * @param {String} user User identifier from the system starting the service call
  * @param {String} xCorrelator UUID for the service execution flow that allows to correlate requests and responses
  * @param {String} traceIndicator Sequence of request numbers along the flow
  * @param {String} customerJourney Holds information supporting customer’s journey to which the execution applies
  * @returns {boolean} return true if the operation is success or else return false
  */
-async function PromptForBequeathingDataCausesTransferOfListOfAlreadyGrantedTypeApprovals(user, xCorrelator, traceIndicator, customerJourney) {
+async function PromptForBequeathingDataCausesTransferOfListOfApplications(user, xCorrelator, traceIndicator, customerJourney) {
     return new Promise(async function (resolve, reject) {
         try {
             let result = true;
             let applicationName 
             let releaseNumber
             let approvalStatus
-            let forwardingKindNameOfTheBequeathOperation = "PromptForBequeathingDataCausesTransferOfListOfAlreadyGrantedTypeApprovals";
+            let forwardingKindNameOfTheBequeathOperation = "PromptForBequeathingDataCausesTransferOfListOfApplications";
 
             /***********************************************************************************
              * Preparing requestBody and transfering the data one by one
@@ -188,7 +188,7 @@ async function PromptForBequeathingDataCausesTransferOfListOfAlreadyGrantedTypeA
                 approvalStatus = applicationDataItem['approval-status'];
 
                 /***********************************************************************************
-                 * PromptForBequeathingDataCausesTransferOfListOfAlreadyGrantedTypeApprovals
+                 * PromptForBequeathingDataCausesTransferOfListOfApplications
                  *   /v1/document-approval-status
                  ************************************************************************************/
                 let requestBody = {};
@@ -446,25 +446,26 @@ async function promptForBequeathingDataCausesRequestForBroadcastingInfoAboutServ
                 let newReleaseHttpClientLtpUuid = HttpClientLtpUuidFromForwarding[0];
                 let newReleaseTcpClientUuid = (await logicalTerminationPoint.getServerLtpListAsync(newReleaseHttpClientLtpUuid))[0];
 
-                let applicationName = await httpServerInterface.getApplicationNameAsync();
-                let oldReleaseNumber = await httpServerInterface.getReleaseNumberAsync();
-                let newApplicationName = await httpClientInterface.getApplicationNameAsync(newReleaseHttpClientLtpUuid)
-                let newReleaseNumber = await httpClientInterface.getReleaseNumberAsync(newReleaseHttpClientLtpUuid);
-                let applicationAddress = await tcpClientInterface.getRemoteAddressAsync(newReleaseTcpClientUuid);
-                let applicationPort = await tcpClientInterface.getRemotePortAsync(newReleaseTcpClientUuid);
-                let applicationProtocol = await tcpClientInterface.getRemoteProtocolAsync(newReleaseTcpClientUuid);
+                let currentApplicationName = await httpServerInterface.getApplicationNameAsync();
+                let currentReleaseNumber = await httpServerInterface.getReleaseNumberAsync();
+                let futureAddress = await tcpClientInterface.getRemoteAddressAsync(newReleaseTcpClientUuid);
+                let futureApplicationName = await httpClientInterface.getApplicationNameAsync(newReleaseHttpClientLtpUuid)
+                let futurePort = await tcpClientInterface.getRemotePortAsync(newReleaseTcpClientUuid);
+                let futureProtocol = await tcpClientInterface.getRemoteProtocolAsync(newReleaseTcpClientUuid);
+                let futureReleaseNumber = await httpClientInterface.getReleaseNumberAsync(newReleaseHttpClientLtpUuid);
+
                 /***********************************************************************************
                  * PromptForBequeathingDataCausesRequestForBroadcastingInfoAboutServerReplacement
                  *   /v1/relay-server-replacement
                  ************************************************************************************/
                 let requestBody = {};
-                requestBody.currentApplicationName = applicationName;
-                requestBody.currentReleaseNumber = oldReleaseNumber;
-                requestBody.futureReleaseNumber = newReleaseNumber;
-                requestBody.futureApplicationName = newApplicationName;
-                requestBody.futureAddress = applicationAddress;
-                requestBody.futurePort= applicationPort;
-                requestBody.futureProtocol= applicationProtocol;
+                requestBody.currentApplicationName = currentApplicationName;
+                requestBody.currentReleaseNumber = currentReleaseNumber;
+                requestBody.futureAddress = futureAddress;
+                requestBody.futureApplicationName = futureApplicationName;
+                requestBody.futurePort = futurePort;
+                requestBody.futureProtocol = futureProtocol;
+                requestBody.futureReleaseNumber = futureReleaseNumber;
 
                 requestBody = onfAttributeFormatter.modifyJsonObjectKeysToKebabCase(requestBody);
                 result = await forwardRequest(
