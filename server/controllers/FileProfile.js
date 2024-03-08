@@ -31,12 +31,17 @@ module.exports.getFileProfileFileIdentifier = async function getFileProfileFileI
   oamLogService.recordOamRequest(req.url, req.body, responseCode, req.headers.authorization, req.method);
 };
 
-module.exports.getFileProfileFileName = function getFileProfileFileName (req, res, next, uuid) {
-  FileProfile.getFileProfileFileName(uuid)
+module.exports.getFileProfileFileName = async function getFileProfileFileName(req, res, next, uuid) {
+  let responseCode = responseCodeEnum.code.OK;
+  await FileProfile.getFileProfileFileName(req.url)
     .then(function (response) {
+      responseBuilder.buildResponse(res, responseCode, response);
     })
     .catch(function (response) {
+      let sentResp = responseBuilder.buildResponse(res, undefined, response);
+      responseCode = sentResp.code;
     });
+  oamLogService.recordOamRequest(req.url, req.body, responseCode, req.headers.authorization, req.method);
 };
 
 module.exports.getFileProfileOperation = async function getFileProfileOperation(req, res, next, uuid) {
@@ -52,12 +57,17 @@ module.exports.getFileProfileOperation = async function getFileProfileOperation(
   oamLogService.recordOamRequest(req.url, req.body, responseCode, req.headers.authorization, req.method);
 };
 
-module.exports.putFileProfileFileName = function putFileProfileFileName (req, res, next, body, uuid) {
-  FileProfile.putFileProfileFileName(body, uuid)
+module.exports.putFileProfileFileName = async function putFileProfileFileName(req, res, next, body, uuid) {
+  let responseCode = responseCodeEnum.code.NO_CONTENT;
+  await FileProfile.putFileProfileFileName(req.url, body)
     .then(function (response) {
+      responseBuilder.buildResponse(res, responseCode, response);
     })
     .catch(function (response) {
+      let sentResp = responseBuilder.buildResponse(res, undefined, response);
+      responseCode = sentResp.code;
     });
+  oamLogService.recordOamRequest(req.url, req.body, responseCode, req.headers.authorization, req.method);
 };
 
 module.exports.putFileProfileOperation = async function putFileProfileOperation(req, res, next, body, uuid) {

@@ -57,16 +57,21 @@ exports.getFileProfileFileIdentifier = function(url) {
  * uuid String 
  * returns inline_response_200_22
  **/
-exports.getFileProfileFileName = function(uuid) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = {
-  "file-profile-1-0:file-name" : "application-data.json"
-};
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
+exports.getFileProfileFileName = function(url) {
+  return new Promise(async function (resolve, reject) {
+    try{
+      var value = await fileOperation.readFromDatabaseAsync(url);
+      var response = {};
+      response['application/json'] = {
+        "file-profile-1-0:file-name": value
+      };
+      if (Object.keys(response).length > 0) {
+        resolve(response[Object.keys(response)[0]]);
+      } else {
+        resolve();
+      }
+    }catch (error) {
+      reject();
     }
   });
 }
@@ -103,9 +108,14 @@ exports.getFileProfileOperation = function(url) {
  * uuid String 
  * no response value expected for this operation
  **/
-exports.putFileProfileFileName = function(body,uuid) {
-  return new Promise(function(resolve, reject) {
-    resolve();
+exports.putFileProfileFileName = function(url, body) {
+  return new Promise(async function (resolve, reject) {
+    try {
+      await fileOperation.writeToDatabaseAsync(url, body, false);
+      resolve();
+    } catch (error) {
+      reject();
+    }
   });
 }
 
