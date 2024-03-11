@@ -14,7 +14,6 @@ const onfAttributes = require('onf-core-model-ap/applicationPattern/onfModel/con
 const OperationServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/OperationServerInterface');
 const FcPort = require('onf-core-model-ap/applicationPattern/onfModel/models/FcPort');
 const eventDispatcher = require('onf-core-model-ap/applicationPattern/rest/client/eventDispatcher');
-const individualServices = require('../IndividualServicesService')
 const forwardingKindNameForBequeathingDataCausesNewTAR= "PromptForBequeathingDataCausesNewTARbeingRequestedToRedirectInfoAboutApprovals"
 const fileProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/FileProfile');
 const prepareApplicationData = require('./PrepareApplicationData');
@@ -232,12 +231,11 @@ async function PromptForBequeathingDataCausesRObeingRequestedToInquireForApplica
              * Preparing requestBody 
              ************************************************************************************/
             try {
-                let HttpClientLtpUuidFromForwarding  = await individualServices.resolveHttpClientLtpUuidFromForwardingName(forwardingKindNameForBequeathingDataCausesNewTAR)
-                if (HttpClientLtpUuidFromForwarding == undefined) {
+                let newReleaseHttpClientLtpUuid  = await httpClientInterface.getHttpClientUuidFromForwarding(forwardingKindNameForBequeathingDataCausesNewTAR)
+                if (newReleaseHttpClientLtpUuid == undefined) {
                     reject(new Error(`The NewRelease ${applicationName} was not found.`));
                     return;
                 }
-                let newReleaseHttpClientLtpUuid = HttpClientLtpUuidFromForwarding[0];
                 let newReleaseTcpClientUuid = (await logicalTerminationPoint.getServerLtpListAsync(newReleaseHttpClientLtpUuid))[0];
 
                 let applicationName = await httpServerInterface.getApplicationNameAsync();
@@ -300,12 +298,11 @@ async function PromptForBequeathingDataCausesSubscriptionForDeregistrationNotifi
              * Preparing requestBody 
              ************************************************************************************/
             try {
-                let HttpClientLtpUuidFromForwarding  = await individualServices.resolveHttpClientLtpUuidFromForwardingName(forwardingKindNameForBequeathingDataCausesNewTAR)
-                if (HttpClientLtpUuidFromForwarding == undefined) {
+                let newReleaseHttpClientLtpUuid  = await httpClientInterface.getHttpClientUuidFromForwarding(forwardingKindNameForBequeathingDataCausesNewTAR)
+                if (newReleaseHttpClientLtpUuid == undefined) {
                     reject(new Error(`The NewRelease ${applicationName} was not found.`));
                     return;
                 }
-                let newReleaseHttpClientLtpUuid = HttpClientLtpUuidFromForwarding[0];
                 let newReleaseTcpClientUuid = (await logicalTerminationPoint.getServerLtpListAsync(newReleaseHttpClientLtpUuid))[0];
 
                 let applicationName = await httpServerInterface.getApplicationNameAsync();
@@ -367,13 +364,13 @@ async function PromptForBequeathingDataCausesEndingSubscriptionsToOldRelease(use
             let forwardingKindNameOfTheNotifyApprovals= "PromptForBequeathingDataCausesRObeingRequestedToInquireForApplicationTypeApprovalsAtNewTAR";
             let forwardingKindNameOfTheNotifyWithdrawnApprovals= "PromptForBequeathingDataCausesSubscriptionForDeregistrationNotifications";
             
-            let operationClientUuidValueOfnotifyApprovals = await individualServices.resolveHttpClientLtpUuidFromForwardingName(forwardingKindNameOfTheNotifyApprovals);
-            let operationClientUuidOfnotifyApprovals = operationClientUuidValueOfnotifyApprovals[1];
-            let operationClientUuidValuenotifyWithdrawnApprovals = await individualServices.resolveHttpClientLtpUuidFromForwardingName(forwardingKindNameOfTheNotifyWithdrawnApprovals)
-            let operationClientUuidOfnotifyWithdrawnApprovals = operationClientUuidValuenotifyWithdrawnApprovals[1];
+            let httpClientUuidOfnotifyApprovals = await httpClientInterface.getHttpClientUuidFromForwarding(forwardingKindNameOfTheNotifyApprovals);
+            let httpClientUuidOfnotifyWithdrawnApprovals = await httpClientInterface.getHttpClientUuidFromForwarding(forwardingKindNameOfTheNotifyWithdrawnApprovals)
+            let operationClientUuidOfnotifyApprovals = await logicalTerminationPoint.getClientLtpListAsync(httpClientUuidOfnotifyApprovals);
+            let operationClientUuidOfnotifyWithdrawnApprovals = await logicalTerminationPoint.getClientLtpListAsync(httpClientUuidOfnotifyWithdrawnApprovals);
             let listOfOperationToBeUnsubscribed = [];
-            let approvalOperationName = await operationClientInterface.getOperationNameAsync(operationClientUuidOfnotifyApprovals);
-            let deregistrationOperationName = await operationClientInterface.getOperationNameAsync(operationClientUuidOfnotifyWithdrawnApprovals);
+            let approvalOperationName = await operationClientInterface.getOperationNameAsync(operationClientUuidOfnotifyApprovals[0]);
+            let deregistrationOperationName = await operationClientInterface.getOperationNameAsync(operationClientUuidOfnotifyWithdrawnApprovals[0]);
             listOfOperationToBeUnsubscribed.push(approvalOperationName);
             listOfOperationToBeUnsubscribed.push(deregistrationOperationName);
             /***********************************************************************************
@@ -438,12 +435,11 @@ async function promptForBequeathingDataCausesRequestForBroadcastingInfoAboutServ
              * Preparing requestBody 
              ************************************************************************************/
             try {
-                let HttpClientLtpUuidFromForwarding  = await individualServices.resolveHttpClientLtpUuidFromForwardingName(forwardingKindNameForBequeathingDataCausesNewTAR)
-                if (HttpClientLtpUuidFromForwarding == undefined) {
+                let newReleaseHttpClientLtpUuid  = await httpClientInterface.getHttpClientUuidFromForwarding(forwardingKindNameForBequeathingDataCausesNewTAR)
+                if (newReleaseHttpClientLtpUuid == undefined) {
                     reject(new Error(`The NewRelease ${applicationName} was not found.`));
                     return;
                 }
-                let newReleaseHttpClientLtpUuid = HttpClientLtpUuidFromForwarding[0];
                 let newReleaseTcpClientUuid = (await logicalTerminationPoint.getServerLtpListAsync(newReleaseHttpClientLtpUuid))[0];
 
                 let applicationName = await httpServerInterface.getApplicationNameAsync();
@@ -509,18 +505,17 @@ async function promptForBequeathingDataCausesRequestForDeregisteringOfOldRelease
              * Preparing requestBody 
              ************************************************************************************/
             try {              
-                let HttpClientLtpUuidFromForwarding  = await individualServices.resolveHttpClientLtpUuidFromForwardingName(forwardingKindNameForBequeathingDataCausesNewTAR)
-                if (HttpClientLtpUuidFromForwarding == undefined) {
+                let newReleaseHttpClientLtpUuid  = await httpClientInterface.getHttpClientUuidFromForwarding(forwardingKindNameForBequeathingDataCausesNewTAR)
+                if (newReleaseHttpClientLtpUuid == undefined) {
                     reject(new Error(`The NewRelease ${applicationName} was not found.`));
                     return;
                 }
-                let newReleaseHttpClientLtpUuid = HttpClientLtpUuidFromForwarding[0];
                 let newReleaseTcpClientUuid = (await logicalTerminationPoint.getServerLtpListAsync(newReleaseHttpClientLtpUuid))[0];
 
                 let applicationName = await httpServerInterface.getApplicationNameAsync();
                 let oldReleaseNumber = await httpServerInterface.getReleaseNumberAsync();
                 let newApplicationName = await httpClientInterface.getApplicationNameAsync(newReleaseHttpClientLtpUuid)
-                let newReleaseNumber= await httpServerInterface.getReleaseNumberAsync(newReleaseHttpClientLtpUuid)
+                let newReleaseNumber= await httpClientInterface.getReleaseNumberAsync(newReleaseHttpClientLtpUuid)
                 let applicationAddress = await tcpClientInterface.getRemoteAddressAsync(newReleaseTcpClientUuid);
                 let applicationPort = await tcpClientInterface.getRemotePortAsync(newReleaseTcpClientUuid);
                 let applicationProtocol = await tcpClientInterface.getRemoteProtocolAsync(newReleaseTcpClientUuid);
