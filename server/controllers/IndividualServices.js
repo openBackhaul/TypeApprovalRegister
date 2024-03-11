@@ -6,6 +6,14 @@ var restResponseBuilder = require('onf-core-model-ap/applicationPattern/rest/ser
 var executionAndTraceService = require('onf-core-model-ap/applicationPattern/services/ExecutionAndTraceService');
 var IndividualServices = require('../service/IndividualServicesService');
 
+module.exports.approveApplicationInGui = function approveApplicationInGui (req, res, next, body, user, originator, xCorrelator, traceIndicator, customerJourney) {
+  IndividualServices.approveApplicationInGui(body, user, originator, xCorrelator, traceIndicator, customerJourney)
+    .then(function (response) {
+    })
+    .catch(function (response) {
+    });
+};
+
 module.exports.bequeathYourDataAndDie = async function bequeathYourDataAndDie(req, res, next, body, user, originator, xCorrelator, traceIndicator, customerJourney) {
   let startTime = process.hrtime();
   let responseCode = responseCodeEnum.code.NO_CONTENT;
@@ -63,6 +71,22 @@ module.exports.documentApprovalStatus = async function documentApprovalStatus(re
   executionAndTraceService.recordServiceRequest(xCorrelator, traceIndicator, user, originator, req.url, responseCode, req.body, responseBodyToDocument);
 };
 
+module.exports.documentEmbeddingStatus = function documentEmbeddingStatus (req, res, next, body, user, originator, xCorrelator, traceIndicator, customerJourney) {
+  IndividualServices.documentEmbeddingStatus(body, user, originator, xCorrelator, traceIndicator, customerJourney)
+    .then(function (response) {
+    })
+    .catch(function (response) {
+    });
+};
+
+module.exports.documentEmbeddingStatusInGui = function documentEmbeddingStatusInGui (req, res, next, body, user, originator, xCorrelator, traceIndicator, customerJourney) {
+  IndividualServices.documentEmbeddingStatusInGui(body, user, originator, xCorrelator, traceIndicator, customerJourney)
+    .then(function (response) {
+    })
+    .catch(function (response) {
+    });
+};
+
 module.exports.listApplications = async function listApplications(req, res, next, user, originator, xCorrelator, traceIndicator, customerJourney) {
   let startTime = process.hrtime();
   let responseCode = responseCodeEnum.code.OK;
@@ -80,6 +104,14 @@ module.exports.listApplications = async function listApplications(req, res, next
       responseBodyToDocument = sentResp.body;
     });
   executionAndTraceService.recordServiceRequest(xCorrelator, traceIndicator, user, originator, req.url, responseCode, req.body, responseBodyToDocument);
+};
+
+module.exports.listApplicationsInGui = function listApplicationsInGui (req, res, next, user, originator, xCorrelator, traceIndicator, customerJourney) {
+  IndividualServices.listApplicationsInGui(user, originator, xCorrelator, traceIndicator, customerJourney)
+    .then(function (response) {
+    })
+    .catch(function (response) {
+    });
 };
 
 module.exports.listApprovedApplicationsInGenericRepresentation = async function listApprovedApplicationsInGenericRepresentation(req, res, next, user, originator, xCorrelator, traceIndicator, customerJourney) {
