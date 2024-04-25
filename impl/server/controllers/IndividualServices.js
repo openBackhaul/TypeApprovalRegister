@@ -72,11 +72,22 @@ module.exports.documentApprovalStatus = async function documentApprovalStatus(re
 };
 
 module.exports.documentEmbeddingStatus = function documentEmbeddingStatus (req, res, next, body, user, originator, xCorrelator, traceIndicator, customerJourney) {
-  IndividualServices.documentEmbeddingStatus(body, user, originator, xCorrelator, traceIndicator, customerJourney)
-    .then(function (response) {
-    })
-    .catch(function (response) {
-    });
+  let startTime = process.hrtime();
+  let responseCode = responseCodeEnum.code.NO_CONTENT;
+  let responseBodyToDocument = {};
+  IndividualServices.documentEmbeddingStatus(body, user, originator, xCorrelator, traceIndicator, customerJourney, req.url)
+  .then(async function (responseBody) {
+    responseBodyToDocument = responseBody;
+    let responseHeader = await restResponseHeader.createResponseHeader(xCorrelator, startTime, req.url);
+    restResponseBuilder.buildResponse(res, responseCode, responseBody, responseHeader);
+  })
+  .catch(async function (responseBody) {
+    let responseHeader = await restResponseHeader.createResponseHeader(xCorrelator, startTime, req.url);
+    let sentResp = restResponseBuilder.buildResponse(res, undefined, responseBody, responseHeader);
+    responseCode = sentResp.code;
+    responseBodyToDocument = sentResp.body;
+  });
+  executionAndTraceService.recordServiceRequest(xCorrelator, traceIndicator, user, originator, req.url, responseCode, req.body, responseBodyToDocument);
 };
 
 module.exports.documentEmbeddingStatusInGui = function documentEmbeddingStatusInGui (req, res, next, body, user, originator, xCorrelator, traceIndicator, customerJourney) {

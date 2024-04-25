@@ -78,4 +78,59 @@ exports.deleteApplication = async (applicationData, applicationNameToDelete, app
         }
     });
   }
-  
+
+exports.getMatchedKeyAndNewApplicationDetails = async (applicationData, conditionToMatch, valueToUpdate) => {
+    return new Promise(async function (resolve, reject) {
+        try {
+            // check if the combination of application-name and application-release-number exist added received process-id into application-data.json
+            let newApplicationData
+            let matchedKey
+            let foundStatus
+            if (conditionToMatch.mixOfAppNameAndReleaseNo) {
+                applicationData["applications"].forEach(async (data, key) => {
+                    if (data["application-name"] == conditionToMatch.applicationNameRequestBody && data["application-release-number"] == conditionToMatch.releaseNumberRequestBody) {
+                        newApplicationData = data
+                        for (var keyItem in valueToUpdate) {
+                            newApplicationData[keyItem] = valueToUpdate[keyItem]
+                        }
+                        matchedKey = key
+                        foundStatus = true
+                    }
+                })
+            } else if (conditionToMatch.checkWithProcessID) {
+                applicationData["applications"].forEach(async (data, key) => {
+                    if (data["process-id"] == conditionToMatch.processId) {
+                        newApplicationData = data
+                        for (var keyItem in valueToUpdate) {
+                            newApplicationData[keyItem] = valueToUpdate[keyItem]
+                        }
+                        matchedKey = key
+                        foundStatus = true
+                    }
+                })
+            }
+
+            resolve({matchedKey,newApplicationData, foundStatus})
+        } catch (error) {
+            reject(error);
+        }
+    });
+}
+
+exports.updateValueWithKey = async (applicationData, matchedKey) => {
+    return new Promise(async function (resolve, reject) {
+        try {
+            let filteredApplicationData = []
+            if (matchedKey != undefined) {
+                delete applicationData["applications"][matchedKey];
+                filteredApplicationData = applicationData["applications"].filter(function (el) {
+                    return el != null;
+                });
+            }
+
+            resolve(filteredApplicationData)
+        } catch (error) {
+            reject(error);
+        }
+    });
+}

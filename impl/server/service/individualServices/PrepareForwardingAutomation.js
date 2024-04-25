@@ -9,7 +9,7 @@ const approvalStatusEnum = {
     NOT_YET_DEFINED: "application-profile-1-0:APPROVAL_STATUS_TYPE_NOT_YET_DEFINED"
 }
 
-exports.regardApplication = function (applicationName, releaseNumber, approvalStatus) {
+exports.regardApplication = function (applicationName, releaseNumber, approvalStatus, operationServerName) {
     return new Promise(async function (resolve, reject) {
         let forwardingConstructAutomationList = [];
         try {
@@ -21,6 +21,7 @@ exports.regardApplication = function (applicationName, releaseNumber, approvalSt
             let approvalStatusRequestBody = {};
             approvalStatusRequestBody.applicationName = applicationName;
             approvalStatusRequestBody.releaseNumber = releaseNumber;
+            approvalStatusRequestBody.responseReceiverOperation = operationServerName;
 
             for (let approvalStatusKey in approvalStatusEnum) {
                 if (approvalStatusEnum[approvalStatusKey] == approvalStatus) {
