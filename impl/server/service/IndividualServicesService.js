@@ -25,6 +25,7 @@ const FileProfile = require('onf-core-model-ap/applicationPattern/onfModel/model
 const prepareApplicationData = require('./individualServices/PrepareApplicationData')
 const createHttpError = require('http-errors');
 const TcpObject = require('onf-core-model-ap/applicationPattern/onfModel/services/models/TcpObject');
+const OperationServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/OperationServerInterface');
 
 /**
  * Initiates authentication of the user and listing the applications in the GUI after updating an approval status
@@ -332,9 +333,86 @@ exports.documentApprovalStatus = function (body, user, originator, xCorrelator, 
  * customerJourney String Holds information supporting customer’s journey to which the execution applies
  * no response value expected for this operation
  **/
-exports.documentEmbeddingStatus = function(body,user,originator,xCorrelator,traceIndicator,customerJourney) {
-  return new Promise(function(resolve, reject) {
-    resolve();
+exports.documentEmbeddingStatus = function (body, user, originator, xCorrelator, traceIndicator, customerJourney, operationServerName) {
+  return new Promise(async function (resolve, reject) {
+    try {
+      let reasonForFailure
+      let processId = body["process-id"]
+      let successfullyEmbedded = body['successfully-embedded']
+
+      if (body['process-id']) {
+        if (!body['successfully-embedded']) {
+          reasonForFailure = body["reason-of-failure"]
+        }
+
+        let filePath = await FileProfile.getApplicationDataFileContent()
+        let applicationData = await prepareApplicationData.readApplicationData(filePath)
+        if (applicationData == undefined) {
+          throw new createHttpError.InternalServerError("Application data does not exist")
+        }
+
+        if (successfullyEmbedded || !successfullyEmbedded) {
+          let valueToUpdate = []
+          valueToUpdate["embedding-status"] = successfullyEmbedded
+          if(!successfullyEmbedded){
+            valueToUpdate["reason-of-failure"] = reasonForFailure
+          }else{
+            valueToUpdate["reason-of-failure"] = ""
+          }
+          let { matchedKey, newApplicationData, foundStatus } = await prepareApplicationData.getMatchedKeyAndNewApplicationDetails(applicationData, { processId, checkWithProcessID: true }, valueToUpdate)
+          if (foundStatus) {
+            let filteredApplicationData = await prepareApplicationData.updateValueWithKey(applicationData, matchedKey)
+
+            let updatedApplicationData = {}
+            updatedApplicationData["applications"] = filteredApplicationData
+            // Add updated application data
+            updatedApplicationData["applications"].push(newApplicationData)
+            await prepareApplicationData.addAndUpdateApplicationData(filePath, updatedApplicationData)
+          }
+        }
+
+      } else {
+        let applicationNameRequestBody = body["application-name"]
+        let releaseNumberRequestBody = body['release-number']
+        successfullyEmbedded = body['successfully-embedded']
+
+        if (!body['successfully-embedded']) {
+          reasonForFailure = body["reason-of-failure"]
+        }
+
+        let filePath = await FileProfile.getApplicationDataFileContent()
+        let applicationData = await prepareApplicationData.readApplicationData(filePath)
+        if (applicationData == undefined) {
+          throw new createHttpError.InternalServerError("Application data does not exist")
+        }
+        let applicationDetails = await prepareApplicationData.getApplicationDetails(applicationData, applicationNameRequestBody, releaseNumberRequestBody)
+         // check if the combination of application-name and application-release-number exist added received process-id into application-data.json
+      if (applicationDetails['is-application-exist']) {
+        let valueToUpdate = []
+          valueToUpdate["embedding-status"] = successfullyEmbedded
+          if(!successfullyEmbedded){
+            valueToUpdate["reason-of-failure"] = reasonForFailure
+          }else{
+            valueToUpdate["reason-of-failure"] = ""
+          }
+         
+          let {matchedKey,newApplicationData, foundStatus} = await prepareApplicationData.getMatchedKeyAndNewApplicationDetails(applicationData, {applicationNameRequestBody, releaseNumberRequestBody,mixOfAppNameAndReleaseNo: true} , valueToUpdate)
+          if (foundStatus) {
+            let filteredApplicationData = await prepareApplicationData.updateValueWithKey(applicationData, matchedKey)
+  
+            let updatedApplicationData = {}
+            updatedApplicationData["applications"] = filteredApplicationData
+            // Add updated application data
+            updatedApplicationData["applications"].push(newApplicationData)
+            await prepareApplicationData.addAndUpdateApplicationData(filePath, updatedApplicationData)
+          }
+      }
+
+      }
+      resolve();
+    } catch (error) {
+      reject(error);
+    }
   });
 }
 
@@ -576,6 +654,7 @@ exports.regardApplication = function (body, user, originator, xCorrelator, trace
       let filePath
       let applicationDetails = false
       let approvalStatus
+      let fetchApplicationOperationServerName = ""
 
       /****************************************************************************************
        * Setting up required local variables from the request body
@@ -601,15 +680,19 @@ exports.regardApplication = function (body, user, originator, xCorrelator, trace
         await prepareApplicationData.addAndUpdateApplicationData(filePath, applicationData)
       } else {
         approvalStatus = applicationDetails['approval-status']
+        let operationServerNameList  = await OperationServerInterface.getAllOperationServerNameAsync()
+        let regexprForOperation = /^(?!.*gui).*embedding.*/
+        fetchApplicationOperationServerName = operationServerNameList.find(value => regexprForOperation.test(value))
       }
 
       /****************************************************************************************
        * Prepare attributes to automate forwarding-construct
        ****************************************************************************************/
       let forwardingAutomationInputList = await prepareForwardingAutomation.regardApplication(
-        applicationNameRequestBody,
-        releaseNumberRequestBody,
-        approvalStatus
+          applicationNameRequestBody,
+          releaseNumberRequestBody,
+          approvalStatus,
+          fetchApplicationOperationServerName
       );
       ForwardingAutomationService.automateForwardingConstructAsync(
         operationServerName,
@@ -619,6 +702,26 @@ exports.regardApplication = function (body, user, originator, xCorrelator, trace
         traceIndicator,
         customerJourney
       );
+
+      // processId variable will fetch the values from Application Pattern
+      let processId = {
+      }
+
+      // check if the combination of application-name and application-release-number exist added received process-id into application-data.json
+      if (applicationDetails['is-application-exist']) {
+        let valueToUpdate = []
+          valueToUpdate["process-id"] = processId["process-id"]
+        let {matchedKey,newApplicationData, foundStatus} = await prepareApplicationData.getMatchedKeyAndNewApplicationDetails(applicationData, {applicationNameRequestBody, releaseNumberRequestBody,mixOfAppNameAndReleaseNo: true} , valueToUpdate)
+        if (foundStatus) {
+          let filteredApplicationData = await prepareApplicationData.updateValueWithKey(applicationData, matchedKey)
+
+          let updatedApplicationData = {}
+          updatedApplicationData["applications"] = filteredApplicationData
+          // Add updated application data
+          updatedApplicationData["applications"].push(newApplicationData)
+          await prepareApplicationData.addAndUpdateApplicationData(filePath, updatedApplicationData)
+        }
+      }
 
       resolve();
     } catch (error) {
