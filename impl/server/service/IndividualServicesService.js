@@ -38,28 +38,37 @@ const OperationServerInterface = require('onf-core-model-ap/applicationPattern/o
  * customerJourney String Holds information supporting customer’s journey to which the execution applies
  * returns List
  **/
-exports.approveApplicationInGui = function(body,user,originator,xCorrelator,traceIndicator,customerJourney) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = [ {
-  "application-name" : "EmbeddedApplication",
-  "release-number" : "17.3.1",
-  "approval-status" : "APPROVED",
-  "embedding-status" : true,
-  "reason-of-failure" : "",
-  "x-correlator" : "550e8400-e29b-11d4-a716-446655440000"
-}, {
-  "application-name" : "NonEmbeddedApplication",
-  "release-number" : "34.1.2",
-  "approval-status" : "APPROVED",
-  "embedding-status" : false,
-  "reason-of-failure" : "ALT_ALT_SERVING_APPLICATION_RELEASE_NUMBER_UNKNOWN",
-  "x-correlator" : "856f5862-d25g-33i5-g345-123456789012"
-} ];
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
+exports.approveApplicationInGui = function (body, user, originator, xCorrelator, traceIndicator, customerJourney, request) {
+  return new Promise(async function (resolve, reject) {
+    try {
+      let applicationName = body["application-name"]
+      let releaseNumber = body['release-number']
+      let approvalStatus = body['approval-status']
+      let operationServerName = request.url
+      /****************************************************************************************
+ * Prepare attributes to automate forwarding-construct
+ ****************************************************************************************/
+      let headerRequest = {
+        user, 
+        xCorrelator,
+        traceIndicator,
+        customerJourney
+      }
+      let retriveUpdatedDocumentEmbeddingStatusInGui = await prepareForwardingAutomation.guiRequestForDocumentingAnApprovalStatusChangeCausesDocumentingApprovalStatus(
+        applicationName,
+        releaseNumber,
+        approvalStatus,
+        headerRequest
+      );
+
+      retriveUpdatedDocumentEmbeddingStatusInGui.map((applicationDetails)=>{
+        applicationDetails["embedding-status"] = applicationDetails["embedding-status"].toString()
+        return applicationDetails
+      })
+
+      resolve(retriveUpdatedDocumentEmbeddingStatusInGui);
+    } catch (error) {
+      reject(error);
     }
   });
 }
@@ -427,28 +436,45 @@ exports.documentEmbeddingStatus = function (body, user, originator, xCorrelator,
  * customerJourney String Holds information supporting customer’s journey to which the execution applies
  * returns List
  **/
-exports.documentEmbeddingStatusInGui = function(body,user,originator,xCorrelator,traceIndicator,customerJourney) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = [ {
-  "application-name" : "EmbeddedApplication",
-  "release-number" : "17.3.1",
-  "approval-status" : "APPROVED",
-  "embedding-status" : true,
-  "reason-of-failure" : "",
-  "x-correlator" : "550e8400-e29b-11d4-a716-446655440000"
-}, {
-  "application-name" : "NonEmbeddedApplication",
-  "release-number" : "34.1.2",
-  "approval-status" : "APPROVED",
-  "embedding-status" : false,
-  "reason-of-failure" : "ALT_ALT_SERVING_APPLICATION_RELEASE_NUMBER_UNKNOWN",
-  "x-correlator" : "856f5862-d25g-33i5-g345-123456789012"
-} ];
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
+exports.documentEmbeddingStatusInGui = function (body, user, originator, xCorrelator, traceIndicator, customerJourney, request) {
+  return new Promise(async function (resolve, reject) {
+    try {
+      let applicationName = body["application-name"]
+      let releaseNumber = body["release-number"]
+      let successfullyEmbedded = body["successfully-embedded"]
+      let reasonOfFailure
+      let operationServerName = request.url
+      let headerRequest = {
+        user, 
+        xCorrelator,
+        traceIndicator,
+        customerJourney
+      }
+
+      if(successfullyEmbedded){
+        reasonOfFailure = ""
+      }else{
+        reasonOfFailure  = body["reason-of-failure"]
+      }
+      /****************************************************************************************
+ * Prepare attributes to automate forwarding-construct
+ ****************************************************************************************/
+        let retriveUpdatedDocumentEmbeddingStatusInGui = await prepareForwardingAutomation.updateDocumentEmbeddingStatusInGui(
+          applicationName,
+          releaseNumber,
+          successfullyEmbedded,
+          reasonOfFailure,
+          headerRequest
+        );
+
+        retriveUpdatedDocumentEmbeddingStatusInGui.map((applicationDetails)=>{
+          applicationDetails["embedding-status"] = applicationDetails["embedding-status"].toString()
+          return applicationDetails
+        })
+
+        resolve(retriveUpdatedDocumentEmbeddingStatusInGui)
+    } catch (error) {
+      reject(error);
     }
   });
 }
@@ -459,19 +485,25 @@ exports.documentEmbeddingStatusInGui = function(body,user,originator,xCorrelator
  * returns List
  **/
 exports.listApplications = async function () {
-  let applicationDataUpdateReleaseNumberKey;
-  const filePath = await FileProfile.getApplicationDataFileContent();
-  const applicationData = await prepareApplicationData.readApplicationData(filePath);
-  if (applicationData != undefined) {
-    applicationDataUpdateReleaseNumberKey = applicationData['applications'].map(function (applicationDataItem) {
-      applicationDataItem['release-number'] = applicationDataItem['application-release-number']; // Assign new key
-      delete applicationDataItem['application-release-number']; // Delete old key
-      return applicationDataItem;
-    });
-  } else {
-    throw new createHttpError.InternalServerError("Application data does not exist");
-  }
-  return applicationDataUpdateReleaseNumberKey;
+  return new Promise(async function (resolve, reject) {
+    try {
+      let applicationDataUpdateReleaseNumberKey;
+      const filePath = await FileProfile.getApplicationDataFileContent();
+      const applicationData = await prepareApplicationData.readApplicationData(filePath);
+      if (applicationData != undefined) {
+        applicationDataUpdateReleaseNumberKey = applicationData['applications'].map(function (applicationDataItem) {
+          applicationDataItem['release-number'] = applicationDataItem['application-release-number']; // Assign new key
+          delete applicationDataItem['application-release-number']; // Delete old key
+          return applicationDataItem;
+        });
+      } else {
+        throw new createHttpError.InternalServerError("Application data does not exist");
+      }
+      resolve(applicationDataUpdateReleaseNumberKey);
+    } catch (error) {
+      reject(error);
+    }
+  })
 }
 
 /**
@@ -484,32 +516,30 @@ exports.listApplications = async function () {
  * customerJourney String Holds information supporting customer’s journey to which the execution applies
  * returns List
  **/
-exports.listApplicationsInGui = function(user,originator,xCorrelator,traceIndicator,customerJourney) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = [ {
-  "application-name" : "EmbeddedApplication",
-  "release-number" : "17.3.1",
-  "approval-status" : "APPROVED",
-  "embedding-status" : true,
-  "reason-of-failure" : "",
-  "x-correlator" : "550e8400-e29b-11d4-a716-446655440000"
-}, {
-  "application-name" : "NonEmbeddedApplication",
-  "release-number" : "34.1.2",
-  "approval-status" : "APPROVED",
-  "embedding-status" : false,
-  "reason-of-failure" : "ALT_ALT_SERVING_APPLICATION_RELEASE_NUMBER_UNKNOWN",
-  "x-correlator" : "856f5862-d25g-33i5-g345-123456789012"
-} ];
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
-    }
-  });
-}
+exports.listApplicationsInGui = async function (user, originator, xCorrelator, traceIndicator, customerJourney, request) {
+  return new Promise(async function (resolve, reject) {
+    try {
+      let headerRequest = {
+        user, 
+        xCorrelator,
+        traceIndicator,
+        customerJourney
+      }
+      let retrievingListOfApplicationsForwardingName = "GuiRequestForVisualizingListOfApplicationsCauses.RetrievingListOfApplications";
+      let retrievingListOfApplications = await prepareForwardingAutomation.retrievingListOfApplications(retrievingListOfApplicationsForwardingName, headerRequest);
+      
+      retrievingListOfApplications.map((applicationDetails)=>{
+        applicationDetails["embedding-status"] = applicationDetails["embedding-status"].toString()
+        return applicationDetails
+      })
 
+      resolve(retrievingListOfApplications);
+    } catch (error) {
+      reject(error);
+    }
+  })
+}
+  
 /**
  * Provides list of approved applications in generic representation
  *
@@ -688,24 +718,22 @@ exports.regardApplication = function (body, user, originator, xCorrelator, trace
       /****************************************************************************************
        * Prepare attributes to automate forwarding-construct
        ****************************************************************************************/
-      let forwardingAutomationInputList = await prepareForwardingAutomation.regardApplication(
-          applicationNameRequestBody,
-          releaseNumberRequestBody,
-          approvalStatus,
-          fetchApplicationOperationServerName
-      );
-      ForwardingAutomationService.automateForwardingConstructAsync(
-        operationServerName,
-        forwardingAutomationInputList,
-        user,
+      let headerRequest = {
+        user, 
         xCorrelator,
         traceIndicator,
         customerJourney
+      }
+      let retrivingProcessId = await prepareForwardingAutomation.regardApplication(
+          applicationNameRequestBody,
+          releaseNumberRequestBody,
+          approvalStatus,
+          fetchApplicationOperationServerName,
+          headerRequest
       );
 
       // processId variable will fetch the values from Application Pattern
-      let processId = {
-      }
+      let processId = retrivingProcessId.data
 
       // check if the combination of application-name and application-release-number exist added received process-id into application-data.json
       if (applicationDetails['is-application-exist']) {
