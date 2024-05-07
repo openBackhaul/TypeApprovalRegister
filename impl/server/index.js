@@ -43,5 +43,6 @@ http.createServer(app).listen(serverPort, function () {
 
 //setting the path to the database 
 global.databasePath = './database/config.json'
+global.applicationDataPath = './application-data/'
 
 appCommons.performApplicationRegistration();

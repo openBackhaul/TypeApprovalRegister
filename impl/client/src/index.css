@@ -1,13 +1,257 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  padding: 1rem;
+  background: #f0f0f0;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+h1 {
+  margin: 1rem auto 2rem;
+  max-width: 1000px;
+}
+
+pre {
+  font-size: 1rem;
+  font-family: Menlo, monospace;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.flex-section {
+  display: flex;
+}
+
+#table-section {
+  font-family: Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#table-section thead tr th,
+#table-section,
+tbody tr td {
+  text-align: center;
+}
+
+#table-section td,
+#table-section th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+#table-section tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+#table-section tr:hover {
+  background-color: #ddd;
+}
+
+#table-section th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: rgb(0, 102, 255);
+  color: white;
+}
+
+.flex {
+  margin: 0 auto;
+  max-width: 1000px;
+  display: flex;
+  gap: 2rem;
+}
+
+.flexLog {
+  margin: 0 auto;
+  max-width: 1420px;
+  display: flex;
+  gap: 2rem;
+}
+
+.section {
+  background: white;
+  border: 1px solid #dedede;
+  border-radius: 8px;
+  padding: 2rem;
+}
+
+.form.section {
+  flex: 0.5;
+  margin: auto;
+  width: 84%;
+}
+
+.remove-flex.form.section {
+  flex: none !important;
+  width: 100%
+}
+
+.results.section {
+  flex: 1;
+  max-height: 400px;
+  overflow-y: scroll;
+  overflow-x: scroll;
+}
+
+.mr-top-30 {
+  margin-top: 30px !important;
+}
+
+.flow.section {
+  flex: 1;
+  position: relative;
+  height: auto;
+  min-height: 100%;
+  padding: 10px;
+  width: 100%;
+}
+
+.form-section input,
+.form-section select,
+.form-section textarea {
+  width: 100%;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+  padding: 0.5rem;
+  margin-bottom: 15px;
+}
+
+.form-section input[type='radio'] {
+  margin-right: 0.5rem;
+}
+
+.form-section textarea {
+  min-height: 100px;
+}
+
+.form-section label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.form-section .field {
+  margin-bottom: 1rem;
+}
+
+.form-section .required,
+.form-section .error {
+  color: #d63642;
+}
+
+.form-section #password {
+  width: 100%;
+}
+
+.form-section .error {
+  margin: 0.25rem 0;
+  display: block;
+}
+
+.form-section button {
+  border: 1px solid #3642d6;
+  padding: 12px 25px 12px 25px;
+  border-radius: 24px;
+  background: #3642d6;
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.form-section:hover {
+  filter: brightness(1.1);
+}
+
+.form-section button:disabled {
+  opacity: 0.5;
+}
+
+.form-title {
+  width: 100%;
+  text-align: left;
+  padding: 17px;
+  background: rgb(0, 102, 255);
+  color: white;
+  border-top-left-radius: 7px;
+  border-top-right-radius: 7px;
+  z-index: 998;
+  font-weight: normal;
+}
+
+.form.section {
+  position: relative;
+  margin-top: 100px;
+  width: 84%;
+}
+
+.form.section button {
+  border: 1px solid rgb(0, 102, 255);
+  background: rgb(0, 102, 255);
+}
+
+.form-section {
+  margin-top: 10px;
+}
+
+.flow-diagram-section .flow-diagram {
+  margin-top: 0px;
+  text-align: center;
+  overflow-x: auto;
+  border: 1px solid #fafafa;
+  border-top: 0px
+}
+
+.flow-diagram-section {
+  max-width: 90%;
+  margin-bottom: 70px;
+}
+
+.flow-diagram-section.section {
+  padding: 0px;
+}
+
+.flow-diagram-section h2 {
+  font-size: 20px;
+  padding: 10px;
+  margin-bottom: 0px;
+  cursor: pointer;
+  font-weight: 600;
+  color: black;
+}
+
+.alert {
+  border-radius: 5px;
+  padding: 15px;
+}
+
+.alert-danger {
+  color: #a94442;
+  background-color: #f2dede;
+  border-color: #ebccd1;
+}
+
+.alert-warning {
+  color: #8a6d3b;
+  background-color: #fcf8e3;
+  border-color: #faebcc;
+}
+
+@media only screen and (max-width: 750px) {
+  .form-container {
+    display: block;
+  }
+
+  .form.section {
+    width: 90%;
+  }
 }
