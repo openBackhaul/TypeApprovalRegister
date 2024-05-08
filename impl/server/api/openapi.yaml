@@ -23342,6 +23342,7 @@ components:
         - release-number
         - successfully-embedded
         type: object
+        additionalProperties: false
         properties:
           application-name:
             type: string
