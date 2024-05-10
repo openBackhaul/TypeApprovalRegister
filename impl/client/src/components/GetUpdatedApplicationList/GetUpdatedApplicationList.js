@@ -122,7 +122,7 @@ export class GetUpdatedApplicationList extends Component {
           (() => {
             let xCorrelator = this.state.xCorrelator
             let UpdatedApprovalStatusAndEmbeddingStatus = false
-
+ 
             if (typeof this.state.listApplicationsFromUpdatedApprovalStatusAndEmbeddingStatus.data !== 'undefined' && this.state.listApplicationsFromUpdatedApprovalStatusAndEmbeddingStatus.data.length > 0) {
               UpdatedApprovalStatusAndEmbeddingStatus = true
             }
