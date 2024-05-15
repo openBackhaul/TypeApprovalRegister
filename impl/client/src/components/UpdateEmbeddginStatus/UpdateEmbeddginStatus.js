@@ -1,5 +1,6 @@
 import React, { Component, useReducer } from 'react'
 import axios from 'axios';
+import randExp from 'randexp';
 
 export class UpdateEmbeddginStatus extends Component {
 
@@ -12,10 +13,10 @@ export class UpdateEmbeddginStatus extends Component {
     this.ERROR_MESSAGES = {
       "401": "Username or Password is incorrect",
       "404": "No data found",
-      "500": "Error in fetching data",
-      "other": "Error in fetching data"
+      "500": "Error in Updateing Embedding Status",
+      "other": "Error in Updateing Embedding Status"
     }
-    const ERROR_STYLING = {
+    this.ERROR_STYLING = {
       "warning": "alert alert-warning",
       "danger": "alert alert-danger"
     }
@@ -23,32 +24,71 @@ export class UpdateEmbeddginStatus extends Component {
 
   handleSubmitForEmbeddingStatus(event) {
     event.preventDefault();
+    this.props.loaderParentCallback(true)
     let requestBody = {}
     requestBody["application-name"] = this.state.applicationName;
     requestBody["release-number"] = this.state.releaseNumber;
-    
-    if((this.state.documentEmbeddingStatus == "true")){
+
+    if ((this.state.documentEmbeddingStatus == "true")) {
       requestBody["successfully-embedded"] = true
       requestBody["reason-of-failure"] = ""
-    }else{
+    } else {
       requestBody["successfully-embedded"] = false
       requestBody["reason-of-failure"] = this.state.reasonOfFailure;
     }
 
-
-console.log(requestBody, requestBody["successfully-embedded"])
     this.requestforUpdateEmbeddingStatus(requestBody).then((applicationList) => {
-      this.props.parentCallback(applicationList);
+      let message;
+      let classname
+      let applicationListLength;
+      let errorMessage
+
+      if (applicationList.catch) {
+        applicationListLength = 0;
+        message = applicationList.message
+        errorMessage = true
+        classname = this.ERROR_STYLING.danger
+      } else {
+        if (applicationList.data !== undefined) {
+          applicationListLength = applicationList.data.length
+        } else {
+          applicationListLength = applicationList.length
+        }
+
+        if (applicationListLength == 0) {
+          errorMessage = true
+          if (applicationList.status == 200) {
+            message = this.ERROR_MESSAGES[404]
+            classname = this.ERROR_STYLING.warning
+          }
+          else if (applicationList.status != 200) {
+            message = this.ERROR_MESSAGES[401]
+            classname = this.ERROR_STYLING.danger
+          }
+        }
+      }
+
+      let listOfApplications = {
+        "applicationList": applicationList,
+        "errorMessage": errorMessage,
+        "message": message,
+        "css": classname,
+        "update-embedding-status": true
+      }
+      this.props.loaderParentCallback(false)
+      this.props.parentCallback(listOfApplications);
     })
   }
 
   async requestforUpdateEmbeddingStatus(requestBody) {
     try {
+      let xCorrelator = this.getRandomXCorrelator();
+      this.props.xCorrelatorrParentCallback(xCorrelator)
       let requestHeader = {
         'accept': 'application/json',
         'user': 'tar-x-gui-path',
         'originator': 'tar-x-gui-path',
-        'x-correlator': this.props.xCorrelator,
+        'x-correlator': xCorrelator,
         'trace-indicator': '1',
         'customer-journey': 'Unknown value',
         'Authorization': this.Authorization,
@@ -56,7 +96,7 @@ console.log(requestBody, requestBody["successfully-embedded"])
       }
       let request = {
         method: "post",
-        url: "http://localhost:3025/v1/document-embedding-status-in-gui",//origin + "/v1/approve-application-in-gui",
+        url: origin + "/v1/document-embedding-status-in-gui",
         headers: requestHeader,
         data: requestBody
       }
@@ -82,27 +122,41 @@ console.log(requestBody, requestBody["successfully-embedded"])
     }
   }
 
+  getRandomXCorrelator() {
+    let randomXCorrelatorString;
+    try {
+      randomXCorrelatorString = new randExp(/^[0-9A-Fa-f]{8}(?:-[0-9A-Fa-f]{4}){3}-[0-9A-Fa-f]{12}$/).gen();
+    } catch (error) {
+      console.log(error);
+    }
+    return randomXCorrelatorString;
+  }
+
   render() {
     return (
       <>
         <div className="flex form-container">
           <div className="form section mr-top-30 remove-flex">
-            <form onSubmit={this.handleSubmitForEmbeddingStatus} className="form-section">
-              <label>Application Name</label>
-              <input type="text" value={this.state.applicationName} onChange={(event) => this.setState({ 'applicationName': event.target.value })} required />
-              <label>Release Number </label>
-              <input type="text" value={this.state.releaseNumber} onChange={(event) => this.setState({ 'releaseNumber': event.target.value })} required />
-              <label>Embedding Status</label>
-              <select required onChange={(event) => this.setState({ 'documentEmbeddingStatus': event.target.value })}>
-              <option value="">Please Select Embedding Status</option>
-                <option value="true">True</option>
-                <option value="false">False</option>
-              </select>
-              {
-                (this.state.documentEmbeddingStatus == 'false') ? [<label>Reason Of Failure</label>, <input type="text" value={this.state.reasonOfFailure} onChange={(event) => this.setState({ 'reasonOfFailure': event.target.value })} /> ]: ""
-              }
-              <button type="submit">Update Embedding Status</button>
-            </form>
+            <span className='form-heading'>Update Document Embedding Status</span>
+            <div className='mr-top-30'>
+              {(this.props.listApplicationsErrorHandling) ? <div className={this.props.listApplicationsErrorHandling.css}>{this.props.listApplicationsErrorHandling.message}</div> : ''}
+              <form onSubmit={this.handleSubmitForEmbeddingStatus} className="form-section">
+                <label>Application Name</label>
+                <input type="text" value={this.state.applicationName} onChange={(event) => this.setState({ 'applicationName': event.target.value })} required />
+                <label>Release Number </label>
+                <input type="text" value={this.state.releaseNumber} onChange={(event) => this.setState({ 'releaseNumber': event.target.value })} required />
+                <label>Embedding Status</label>
+                <select required onChange={(event) => this.setState({ 'documentEmbeddingStatus': event.target.value })}>
+                  <option value="">Please Select Embedding Status</option>
+                  <option value="true">True</option>
+                  <option value="false">False</option>
+                </select>
+                {
+                  (this.state.documentEmbeddingStatus == 'false') ? [<label>Reason Of Failure</label>, <input type="text" value={this.state.reasonOfFailure} onChange={(event) => this.setState({ 'reasonOfFailure': event.target.value })} />] : ""
+                }
+                <button type="submit">Update Embedding Status</button>
+              </form>
+            </div>
           </div>
         </div>
       </>

@@ -5,6 +5,7 @@ import { Buffer } from 'buffer';
 import ApplicationsList from "../ApplicationsList/ApplicationsList"
 import UpdateApprovalStatus from "../UpdateApprovalStatus/UpdateApprovalStatus"
 import UpdateEmbeddginStatus from "../UpdateEmbeddginStatus/UpdateEmbeddginStatus"
+import Spinner from '../Spinner/Spinner'
 import './GetUpdatedApplicationList.css';
 
 export class GetUpdatedApplicationList extends Component {
@@ -17,7 +18,10 @@ export class GetUpdatedApplicationList extends Component {
       password: '',
       xCorrelator: '',
       listApplications: '',
-      listApplicationsFromUpdatedApprovalStatusAndEmbeddingStatus: ''
+      listApplicationsFromUpdatedApprovalStatusAndEmbeddingStatus: '',
+      loader: false,
+      listApplicationsErrorHandlingForUpdateApprovalStatus: '',
+      listApplicationsErrorHandlingForUpdateEmbeddingStatus: ''
     };
     this.handleSubmitForListApplicationForm = this.handleSubmitForListApplicationForm.bind(this);
     this.ERROR_MESSAGES = {
@@ -26,7 +30,7 @@ export class GetUpdatedApplicationList extends Component {
       "500": "Error in fetching data",
       "other": "Error in fetching data"
     }
-    const ERROR_STYLING = {
+    this.ERROR_STYLING = {
       "warning": "alert alert-warning",
       "danger": "alert alert-danger"
     }
@@ -34,17 +38,55 @@ export class GetUpdatedApplicationList extends Component {
 
   handleSubmitForListApplicationForm(event) {
     event.preventDefault();
+    this.setState({ "loader": true })
     let userName = this.state.username;
     let password = this.state.password;
     let basicAuth = "Basic " + Buffer.from(userName + ":" + password).toString('base64');
     this.Authorization = basicAuth
     this.getchListOfApplications().then((applicationList) => {
-      this.setListApplicationData(applicationList)
+      let message;
+      let classname
+      let applicationListLength;
+      let errorMessage
+
+      if (applicationList.catch) {
+        applicationListLength = 0;
+        message = applicationList.message
+        errorMessage = true
+        classname = this.ERROR_STYLING.danger
+      } else {
+        if (applicationList.data !== undefined) {
+          applicationListLength = applicationList.data.length
+        } else {
+          applicationListLength = applicationList.length
+        }
+
+        if (applicationListLength == 0) {
+          errorMessage = true
+          if (applicationList.status == 200) {
+            message = this.ERROR_MESSAGES[404]
+            classname = this.ERROR_STYLING.warning
+          }
+          else if (applicationList.status != 200) {
+            message = this.ERROR_MESSAGES[401]
+            classname = this.ERROR_STYLING.danger
+          }
+        }
+      }
+
+      let listOfApplications = {
+        "applicationList": applicationList,
+        "errorMessage": errorMessage,
+        "message": message,
+        "css": classname
+      }
+
+      this.setListApplicationData(listOfApplications)
     })
   }
 
   setListApplicationData(applicationList) {
-    this.setState({ 'listApplications': applicationList })
+    this.setState({ 'listApplications': applicationList, 'loader': false })
   }
 
   async getchListOfApplications() {
@@ -64,7 +106,7 @@ export class GetUpdatedApplicationList extends Component {
       let requestBody = {}
       let request = {
         method: "post",
-        url: "http://localhost:3025/v1/list-applications-in-gui",//origin + "/v1/list-applications-in-gui",
+        url: origin + "/v1/list-applications-in-gui",
         headers: requestHeader,
         data: requestBody
       }
@@ -101,60 +143,76 @@ export class GetUpdatedApplicationList extends Component {
   }
 
   handleCallback = (childData) => {
-    this.setState({ listApplicationsFromUpdatedApprovalStatusAndEmbeddingStatus: childData });
+    if (!childData.applicationList.catch) {
+      this.setState({ listApplications: childData });
+      this.setState({ listApplicationsErrorHandlingForUpdateApprovalStatus: "" })
+      this.setState({ listApplicationsErrorHandlingForUpdateEmbeddingStatus: "" })
+    } else {
+      if (childData["update-approval-status"]) {
+        this.setState({ listApplicationsErrorHandlingForUpdateApprovalStatus: childData })
+      }
+      if (childData["update-embedding-status"]) {
+        this.setState({ listApplicationsErrorHandlingForUpdateEmbeddingStatus: childData })
+      }
+    }
+  }
+
+  loaderHandleCallback = (childData) => {
+    this.setState({ loader: childData });
+  }
+
+  xCorrelatorHandleCallback = (childData) => {
+    this.setState({ xCorrelator: childData });
   }
 
   render() {
-    return (
-      <>
-        <div className="flex form-container">
-          <div className="form section">
-            <form onSubmit={this.handleSubmitForListApplicationForm} className="form-section">
-              <label>Username</label>
-              <input type="text" value={this.state.username} onChange={(event) => this.setState({ 'username': event.target.value })} required />
-              <label>Password </label>
-              <input type="password" value={this.state.password} onChange={(event) => this.setState({ 'password': event.target.value })} required />
-              <button type="submit">Update List</button>
-            </form>
+    if (this.state.loader) {
+      return <Spinner />
+    } else {
+      return (
+        <>
+          <div className="flex form-container">
+            <div className="form section">
+              {(this.state.listApplications.errorMessage) ? <div className={this.state.listApplications.css}>{this.state.listApplications.message}</div> : ''}
+              <form onSubmit={this.handleSubmitForListApplicationForm} className="form-section">
+                <label>Username</label>
+                <input type="text" value={this.state.username} onChange={(event) => this.setState({ 'username': event.target.value })} required />
+                <label>Password </label>
+                <input type="password" value={this.state.password} onChange={(event) => this.setState({ 'password': event.target.value })} required />
+                <button type="submit">Fetch Updated List</button>
+              </form>
+            </div>
           </div>
-        </div>
-        {
-          (() => {
-            let xCorrelator = this.state.xCorrelator
-            let UpdatedApprovalStatusAndEmbeddingStatus = false
- 
-            if (typeof this.state.listApplicationsFromUpdatedApprovalStatusAndEmbeddingStatus.data !== 'undefined' && this.state.listApplicationsFromUpdatedApprovalStatusAndEmbeddingStatus.data.length > 0) {
-              UpdatedApprovalStatusAndEmbeddingStatus = true
-            }
-            if (!UpdatedApprovalStatusAndEmbeddingStatus) {
-              if (typeof this.state.listApplications.data !== 'undefined' && this.state.listApplications.data.length > 0) {
-                let listApplications = this.state.listApplications.data
-                return <ApplicationsList listOfApplications={listApplications} xCorrelator={xCorrelator} />
+          {
+            (() => {
+              if (this.state.listApplications.applicationList != undefined) {
+                let applicationListData = this.state.listApplications.applicationList
+                let xCorrelator = this.state.xCorrelator
+                if (typeof applicationListData.data !== 'undefined' && applicationListData.data.length > 0) {
+                  let listApplications = applicationListData.data
+                  return <ApplicationsList listOfApplications={listApplications} isLoading={this.state.loader} />
+                }
               }
+            })()
+          }
+          <div className='flex-section'>
+            {
+              (() => {
+                if (this.state.listApplications.applicationList != undefined) {
+                  let applicationListData = this.state.listApplications.applicationList
+                  if (typeof applicationListData.data !== 'undefined' && applicationListData.data.length > 0) {
+                    return [
+                      <UpdateApprovalStatus authorization={this.Authorization} parentCallback={this.handleCallback} loaderParentCallback={this.loaderHandleCallback} xCorrelatorrParentCallback={this.xCorrelatorHandleCallback} listApplicationsErrorHandling={this.state.listApplicationsErrorHandlingForUpdateApprovalStatus} />,
+                      <UpdateEmbeddginStatus authorization={this.Authorization} parentCallback={this.handleCallback} loaderParentCallback={this.loaderHandleCallback} xCorrelatorrParentCallback={this.xCorrelatorHandleCallback} listApplicationsErrorHandling={this.state.listApplicationsErrorHandlingForUpdateEmbeddingStatus} />
+                    ]
+                  }
+                }
+              })()
             }
-            
-            if (typeof this.state.listApplicationsFromUpdatedApprovalStatusAndEmbeddingStatus.data !== 'undefined' && this.state.listApplicationsFromUpdatedApprovalStatusAndEmbeddingStatus.data.length > 0) {
-              let listApplicationsFromUpdatedApprovalStatusAndEmbeddingStatus = this.state.listApplicationsFromUpdatedApprovalStatusAndEmbeddingStatus.data
-             return <ApplicationsList listOfApplications={listApplicationsFromUpdatedApprovalStatusAndEmbeddingStatus} xCorrelator={xCorrelator} />
-            }
-
-          })()
-        }
-        <div className='flex-section'>
-        {
-          (() => {
-            if (typeof this.state.listApplications.data !== 'undefined' && this.state.listApplications.data.length > 0) {
-              return [
-              <UpdateApprovalStatus authorization={this.Authorization} listOfApplications={this.state.listApplications.data} xCorrelator={this.state.xCorrelator} parentCallback={this.handleCallback} />,
-              <UpdateEmbeddginStatus authorization={this.Authorization} listOfApplications={this.state.listApplications.data} xCorrelator={this.state.xCorrelator} parentCallback={this.handleCallback} />
-              ]
-            }
-
-          })()
-        }
-        </div>
-      </>
-    )
+          </div>
+        </>
+      )
+    }
   }
 }
 export default GetUpdatedApplicationList;

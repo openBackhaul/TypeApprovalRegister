@@ -1,0 +1,23 @@
+FROM node:14
+
+# Create app directory
+WORKDIR /home/openbackhaul/typeApprovalRegister/
+
+# Bundle app source
+COPY . .
+
+# Install npm packages for client
+WORKDIR ./client
+RUN npm ci --only=production
+
+# Create build for react application
+RUN npm run build
+
+# Install npm packages for server
+WORKDIR ../server
+RUN npm ci --only=production
+
+EXPOSE 3025
+
+#Command to start the application
+CMD ["sh", "-c", "npm run start"]

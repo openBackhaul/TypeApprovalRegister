@@ -1,8 +1,6 @@
 import React from "react";
 import "./Spinner.css";
 
-const LoaderMsg = "Loading..."
-
 const Spinner = () => <><div className="spinner_overlay"></div><div className="loader"></div></>;
 
 export function inlineSpinner(){

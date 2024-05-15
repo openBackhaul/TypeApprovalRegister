@@ -8,7 +8,6 @@ export class ApplicationsList extends Component {
 
   render() {
     let listOfApplications = this.props.listOfApplications
-    let xCorrelator = this.props.xCorrelator
     return (
       <>
         {
@@ -22,16 +21,16 @@ export class ApplicationsList extends Component {
                   <td> {applicationDetails['approval-status']}</td>
                   <td> {applicationDetails['embedding-status']}</td>
                   <td> {applicationDetails['reason-of-failure']}</td>
-                  <td> {xCorrelator}</td>
+                  <td> {applicationDetails['x-correlator']}</td>
                 </tr></tbody>)
               });
               return <table id="table-section" className='mr-top-30'>
                 <thead><tr key="listApplicationsTableBody">
-                <th>ApplicationName</th>
-                <th>ReleaseNumber</th>
+                <th>Application Name</th>
+                <th>Release Number</th>
                 <th>Approval Status</th>
                 <th>Embedding Status</th>
-                <th>Reason Of Failure Status</th>
+                <th>Reason Of Failure</th>
                 <th>X-Correlator</th>
               </tr></thead>
               {listApplicationsTableBody}</table>

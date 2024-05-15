@@ -301,7 +301,9 @@ exports.documentApprovalStatus = function (body, user, originator, xCorrelator, 
         let newApplicationData = {
           "application-name": applicationNameFromRequestBody,
           "application-release-number": releaseNumberFromRequestBody,
-          "approval-status": approvalStatusFromRequestBody
+          "approval-status": approvalStatusFromRequestBody,
+          "embedding-status": true,
+          "reason-of-failure": ""
         }
         applicationData["applications"].push(newApplicationData)
         prepareApplicationData.addAndUpdateApplicationData(filePath, applicationData)
@@ -342,13 +344,13 @@ exports.documentApprovalStatus = function (body, user, originator, xCorrelator, 
  * customerJourney String Holds information supporting customer’s journey to which the execution applies
  * no response value expected for this operation
  **/
-exports.documentEmbeddingStatus = function (body, user, originator, xCorrelator, traceIndicator, customerJourney, operationServerName) {
+exports.documentEmbeddingStatus = function (body, user, originator, xCorrelator, traceIndicator, customerJourney, req) {
   return new Promise(async function (resolve, reject) {
     try {
       let reasonForFailure
       let processId = body["process-id"]
       let successfullyEmbedded = body['successfully-embedded']
-
+      let operationServerName = req.url
       if (body['process-id']) {
         if (!body['successfully-embedded']) {
           reasonForFailure = body["reason-of-failure"]
@@ -368,6 +370,8 @@ exports.documentEmbeddingStatus = function (body, user, originator, xCorrelator,
           }else{
             valueToUpdate["reason-of-failure"] = ""
           }
+          valueToUpdate["x-correlator"] = req.headers["x-correlator"]
+
           let { matchedKey, newApplicationData, foundStatus } = await prepareApplicationData.getMatchedKeyAndNewApplicationDetails(applicationData, { processId, checkWithProcessID: true }, valueToUpdate)
           if (foundStatus) {
             let filteredApplicationData = await prepareApplicationData.updateValueWithKey(applicationData, matchedKey)
@@ -404,7 +408,8 @@ exports.documentEmbeddingStatus = function (body, user, originator, xCorrelator,
           }else{
             valueToUpdate["reason-of-failure"] = ""
           }
-         
+          valueToUpdate["x-correlator"] = req.headers["x-correlator"]
+
           let {matchedKey,newApplicationData, foundStatus} = await prepareApplicationData.getMatchedKeyAndNewApplicationDetails(applicationData, {applicationNameRequestBody, releaseNumberRequestBody,mixOfAppNameAndReleaseNo: true} , valueToUpdate)
           if (foundStatus) {
             let filteredApplicationData = await prepareApplicationData.updateValueWithKey(applicationData, matchedKey)
