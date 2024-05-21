@@ -86,7 +86,7 @@ module.exports.documentEmbeddingStatus = async function documentEmbeddingStatus(
   let startTime = process.hrtime();
   let responseCode = responseCodeEnum.code.NO_CONTENT;
   let responseBodyToDocument = {};
-  await IndividualServices.documentEmbeddingStatus(body, user, originator, xCorrelator, traceIndicator, customerJourney, req.url)
+  await IndividualServices.documentEmbeddingStatus(body, user, originator, xCorrelator, traceIndicator, customerJourney, req)
     .then(async function (responseBody) {
       responseBodyToDocument = responseBody;
       let responseHeader = await restResponseHeader.createResponseHeader(xCorrelator, startTime, req.url);

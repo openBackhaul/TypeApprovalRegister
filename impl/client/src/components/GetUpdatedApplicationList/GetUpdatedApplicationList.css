@@ -1,0 +1,89 @@
+  .header {
+    z-index: 999;
+    height: 88px;
+    width: 100%;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    padding: 10px 50px 10px 50px;
+    background: rgb(0, 102, 255);
+    box-shadow: 0 3px 5px rgba(57, 63, 72, 0.3);
+  }
+  
+  .logo {
+    width: 164px;
+  }
+
+  .info {
+    width: 30px;
+  }
+
+  .header-container{
+    position: relative
+  }
+
+  .header-title-container{
+    position: absolute;
+    top:0;
+    bottom:0;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+  }
+
+  .header-info-container{
+    position: absolute;
+    top:21px;
+    bottom:0;
+    left: 1;
+    right: 0;
+    margin: 0 auto;
+    color: #FFF;
+  }
+
+  .header-text {
+    text-align: center;
+    font-size: 25px;
+    height: 30px;
+    color: #FFF;
+  }
+
+  @media only screen and (max-width: 850px) {
+    .header{
+      height: auto;
+    }
+
+    .header-container{
+      text-align: center;
+    }
+
+    .header-title-container, .header-info-container{
+      position: inherit;
+      margin-top: -20px;
+    }
+
+    .header-info-container{
+      top:1px;
+    }
+    .form.section {
+      margin-top: 150px;
+    }
+  }
+
+  @media only screen and (max-width: 504px) {
+    .header-text {
+      font-size: 21px; 
+    }
+  }
+
+  @media only screen and (max-width: 440px) {
+    .header-info-container{
+      margin-top: -9px;
+    }
+  }
+
+  @media only screen and (max-width: 285px) {
+    .header-text {
+      font-size: 18px; 
+    }
+  }
