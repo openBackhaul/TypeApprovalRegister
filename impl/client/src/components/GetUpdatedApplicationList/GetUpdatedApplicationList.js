@@ -21,7 +21,9 @@ export class GetUpdatedApplicationList extends Component {
       listApplicationsFromUpdatedApprovalStatusAndEmbeddingStatus: '',
       loader: false,
       listApplicationsErrorHandlingForUpdateApprovalStatus: '',
-      listApplicationsErrorHandlingForUpdateEmbeddingStatus: ''
+      listApplicationsErrorHandlingForUpdateEmbeddingStatus: '',
+      dataOnTableRowClick: '',
+      tableRowClicked: false
     };
     this.handleSubmitForListApplicationForm = this.handleSubmitForListApplicationForm.bind(this);
     this.ERROR_MESSAGES = {
@@ -165,6 +167,15 @@ export class GetUpdatedApplicationList extends Component {
     this.setState({ xCorrelator: childData });
   }
 
+  fillDataOnTableRowClick = (childData) => {
+    if(childData != false){
+      this.setState({ dataOnTableRowClick: childData, tableRowClicked: true });
+    }else{
+      this.setState({ dataOnTableRowClick: '', tableRowClicked: false });
+    }
+  }
+
+
   render() {
     if (this.state.loader) {
       return <Spinner />
@@ -190,7 +201,7 @@ export class GetUpdatedApplicationList extends Component {
                 let xCorrelator = this.state.xCorrelator
                 if (typeof applicationListData.data !== 'undefined' && applicationListData.data.length > 0) {
                   let listApplications = applicationListData.data
-                  return <ApplicationsList listOfApplications={listApplications} isLoading={this.state.loader} />
+                  return <ApplicationsList listOfApplications={listApplications} isLoading={this.state.loader} fillDataOnTableRowClickParentCallback={this.fillDataOnTableRowClick} />
                 }
               }
             })()
@@ -202,8 +213,8 @@ export class GetUpdatedApplicationList extends Component {
                   let applicationListData = this.state.listApplications.applicationList
                   if (typeof applicationListData.data !== 'undefined' && applicationListData.data.length > 0) {
                     return [
-                      <UpdateApprovalStatus authorization={this.Authorization} parentCallback={this.handleCallback} loaderParentCallback={this.loaderHandleCallback} xCorrelatorrParentCallback={this.xCorrelatorHandleCallback} listApplicationsErrorHandling={this.state.listApplicationsErrorHandlingForUpdateApprovalStatus} />,
-                      <UpdateEmbeddginStatus authorization={this.Authorization} parentCallback={this.handleCallback} loaderParentCallback={this.loaderHandleCallback} xCorrelatorrParentCallback={this.xCorrelatorHandleCallback} listApplicationsErrorHandling={this.state.listApplicationsErrorHandlingForUpdateEmbeddingStatus} />
+                      <UpdateApprovalStatus authorization={this.Authorization} parentCallback={this.handleCallback} loaderParentCallback={this.loaderHandleCallback} xCorrelatorrParentCallback={this.xCorrelatorHandleCallback} listApplicationsErrorHandling={this.state.listApplicationsErrorHandlingForUpdateApprovalStatus} dataOnTableRowClick = {this.state.dataOnTableRowClick} tableRowClicked={this.state.tableRowClicked} fillDataOnTableRowClickParentCallback={this.fillDataOnTableRowClick} />,
+                      <UpdateEmbeddginStatus authorization={this.Authorization} parentCallback={this.handleCallback} loaderParentCallback={this.loaderHandleCallback} xCorrelatorrParentCallback={this.xCorrelatorHandleCallback} listApplicationsErrorHandling={this.state.listApplicationsErrorHandlingForUpdateEmbeddingStatus} dataOnTableRowClick = {this.state.dataOnTableRowClick} tableRowClicked={this.state.tableRowClicked} fillDataOnTableRowClickParentCallback={this.fillDataOnTableRowClick} />
                     ]
                   }
                 }

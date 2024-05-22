@@ -131,6 +131,14 @@ export class UpdateApprovalStatus extends Component {
   }
 
   render() {
+    if (this.props.tableRowClicked) {
+      if (this.props.dataOnTableRowClick != undefined && this.props.dataOnTableRowClick.length > 0) {
+        this.state.applicationName = this.props.dataOnTableRowClick[0]
+        this.state.releaseNumber = this.props.dataOnTableRowClick[1]
+        this.state.approvalStatus = this.props.dataOnTableRowClick[2]
+      }
+    }
+
     return (
       <>
         <div className="flex form-container">
@@ -140,11 +148,11 @@ export class UpdateApprovalStatus extends Component {
               {(this.props.listApplicationsErrorHandling) ? <div className={this.props.listApplicationsErrorHandling.css}>{this.props.listApplicationsErrorHandling.message}</div> : ''}
               <form onSubmit={this.handleSubmitForUpdateApprovalStatus} className="form-section">
                 <label>Application Name</label>
-                <input type="text" value={this.state.applicationName} onChange={(event) => this.setState({ 'applicationName': event.target.value })} required />
+                <input type="text" value={this.state.applicationName} onChange={(event) => {this.props.fillDataOnTableRowClickParentCallback(false); this.setState({ 'applicationName': event.target.value })} } required />
                 <label>Release Number </label>
-                <input type="text" value={this.state.releaseNumber} onChange={(event) => this.setState({ 'releaseNumber': event.target.value })} required />
+                <input type="text" value={this.state.releaseNumber} onChange={(event) => {this.props.fillDataOnTableRowClickParentCallback(false); this.setState({ 'releaseNumber': event.target.value })}} required />
                 <label>Approval Status</label>
-                <select onChange={(event) => this.setState({ 'approvalStatus': event.target.value })}>
+                <select onChange={(event) => {this.props.fillDataOnTableRowClickParentCallback(false); this.setState({ 'approvalStatus': event.target.value })}} value={this.state.approvalStatus}  >
                   <option required value="">Please Select Approval Status</option>
                   <option value="REGISTERED">REGISTERED</option>
                   <option value="APPROVED">APPROVED</option>
