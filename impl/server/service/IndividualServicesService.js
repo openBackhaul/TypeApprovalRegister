@@ -708,7 +708,9 @@ exports.regardApplication = function (body, user, originator, xCorrelator, trace
         let newApplicationData = {
           "application-name": applicationNameRequestBody,
           "application-release-number": releaseNumberRequestBody,
-          "approval-status": approvalStatus
+          "approval-status": approvalStatus,
+          "embedding-status": true,
+          "reason-of-failure": ""
         }
         // Add new application data from request body
         applicationData["applications"].push(newApplicationData)
