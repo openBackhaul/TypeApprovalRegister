@@ -64,6 +64,18 @@ tbody tr td {
   font-weight: 100;
 }
 
+.application-list tr{
+  cursor: pointer;
+}
+
+.information{
+  margin-top: 10px;
+  display: block;
+  font-style: italic;
+  color: grey;
+  font-size: 14px;
+}
+
 .flex {
   margin: 0 auto;
   max-width: 1000px;

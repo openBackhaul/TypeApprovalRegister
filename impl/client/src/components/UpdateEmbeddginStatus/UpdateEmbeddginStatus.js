@@ -133,6 +133,14 @@ export class UpdateEmbeddginStatus extends Component {
   }
 
   render() {
+    if (this.props.tableRowClicked) {
+      if (this.props.dataOnTableRowClick != undefined && this.props.dataOnTableRowClick.length > 0) {
+        this.state.applicationName = this.props.dataOnTableRowClick[0]
+        this.state.releaseNumber = this.props.dataOnTableRowClick[1]
+        this.state.documentEmbeddingStatus = this.props.dataOnTableRowClick[3]
+        this.state.reasonOfFailure = this.props.dataOnTableRowClick[4]
+      }
+    }
     return (
       <>
         <div className="flex form-container">
@@ -142,17 +150,17 @@ export class UpdateEmbeddginStatus extends Component {
               {(this.props.listApplicationsErrorHandling) ? <div className={this.props.listApplicationsErrorHandling.css}>{this.props.listApplicationsErrorHandling.message}</div> : ''}
               <form onSubmit={this.handleSubmitForEmbeddingStatus} className="form-section">
                 <label>Application Name</label>
-                <input type="text" value={this.state.applicationName} onChange={(event) => this.setState({ 'applicationName': event.target.value })} required />
+                <input type="text" value={this.state.applicationName} onChange={(event) => {this.props.fillDataOnTableRowClickParentCallback(false); this.setState({ 'applicationName': event.target.value })}} required />
                 <label>Release Number </label>
-                <input type="text" value={this.state.releaseNumber} onChange={(event) => this.setState({ 'releaseNumber': event.target.value })} required />
+                <input type="text" value={this.state.releaseNumber} onChange={(event) => {this.props.fillDataOnTableRowClickParentCallback(false); this.setState({ 'releaseNumber': event.target.value })}} required />
                 <label>Embedding Status</label>
-                <select required onChange={(event) => this.setState({ 'documentEmbeddingStatus': event.target.value })}>
+                <select required onChange={(event) => {this.props.fillDataOnTableRowClickParentCallback(false); this.setState({ 'documentEmbeddingStatus': event.target.value })}} value={this.state.documentEmbeddingStatus}>
                   <option value="">Please Select Embedding Status</option>
                   <option value="true">True</option>
                   <option value="false">False</option>
                 </select>
                 {
-                  (this.state.documentEmbeddingStatus == 'false') ? [<label>Reason Of Failure</label>, <input type="text" value={this.state.reasonOfFailure} onChange={(event) => this.setState({ 'reasonOfFailure': event.target.value })} />] : ""
+                  (this.state.documentEmbeddingStatus == 'false') ? [<label>Reason Of Failure</label>, <input type="text" value={this.state.reasonOfFailure} onChange={(event) => {this.props.fillDataOnTableRowClickParentCallback(false); this.setState({ 'reasonOfFailure': event.target.value })}} />] : ""
                 }
                 <button type="submit">Update Embedding Status</button>
               </form>
