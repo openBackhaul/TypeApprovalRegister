@@ -41,7 +41,7 @@ exports.regardApplication = function (applicationName, releaseNumber, approvalSt
                 forwardingAutomation,
                 headerRequest.user,
                 headerRequest.xCorrelator,
-                headerRequest.traceIndicator,
+                headerRequest.traceIndicator  + '.1',
                 headerRequest.customerJourney
             )
 
@@ -78,7 +78,7 @@ exports.redirectInfoAboutApprovalStatusChanges = function (logicalTerminationPoi
     });
 }
 
-exports.documentApprovalStatus = function (applicationName, releaseNumber, approvalStatus) {
+exports.documentApprovalStatus = function (applicationName, releaseNumber, approvalStatus, operationServerName, headerRequest) {
     return new Promise(async function (resolve, reject) {
         let forwardingConstructAutomationList = [];
         try {
@@ -86,10 +86,10 @@ exports.documentApprovalStatus = function (applicationName, releaseNumber, appro
              * UpdateOfApprovalStatusCausesInfoToRegistryOffice /v1/regard-updated-approval-status
              ************************************************************************************/
             let approvalStatusForwardingName = "UpdateOfApprovalStatusCausesInfoToRegistryOffice";
-            let approvalStatusContext;
             let approvalStatusRequestBody = {};
             approvalStatusRequestBody.applicationName = applicationName;
             approvalStatusRequestBody.releaseNumber = releaseNumber;
+            approvalStatusRequestBody.responseReceiverOperation = operationServerName;
 
             for (let approvalStatusKey in approvalStatusEnum) {
                 if (approvalStatusEnum[approvalStatusKey] == approvalStatus) {
@@ -100,14 +100,19 @@ exports.documentApprovalStatus = function (applicationName, releaseNumber, appro
             approvalStatusRequestBody.approvalStatus = approvalStatus;
 
             approvalStatusRequestBody = onfFormatter.modifyJsonObjectKeysToKebabCase(approvalStatusRequestBody);
-            let forwardingAutomation = new forwardingConstructAutomationInput(
+            let forwardingAutomation = new ForwardingProcessingInput(
                 approvalStatusForwardingName,
-                approvalStatusRequestBody,
-                approvalStatusContext
+                approvalStatusRequestBody
             );
-            forwardingConstructAutomationList.push(forwardingAutomation);
+            let response = await ForwardingConstructProcessingService.processForwardingConstructAsync(
+                forwardingAutomation,
+                headerRequest.user,
+                headerRequest.xCorrelator,
+                headerRequest.traceIndicator,
+                headerRequest.customerJourney
+            )
 
-            resolve(forwardingConstructAutomationList);
+            resolve(response);
         } catch (error) {
             reject(error);
         }
