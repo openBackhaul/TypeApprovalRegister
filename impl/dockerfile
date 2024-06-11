@@ -15,4 +15,4 @@ RUN cd ./server && npm ci --only=production
 EXPOSE 3025
 
 #Command to start the application
-CMD ["sh", "-c", "cd ./server && npm run start"]
+CMD ["sh", "-c", "cd ./server && node index.js"]
