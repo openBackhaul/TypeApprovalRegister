@@ -32,8 +32,6 @@ const stack = app._router.stack;
 const lastEntries = stack.splice(app._router.stack.length - 2);  // The number of middleware we added is 2 in this case.
 const firstEntries = stack.splice(0, 9); // Adding the middleware after the cookieParser
 app._router.stack = [...firstEntries, ...lastEntries, ...stack];
-console.log(app._router.stack);
-
 
 // Initialize the Swagger middleware
 http.createServer(app).listen(serverPort, function () {
