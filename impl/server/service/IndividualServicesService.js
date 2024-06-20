@@ -296,9 +296,6 @@ exports.documentApprovalStatus = function (body, user, originator, xCorrelator, 
           let applicationDetailsIndex = applicationDetails['index']
           applicationData["applications"][applicationDetailsIndex]["approval-status"] = approvalStatusFromRequestBody
           prepareApplicationData.addAndUpdateApplicationData(filePath, applicationData)
-          let operationServerNameList = await OperationServerInterface.getAllOperationServerNameAsync()
-          let regexprForOperation = /^(?!.*gui).*embedding.*/
-          fetchApplicationOperationServerName = operationServerNameList.find(value => regexprForOperation.test(value))
         }
       } else {
         // If there is no instance available for this application + release-number combination, create a instances
@@ -312,6 +309,10 @@ exports.documentApprovalStatus = function (body, user, originator, xCorrelator, 
         applicationData["applications"].push(newApplicationData)
         prepareApplicationData.addAndUpdateApplicationData(filePath, applicationData)
       }
+
+      let operationServerNameList = await OperationServerInterface.getAllOperationServerNameAsync()
+      let regexprForOperation = /^(?!.*gui).*embedding.*/
+      fetchApplicationOperationServerName = operationServerNameList.find(value => regexprForOperation.test(value))
 
       /****************************************************************************************
        * Prepare attributes to automate forwarding-construct
@@ -330,26 +331,23 @@ exports.documentApprovalStatus = function (body, user, originator, xCorrelator, 
         headerRequest
       );
 
-      if (approvalStatusFromRequestBody != applicationDetails['approval-status']) {
-        // processId variable will fetch the values from Application Pattern
-        let processId = retrivingProcessId.data
+      // processId variable will fetch the values from Application Pattern
+      let processId = retrivingProcessId.data
 
-        // check if the combination of application-name and application-release-number exist add received process-id into application-data.json
-        if (applicationDetails['is-application-exist']) {
-          let valueToUpdate = []
-          valueToUpdate["process-id"] = processId["process-id"]
-          let { matchedKey, newApplicationData, foundStatus } = await prepareApplicationData.getMatchedKeyAndNewApplicationDetails(applicationData, { applicationNameRequestBody, releaseNumberRequestBody, mixOfAppNameAndReleaseNo: true }, valueToUpdate)
-          if (foundStatus) {
-            let filteredApplicationData = await prepareApplicationData.updateValueWithKey(applicationData, matchedKey)
+      // check if the combination of application-name and application-release-number exist add received process-id into application-data.json
+      if (applicationDetails['is-application-exist']) {
+        let valueToUpdate = []
+        valueToUpdate["process-id"] = processId["process-id"]
+        let { matchedKey, newApplicationData, foundStatus } = await prepareApplicationData.getMatchedKeyAndNewApplicationDetails(applicationData, { applicationNameRequestBody, releaseNumberRequestBody, mixOfAppNameAndReleaseNo: true }, valueToUpdate)
+        if (foundStatus) {
+          let filteredApplicationData = await prepareApplicationData.updateValueWithKey(applicationData, matchedKey)
 
-            let updatedApplicationData = {}
-            updatedApplicationData["applications"] = filteredApplicationData
-            // Add updated application data
-            updatedApplicationData["applications"].push(newApplicationData)
-            await prepareApplicationData.addAndUpdateApplicationData(filePath, updatedApplicationData)
-          }
+          let updatedApplicationData = {}
+          updatedApplicationData["applications"] = filteredApplicationData
+          // Add updated application data
+          updatedApplicationData["applications"].push(newApplicationData)
+          await prepareApplicationData.addAndUpdateApplicationData(filePath, updatedApplicationData)
         }
-
       }
       
       resolve();
