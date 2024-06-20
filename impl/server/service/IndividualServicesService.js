@@ -303,7 +303,7 @@ exports.documentApprovalStatus = function (body, user, originator, xCorrelator, 
           "application-name": applicationNameRequestBody,
           "application-release-number": releaseNumberRequestBody,
           "approval-status": approvalStatusFromRequestBody,
-          "embedding-status": true,
+          "embedding-status": false,
           "reason-of-failure": ""
         }
         applicationData["applications"].push(newApplicationData)
