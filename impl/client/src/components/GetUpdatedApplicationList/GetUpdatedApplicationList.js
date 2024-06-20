@@ -97,8 +97,8 @@ export class GetUpdatedApplicationList extends Component {
       this.setState({ "xCorrelator": xCorrelator })
       let requestHeader = {
         'accept': 'application/json',
-        'user': 'tar-x-gui-path',
-        'originator': 'tar-x-gui-path',
+        'user': this.state.username,
+        'originator': this.state.username,
         'x-correlator': xCorrelator,
         'trace-indicator': '1',
         'customer-journey': 'Unknown value',
@@ -213,8 +213,8 @@ export class GetUpdatedApplicationList extends Component {
                   let applicationListData = this.state.listApplications.applicationList
                   if (typeof applicationListData.data !== 'undefined' && applicationListData.data.length > 0) {
                     return [
-                      <UpdateApprovalStatus authorization={this.Authorization} parentCallback={this.handleCallback} loaderParentCallback={this.loaderHandleCallback} xCorrelatorrParentCallback={this.xCorrelatorHandleCallback} listApplicationsErrorHandling={this.state.listApplicationsErrorHandlingForUpdateApprovalStatus} dataOnTableRowClick = {this.state.dataOnTableRowClick} tableRowClicked={this.state.tableRowClicked} fillDataOnTableRowClickParentCallback={this.fillDataOnTableRowClick} />,
-                      <UpdateEmbeddginStatus authorization={this.Authorization} parentCallback={this.handleCallback} loaderParentCallback={this.loaderHandleCallback} xCorrelatorrParentCallback={this.xCorrelatorHandleCallback} listApplicationsErrorHandling={this.state.listApplicationsErrorHandlingForUpdateEmbeddingStatus} dataOnTableRowClick = {this.state.dataOnTableRowClick} tableRowClicked={this.state.tableRowClicked} fillDataOnTableRowClickParentCallback={this.fillDataOnTableRowClick} />
+                      <UpdateApprovalStatus loggedInUser={this.state.username} authorization={this.Authorization} parentCallback={this.handleCallback} loaderParentCallback={this.loaderHandleCallback} xCorrelatorrParentCallback={this.xCorrelatorHandleCallback} listApplicationsErrorHandling={this.state.listApplicationsErrorHandlingForUpdateApprovalStatus} dataOnTableRowClick = {this.state.dataOnTableRowClick} tableRowClicked={this.state.tableRowClicked} fillDataOnTableRowClickParentCallback={this.fillDataOnTableRowClick} />,
+                      <UpdateEmbeddginStatus loggedInUser={this.state.username} authorization={this.Authorization} parentCallback={this.handleCallback} loaderParentCallback={this.loaderHandleCallback} xCorrelatorrParentCallback={this.xCorrelatorHandleCallback} listApplicationsErrorHandling={this.state.listApplicationsErrorHandlingForUpdateEmbeddingStatus} dataOnTableRowClick = {this.state.dataOnTableRowClick} tableRowClicked={this.state.tableRowClicked} fillDataOnTableRowClickParentCallback={this.fillDataOnTableRowClick} />
                     ]
                   }
                 }

@@ -86,8 +86,8 @@ export class UpdateEmbeddginStatus extends Component {
       this.props.xCorrelatorrParentCallback(xCorrelator)
       let requestHeader = {
         'accept': 'application/json',
-        'user': 'tar-x-gui-path',
-        'originator': 'tar-x-gui-path',
+        'user': this.props.loggedInUser,
+        'originator': this.props.loggedInUser,
         'x-correlator': xCorrelator,
         'trace-indicator': '1',
         'customer-journey': 'Unknown value',
