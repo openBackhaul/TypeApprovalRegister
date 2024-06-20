@@ -48,13 +48,6 @@
             "approval-status": "APPROVED",
             "embedding-status": true,
             "reason-of-failure": ""
-        },
-        {
-            "application-name": "CurrentController",
-            "application-release-number": "1.0.0",
-            "approval-status": "REGISTERED",
-            "embedding-status": true,
-            "reason-of-failure": ""
         }
     ]
 }
