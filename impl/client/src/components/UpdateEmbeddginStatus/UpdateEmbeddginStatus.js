@@ -160,7 +160,7 @@ export class UpdateEmbeddginStatus extends Component {
                   <option value="false">False</option>
                 </select>
                 {
-                  (this.state.documentEmbeddingStatus == 'false') ? [<label>Reason Of Failure</label>, <input type="text" value={this.state.reasonOfFailure} onChange={(event) => {this.props.fillDataOnTableRowClickParentCallback(false); this.setState({ 'reasonOfFailure': event.target.value })}} />] : ""
+                  (this.state.documentEmbeddingStatus == 'false') ? [<label>Reason Of Failure</label>, <input required type="text" value={this.state.reasonOfFailure} onChange={(event) => {this.props.fillDataOnTableRowClickParentCallback(false); this.setState({ 'reasonOfFailure': event.target.value })}} />] : ""
                 }
                 <button type="submit">Update Embedding Status</button>
               </form>
