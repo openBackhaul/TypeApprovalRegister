@@ -86,8 +86,8 @@ export class UpdateEmbeddginStatus extends Component {
       this.props.xCorrelatorrParentCallback(xCorrelator)
       let requestHeader = {
         'accept': 'application/json',
-        'user': 'tar-x-gui-path',
-        'originator': 'tar-x-gui-path',
+        'user': this.props.loggedInUser,
+        'originator': this.props.loggedInUser,
         'x-correlator': xCorrelator,
         'trace-indicator': '1',
         'customer-journey': 'Unknown value',
@@ -160,7 +160,7 @@ export class UpdateEmbeddginStatus extends Component {
                   <option value="false">False</option>
                 </select>
                 {
-                  (this.state.documentEmbeddingStatus == 'false') ? [<label>Reason Of Failure</label>, <input type="text" value={this.state.reasonOfFailure} onChange={(event) => {this.props.fillDataOnTableRowClickParentCallback(false); this.setState({ 'reasonOfFailure': event.target.value })}} />] : ""
+                  (this.state.documentEmbeddingStatus == 'false') ? [<label>Reason Of Failure</label>, <input required type="text" value={this.state.reasonOfFailure} onChange={(event) => {this.props.fillDataOnTableRowClickParentCallback(false); this.setState({ 'reasonOfFailure': event.target.value })}} />] : ""
                 }
                 <button type="submit">Update Embedding Status</button>
               </form>

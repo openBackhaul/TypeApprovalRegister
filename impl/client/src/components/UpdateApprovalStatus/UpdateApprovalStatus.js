@@ -84,8 +84,8 @@ export class UpdateApprovalStatus extends Component {
       let xCorrelator = this.getRandomXCorrelator();
       let requestHeader = {
         'accept': 'application/json',
-        'user': 'tar-x-gui-path',
-        'originator': 'tar-x-gui-path',
+        'user': this.props.loggedInUser,
+        'originator': this.props.loggedInUser,
         'x-correlator': xCorrelator,
         'trace-indicator': '1',
         'customer-journey': 'Unknown value',
