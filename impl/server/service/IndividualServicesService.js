@@ -296,6 +296,9 @@ exports.documentApprovalStatus = function (body, user, originator, xCorrelator, 
           let applicationDetailsIndex = applicationDetails['index']
           applicationData["applications"][applicationDetailsIndex]["approval-status"] = approvalStatusFromRequestBody
           applicationData["applications"][applicationDetailsIndex]["x-correlator"] = xCorrelator;
+          if(approvalStatusFromRequestBody == "BARRED"){
+            applicationData["applications"][applicationDetailsIndex]["reason-of-failure"] = "";
+          }
           prepareApplicationData.addAndUpdateApplicationData(filePath, applicationData)
         }
       } else {
@@ -752,18 +755,19 @@ exports.regardApplication = function (body, user, originator, xCorrelator, trace
           "application-release-number": releaseNumberRequestBody,
           "approval-status": approvalStatus,
           "embedding-status": false,
-          "reason-of-failure": ""
+          "reason-of-failure": "",
+          "x-correlator":xCorrelator
         }
         // Add new application data from request body
         applicationData["applications"].push(newApplicationData)
         await prepareApplicationData.addAndUpdateApplicationData(filePath, applicationData)
       } else {
         approvalStatus = applicationDetails['approval-status']
-        let operationServerNameList  = await OperationServerInterface.getAllOperationServerNameAsync()
-        let regexprForOperation = /^(?!.*gui).*embedding.*/
-        fetchApplicationOperationServerName = operationServerNameList.find(value => regexprForOperation.test(value))
       }
-
+      
+      let operationServerNameList  = await OperationServerInterface.getAllOperationServerNameAsync()
+      let regexprForOperation = /^(?!.*gui).*embedding.*/
+      fetchApplicationOperationServerName = operationServerNameList.find(value => regexprForOperation.test(value))
       /****************************************************************************************
        * Prepare attributes to automate forwarding-construct
        ****************************************************************************************/
@@ -785,10 +789,15 @@ exports.regardApplication = function (body, user, originator, xCorrelator, trace
       let processId = retrivingProcessId.data
 
       // check if the combination of application-name and application-release-number exist add received process-id into application-data.json
-      if (applicationDetails['is-application-exist']) {
+      
         let valueToUpdate = []
         valueToUpdate["process-id"] = processId["process-id"]
-        let {matchedKey,newApplicationData, foundStatus} = await prepareApplicationData.getMatchedKeyAndNewApplicationDetails(applicationData, {applicationNameRequestBody, releaseNumberRequestBody,mixOfAppNameAndReleaseNo: true} , valueToUpdate)
+        let {matchedKey,newApplicationData, foundStatus} = await prepareApplicationData.
+        getMatchedKeyAndNewApplicationDetails(
+          applicationData, 
+          {applicationNameRequestBody, releaseNumberRequestBody,mixOfAppNameAndReleaseNo: true} ,
+           valueToUpdate);
+           
         if (foundStatus) {
           let filteredApplicationData = await prepareApplicationData.updateValueWithKey(applicationData, matchedKey)
 
@@ -798,7 +807,6 @@ exports.regardApplication = function (body, user, originator, xCorrelator, trace
           updatedApplicationData["applications"].push(newApplicationData)
           await prepareApplicationData.addAndUpdateApplicationData(filePath, updatedApplicationData)
         }
-      }
 
       resolve();
     } catch (error) {
