@@ -295,6 +295,7 @@ exports.documentApprovalStatus = function (body, user, originator, xCorrelator, 
         if (approvalStatusFromRequestBody != applicationDetails['approval-status']) {
           let applicationDetailsIndex = applicationDetails['index']
           applicationData["applications"][applicationDetailsIndex]["approval-status"] = approvalStatusFromRequestBody
+          applicationData["applications"][applicationDetailsIndex]["x-correlator"] = xCorrelator;
           prepareApplicationData.addAndUpdateApplicationData(filePath, applicationData)
         }
       } else {
@@ -304,7 +305,8 @@ exports.documentApprovalStatus = function (body, user, originator, xCorrelator, 
           "application-release-number": releaseNumberRequestBody,
           "approval-status": approvalStatusFromRequestBody,
           "embedding-status": false,
-          "reason-of-failure": ""
+          "reason-of-failure": "",
+          "x-correlator":xCorrelator
         }
         applicationData["applications"].push(newApplicationData)
         prepareApplicationData.addAndUpdateApplicationData(filePath, applicationData)
@@ -335,7 +337,7 @@ exports.documentApprovalStatus = function (body, user, originator, xCorrelator, 
       let processId = retrivingProcessId.data
 
       // check if the combination of application-name and application-release-number exist add received process-id into application-data.json
-      if (applicationDetails['is-application-exist']) {
+      
         let valueToUpdate = []
         valueToUpdate["process-id"] = processId["process-id"]
         let { matchedKey, newApplicationData, foundStatus } = await prepareApplicationData.getMatchedKeyAndNewApplicationDetails(applicationData, { applicationNameRequestBody, releaseNumberRequestBody, mixOfAppNameAndReleaseNo: true }, valueToUpdate)
@@ -348,7 +350,7 @@ exports.documentApprovalStatus = function (body, user, originator, xCorrelator, 
           updatedApplicationData["applications"].push(newApplicationData)
           await prepareApplicationData.addAndUpdateApplicationData(filePath, updatedApplicationData)
         }
-      }
+     
       
       resolve();
     } catch (error) {
