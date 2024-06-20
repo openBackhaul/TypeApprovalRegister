@@ -108,7 +108,7 @@ exports.documentApprovalStatus = function (applicationName, releaseNumber, appro
                 forwardingAutomation,
                 headerRequest.user,
                 headerRequest.xCorrelator,
-                headerRequest.traceIndicator,
+                headerRequest.traceIndicator  + '.1',
                 headerRequest.customerJourney
             )
 
@@ -228,7 +228,7 @@ exports.retrievingListOfApplications = function (retrievingListOfApplicationsFor
                 forwardingAutomation,
                 headerRequest.user,
                 headerRequest.xCorrelator,
-                headerRequest.traceIndicator,
+                headerRequest.traceIndicator + '.2',
                 headerRequest.customerJourney
             )
             resolve(response.data);
@@ -261,7 +261,7 @@ exports.guiRequestForDocumentingAnApprovalStatusChangeCausesDocumentingApprovalS
                 forwardingAutomation,
                 headerRequest.user,
                 headerRequest.xCorrelator,
-                headerRequest.traceIndicator,
+                headerRequest.traceIndicator + '.1',
                 headerRequest.customerJourney
             )
 
