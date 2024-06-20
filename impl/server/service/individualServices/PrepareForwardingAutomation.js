@@ -194,7 +194,7 @@ exports.updateDocumentEmbeddingStatusInGui = function ( applicationName, release
                 forwardingAutomation,
                 headerRequest.user,
                 headerRequest.xCorrelator,
-                headerRequest.traceIndicator,
+                headerRequest.traceIndicator+ ".1",
                 headerRequest.customerJourney
             )
 
