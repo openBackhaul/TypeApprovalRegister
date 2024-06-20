@@ -261,7 +261,7 @@ exports.guiRequestForDocumentingAnApprovalStatusChangeCausesDocumentingApprovalS
                 forwardingAutomation,
                 headerRequest.user,
                 headerRequest.xCorrelator,
-                headerRequest.traceIndicator,
+                headerRequest.traceIndicator + '1',
                 headerRequest.customerJourney
             )
 
