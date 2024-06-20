@@ -108,7 +108,7 @@ exports.documentApprovalStatus = function (applicationName, releaseNumber, appro
                 forwardingAutomation,
                 headerRequest.user,
                 headerRequest.xCorrelator,
-                headerRequest.traceIndicator,
+                headerRequest.traceIndicator  + '.1',
                 headerRequest.customerJourney
             )
 
