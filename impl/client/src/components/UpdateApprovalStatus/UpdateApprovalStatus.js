@@ -85,7 +85,7 @@ export class UpdateApprovalStatus extends Component {
       let requestHeader = {
         'accept': 'application/json',
         'user': this.props.loggedInUser,
-        'originator': this.props.loggedInUser,
+        'originator': "application/medium",
         'x-correlator': xCorrelator,
         'trace-indicator': '1',
         'customer-journey': 'Unknown value',
