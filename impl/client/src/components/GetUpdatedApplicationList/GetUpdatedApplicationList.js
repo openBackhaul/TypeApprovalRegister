@@ -98,7 +98,7 @@ export class GetUpdatedApplicationList extends Component {
       let requestHeader = {
         'accept': 'application/json',
         'user': this.state.username,
-        'originator': "application/medium",
+        'originator': "tar-x-gui",
         'x-correlator': xCorrelator,
         'trace-indicator': '1',
         'customer-journey': 'Unknown value',
