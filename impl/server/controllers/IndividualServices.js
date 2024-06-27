@@ -3,7 +3,7 @@
 var responseCodeEnum = require('onf-core-model-ap/applicationPattern/rest/server/ResponseCode');
 var restResponseHeader = require('onf-core-model-ap/applicationPattern/rest/server/ResponseHeader');
 var restResponseBuilder = require('onf-core-model-ap/applicationPattern/rest/server/ResponseBuilder');
-var executionAndTraceService = require('onf-core-model-ap/applicationPattern/services/ExecutionAndTraceService');
+var ExecutionAndTraceService = require('onf-core-model-ap/applicationPattern/services/ExecutionAndTraceService');
 var IndividualServices = require('../service/IndividualServicesService');
 
 module.exports.approveApplicationInGui = async function approveApplicationInGui(req, res, next, body, user, originator, xCorrelator, traceIndicator, customerJourney) {
@@ -22,7 +22,7 @@ module.exports.approveApplicationInGui = async function approveApplicationInGui(
       responseCode = sentResp.code;
       responseBodyToDocument = sentResp.body;
     });
-  let execTime = await RestResponseHeader.executionTimeInMilliseconds(startTime);
+  let execTime = await restResponseHeader.executionTimeInMilliseconds(startTime);
   if (!execTime) execTime = 0;
   else execTime = Math.round(execTime);
   ExecutionAndTraceService.recordServiceRequest(xCorrelator, traceIndicator, user, originator, req.url, responseCode, req.body, responseBodyToDocument, execTime);
@@ -44,7 +44,7 @@ module.exports.bequeathYourDataAndDie = async function bequeathYourDataAndDie(re
       responseCode = sentResp.code;
       responseBodyToDocument = sentResp.body;
     });
-  let execTime = await RestResponseHeader.executionTimeInMilliseconds(startTime);
+  let execTime = await restResponseHeader.executionTimeInMilliseconds(startTime);
   if (!execTime) execTime = 0;
   else execTime = Math.round(execTime);
   ExecutionAndTraceService.recordServiceRequest(xCorrelator, traceIndicator, user, originator, req.url, responseCode, req.body, responseBodyToDocument, execTime);
@@ -66,7 +66,7 @@ module.exports.disregardApplication = async function disregardApplication(req, r
       responseCode = sentResp.code;
       responseBodyToDocument = sentResp.body;
     });
-  let execTime = await RestResponseHeader.executionTimeInMilliseconds(startTime);
+  let execTime = await restResponseHeader.executionTimeInMilliseconds(startTime);
   if (!execTime) execTime = 0;
   else execTime = Math.round(execTime);
   ExecutionAndTraceService.recordServiceRequest(xCorrelator, traceIndicator, user, originator, req.url, responseCode, req.body, responseBodyToDocument, execTime);
@@ -88,7 +88,7 @@ module.exports.documentApprovalStatus = async function documentApprovalStatus(re
       responseCode = sentResp.code;
       responseBodyToDocument = sentResp.body;
     });
-  let execTime = await RestResponseHeader.executionTimeInMilliseconds(startTime);
+  let execTime = await restResponseHeader.executionTimeInMilliseconds(startTime);
   if (!execTime) execTime = 0;
   else execTime = Math.round(execTime);
   ExecutionAndTraceService.recordServiceRequest(xCorrelator, traceIndicator, user, originator, req.url, responseCode, req.body, responseBodyToDocument, execTime);
@@ -110,7 +110,7 @@ module.exports.documentEmbeddingStatus = async function documentEmbeddingStatus(
       responseCode = sentResp.code;
       responseBodyToDocument = sentResp.body;
     });
-  let execTime = await RestResponseHeader.executionTimeInMilliseconds(startTime);
+  let execTime = await restResponseHeader.executionTimeInMilliseconds(startTime);
   if (!execTime) execTime = 0;
   else execTime = Math.round(execTime);
   ExecutionAndTraceService.recordServiceRequest(xCorrelator, traceIndicator, user, originator, req.url, responseCode, req.body, responseBodyToDocument, execTime);
@@ -132,7 +132,7 @@ module.exports.documentEmbeddingStatusInGui = async function documentEmbeddingSt
       responseCode = sentResp.code;
       responseBodyToDocument = sentResp.body;
     });
-  let execTime = await RestResponseHeader.executionTimeInMilliseconds(startTime);
+  let execTime = await restResponseHeader.executionTimeInMilliseconds(startTime);
   if (!execTime) execTime = 0;
   else execTime = Math.round(execTime);
   ExecutionAndTraceService.recordServiceRequest(xCorrelator, traceIndicator, user, originator, req.url, responseCode, req.body, responseBodyToDocument, execTime);
@@ -154,7 +154,7 @@ module.exports.listApplications = async function listApplications(req, res, next
       responseCode = sentResp.code;
       responseBodyToDocument = sentResp.body;
     });
-  let execTime = await RestResponseHeader.executionTimeInMilliseconds(startTime);
+  let execTime = await restResponseHeader.executionTimeInMilliseconds(startTime);
   if (!execTime) execTime = 0;
   else execTime = Math.round(execTime);
   ExecutionAndTraceService.recordServiceRequest(xCorrelator, traceIndicator, user, originator, req.url, responseCode, req.body, responseBodyToDocument, execTime);
@@ -176,7 +176,7 @@ module.exports.listApplicationsInGui = async function listApplicationsInGui(req,
       responseCode = sentResp.code;
       responseBodyToDocument = sentResp.body;
     });
-  let execTime = await RestResponseHeader.executionTimeInMilliseconds(startTime);
+  let execTime = await restResponseHeader.executionTimeInMilliseconds(startTime);
   if (!execTime) execTime = 0;
   else execTime = Math.round(execTime);
   ExecutionAndTraceService.recordServiceRequest(xCorrelator, traceIndicator, user, originator, req.url, responseCode, req.body, responseBodyToDocument, execTime);
@@ -198,7 +198,7 @@ module.exports.listApprovedApplicationsInGenericRepresentation = async function 
       responseCode = sentResp.code;
       responseBodyToDocument = sentResp.body;
     });
-  let execTime = await RestResponseHeader.executionTimeInMilliseconds(startTime);
+  let execTime = await restResponseHeader.executionTimeInMilliseconds(startTime);
   if (!execTime) execTime = 0;
   else execTime = Math.round(execTime);
   ExecutionAndTraceService.recordServiceRequest(xCorrelator, traceIndicator, user, originator, req.url, responseCode, req.body, responseBodyToDocument, execTime);
@@ -220,7 +220,7 @@ module.exports.redirectInfoAboutApprovalStatusChanges = async function redirectI
       responseCode = sentResp.code;
       responseBodyToDocument = sentResp.body;
     });
-  let execTime = await RestResponseHeader.executionTimeInMilliseconds(startTime);
+  let execTime = await restResponseHeader.executionTimeInMilliseconds(startTime);
   if (!execTime) execTime = 0;
   else execTime = Math.round(execTime);
   ExecutionAndTraceService.recordServiceRequest(xCorrelator, traceIndicator, user, originator, req.url, responseCode, req.body, responseBodyToDocument, execTime);
@@ -242,7 +242,7 @@ module.exports.regardApplication = async function regardApplication(req, res, ne
       responseCode = sentResp.code;
       responseBodyToDocument = sentResp.body;
     });
-  let execTime = await RestResponseHeader.executionTimeInMilliseconds(startTime);
+  let execTime = await restResponseHeader.executionTimeInMilliseconds(startTime);
   if (!execTime) execTime = 0;
   else execTime = Math.round(execTime);
   ExecutionAndTraceService.recordServiceRequest(xCorrelator, traceIndicator, user, originator, req.url, responseCode, req.body, responseBodyToDocument, execTime);
