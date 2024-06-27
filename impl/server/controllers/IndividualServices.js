@@ -3,7 +3,7 @@
 var responseCodeEnum = require('onf-core-model-ap/applicationPattern/rest/server/ResponseCode');
 var restResponseHeader = require('onf-core-model-ap/applicationPattern/rest/server/ResponseHeader');
 var restResponseBuilder = require('onf-core-model-ap/applicationPattern/rest/server/ResponseBuilder');
-var ExecutionAndTraceService = require('onf-core-model-ap/applicationPattern/services/ExecutionAndTraceService');
+var ExecutionAndTraceService = require('onf-core-model-ap/applicationPattern/services/executionAndTraceService');
 var IndividualServices = require('../service/IndividualServicesService');
 
 module.exports.approveApplicationInGui = async function approveApplicationInGui(req, res, next, body, user, originator, xCorrelator, traceIndicator, customerJourney) {
