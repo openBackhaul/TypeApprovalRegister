@@ -5,7 +5,7 @@ var BasicServices = require('onf-core-model-ap-bs/basicServices/BasicServicesSer
 var responseCodeEnum = require('onf-core-model-ap/applicationPattern/rest/server/ResponseCode');
 var RestResponseHeader = require('onf-core-model-ap/applicationPattern/rest/server/ResponseHeader');
 var RestResponseBuilder = require('onf-core-model-ap/applicationPattern/rest/server/ResponseBuilder');
-var ExecutionAndTraceService = require('onf-core-model-ap/applicationPattern/services/executionAndTraceService');
+var ExecutionAndTraceService = require('onf-core-model-ap/applicationPattern/services/ExecutionAndTraceService');
 
 const NEW_RELEASE_FORWARDING_NAME = 'PromptForBequeathingDataCausesTransferOfListOfApplications';
 const OLD_RELEASE_FORWARDING_NAME = 'PromptForEmbeddingCausesRequestForBequeathingData';
