@@ -526,7 +526,7 @@ async function promptForBequeathingDataCausesRequestForDeregisteringOfOldRelease
 
                 let applicationName = await httpServerInterface.getApplicationNameAsync();
                 let oldReleaseNumber = await httpServerInterface.getReleaseNumberAsync();
-                let newReleaseNumber= await httpServerInterface.getReleaseNumberAsync(newReleaseHttpClientLtpUuid)
+                let newReleaseNumber= await httpClientInterface.getReleaseNumberAsync(newReleaseHttpClientLtpUuid)
 
                 if (oldReleaseNumber != newReleaseNumber) {
                     /***********************************************************************************

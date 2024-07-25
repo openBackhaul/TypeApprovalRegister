@@ -22,7 +22,7 @@ export class Header extends Component {
             }
           </div>
           <div className="header-title-container">
-            <h1 className='header-text'>Type Approval Register x-gui path</h1>
+            <h1 className='header-text'>Type Approval Register</h1>
           </div>
           <div className="header-info-container">
           </div>
