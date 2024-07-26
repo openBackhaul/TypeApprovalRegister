@@ -1,0 +1,53 @@
+{
+    "applications": [
+        {
+            "application-name": "RegistryOffice",
+            "application-release-number": "2.1.1",
+            "approval-status": "APPROVED",
+            "embedding-status": true,
+            "reason-of-failure": ""
+        },
+        {
+            "application-name": "TypeApprovalRegister",
+            "application-release-number": "2.1.1",
+            "approval-status": "APPROVED",
+            "embedding-status": true,
+            "reason-of-failure": ""
+        },
+        {
+            "application-name": "OamLog",
+            "application-release-number": "2.1.1",
+            "approval-status": "APPROVED",
+            "embedding-status": true,
+            "reason-of-failure": ""
+        },
+        {
+            "application-name": "ExecutionAndTraceLog",
+            "application-release-number": "2.1.1",
+            "approval-status": "APPROVED",
+            "embedding-status": true,
+            "reason-of-failure": ""
+        },
+        {
+            "application-name": "AdministratorAdministration",
+            "application-release-number": "2.1.1",
+            "approval-status": "APPROVED",
+            "embedding-status": true,
+            "reason-of-failure": ""
+        },
+        {
+            "application-name": "OperationKeyManagement",
+            "application-release-number": "2.1.1",
+            "approval-status": "APPROVED",
+            "embedding-status": true,
+            "reason-of-failure": ""
+        },
+        {
+            "application-name": "ApplicationLayerTopology",
+            "application-release-number": "2.1.1",
+            "approval-status": "APPROVED",
+            "embedding-status": true,
+            "reason-of-failure": ""
+        }
+    ]
+}
