@@ -144,7 +144,5 @@ profile-instances:
       file-identifier: 'LOADfile'
       file-description: 'Application name, release number and approval status'
     configuration:
-      file-path: '../application-data/application-data.json'
-      user-name: 'TypeApprovalRegister'
-      password: 'Operations to add password'
+      file-name: 'application-data.json'
       operation: 'write'
