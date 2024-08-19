@@ -1146,7 +1146,16 @@ paths:
     parameters:
       - $ref: '#/components/parameters/user'
       - $ref: '#/components/parameters/originator'
-      - $ref: '#/components/parameters/x-correlator'
+      - name: x-correlator
+        in: header
+        required: true
+        schema:
+          type: string
+          pattern: '^[0-9A-Fa-f]{8}(?:-[0-9A-Fa-f]{4}){3}-[0-9A-Fa-f]{12}$'
+          example: '550e8400-e29b-11d4-a716-446655440000'
+        description: >
+          'UUID for the service execution flow that allows to correlate requests and responses
+          update in LOADfile'
       - $ref: '#/components/parameters/trace-indicator'
       - $ref: '#/components/parameters/customer-journey'
     post:
@@ -1722,17 +1731,7 @@ paths:
     parameters:
       - $ref: '#/components/parameters/user'
       - $ref: '#/components/parameters/originator'
-      - name: x-correlator
-        in: header
-        required: true
-        schema:
-          type: string
-          pattern: '^[0-9A-Fa-f]{8}(?:-[0-9A-Fa-f]{4}){3}-[0-9A-Fa-f]{12}$'
-          description: 'Empty string accepted from external applications.'
-          example: '550e8400-e29b-11d4-a716-446655440000'
-        description: >
-          'UUID for the service execution flow that allows to correlate requests and responses
-          update in LOADfile'
+      - $ref: '#/components/parameters/x-correlator'
       - $ref: '#/components/parameters/trace-indicator'
       - $ref: '#/components/parameters/customer-journey'
     post:
