@@ -292,7 +292,6 @@ exports.documentApprovalStatus = function (body, user, originator, xCorrelator, 
       applicationDetails = await prepareApplicationData.getApplicationDetails(applicationData, applicationNameRequestBody, releaseNumberRequestBody)
       if (applicationDetails['is-application-exist']) {
         // If there is instance available for this application + release-number combination, update the “approval-status” of the instance
-        if (approvalStatusFromRequestBody != applicationDetails['approval-status']) {
           let applicationDetailsIndex = applicationDetails['index']
           applicationData["applications"][applicationDetailsIndex]["approval-status"] = approvalStatusFromRequestBody
           applicationData["applications"][applicationDetailsIndex]["x-correlator"] = xCorrelator;
@@ -300,7 +299,6 @@ exports.documentApprovalStatus = function (body, user, originator, xCorrelator, 
             applicationData["applications"][applicationDetailsIndex]["reason-of-failure"] = "";
           }
           prepareApplicationData.addAndUpdateApplicationData(filePath, applicationData)
-        }
       } else {
         // If there is no instance available for this application + release-number combination, create a instances
         let newApplicationData = {
