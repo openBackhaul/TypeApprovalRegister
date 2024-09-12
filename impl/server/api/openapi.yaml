@@ -23228,6 +23228,7 @@ components:
             description: "If true, the application successfully connected with the\
               \ TinyApplicationController"
         description: IF successfully-embedded == true
+        additionalProperties: false
       - required:
         - application-name
         - reason-of-failure
