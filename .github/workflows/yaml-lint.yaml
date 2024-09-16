@@ -21,4 +21,4 @@ jobs:
                 ignore: |
                   .github/
             ignore: |
-              server/
+              impl/server/
