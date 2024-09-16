@@ -29,7 +29,7 @@
             "reason-of-failure": ""
         },
         {
-            "application-name": "AdministratorAdministration",
+            "application-name": "AccessAdministration",
             "application-release-number": "2.1.1",
             "approval-status": "APPROVED",
             "embedding-status": true,
