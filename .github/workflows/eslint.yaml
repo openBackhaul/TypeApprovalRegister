@@ -21,8 +21,8 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-        working-directory: server
+        working-directory: impl/server
 
       - name: Run ESLint
         run: ./node_modules/.bin/eslint .
-        working-directory: server
+        working-directory: impl/server
