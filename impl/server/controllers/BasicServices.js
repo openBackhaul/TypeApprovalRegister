@@ -43,7 +43,7 @@ module.exports.embedYourself = async function embedYourself(req, res, next, body
       RestResponseBuilder.buildResponse(res, responseCode, responseBody, responseHeader);
     })
     .catch(async function (responseBody) {
-      let responseHeader = await RestResponseHeader.createResponseHeader(xCorrelator, startTime, req.url);
+      let responseHeader = await RestResponseHeader.createResponseHeader(xCorrelator, startTime, req.url, -1);
       let sentResp = RestResponseBuilder.buildResponse(res, undefined, responseBody, responseHeader);
       responseCode = sentResp.code;
       responseBodyToDocument = sentResp.body;
