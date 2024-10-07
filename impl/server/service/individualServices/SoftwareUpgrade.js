@@ -447,7 +447,7 @@ async function promptForBequeathingDataCausesRequestForBroadcastingInfoAboutServ
             try {
                 let HttpClientLtpUuidFromForwarding  = await individualServices.resolveHttpClientLtpUuidFromForwardingName(forwardingKindNameForBequeathingDataCausesNewTAR)
                 if (HttpClientLtpUuidFromForwarding == undefined) {
-                    reject(new Error(`The NewRelease ${applicationName} was not found.`));
+                    reject(new Error(`The NewRelease was not found.`));
                     return;
                 }
                 let newReleaseHttpClientLtpUuid = HttpClientLtpUuidFromForwarding[0];
