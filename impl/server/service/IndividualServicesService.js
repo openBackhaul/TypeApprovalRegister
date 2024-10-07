@@ -38,13 +38,12 @@ const OperationServerInterface = require('onf-core-model-ap/applicationPattern/o
  * customerJourney String Holds information supporting customer’s journey to which the execution applies
  * returns List
  **/
-exports.approveApplicationInGui = function (body, user, originator, xCorrelator, traceIndicator, customerJourney, request) {
+exports.approveApplicationInGui = function (body, user, xCorrelator, traceIndicator, customerJourney) {
   return new Promise(async function (resolve, reject) {
     try {
       let applicationName = body["application-name"]
       let releaseNumber = body['release-number']
       let approvalStatus = body['approval-status']
-      let operationServerName = request.url
       /****************************************************************************************
  * Prepare attributes to automate forwarding-construct
  ****************************************************************************************/
@@ -267,7 +266,7 @@ exports.disregardApplication = function (body) {
  * customerJourney String Holds information supporting customer’s journey to which the execution applies
  * no response value expected for this operation
  **/
-exports.documentApprovalStatus = function (body, user, originator, xCorrelator, traceIndicator, customerJourney, operationServerName) {
+exports.documentApprovalStatus = function (body, user, xCorrelator, traceIndicator, customerJourney) {
   return new Promise(async function (resolve, reject) {
     try {
       /****************************************************************************************
@@ -371,13 +370,12 @@ exports.documentApprovalStatus = function (body, user, originator, xCorrelator, 
  * customerJourney String Holds information supporting customer’s journey to which the execution applies
  * no response value expected for this operation
  **/
-exports.documentEmbeddingStatus = function (body, user, originator, xCorrelator, traceIndicator, customerJourney, req) {
+exports.documentEmbeddingStatus = function (body, req) {
   return new Promise(async function (resolve, reject) {
     try {
       let reasonForFailure
       let processId = body["process-id"]
       let successfullyEmbedded = body['successfully-embedded']
-      let operationServerName = req.url
 
       // in case successfullyEmbedded is false & "reason-of-failure" is not provided send 400
       if (!successfullyEmbedded) {
@@ -476,14 +474,13 @@ exports.documentEmbeddingStatus = function (body, user, originator, xCorrelator,
  * customerJourney String Holds information supporting customer’s journey to which the execution applies
  * returns List
  **/
-exports.documentEmbeddingStatusInGui = function (body, user, originator, xCorrelator, traceIndicator, customerJourney, request) {
+exports.documentEmbeddingStatusInGui = function (body, user, xCorrelator, traceIndicator, customerJourney) {
   return new Promise(async function (resolve, reject) {
     try {
       let applicationName = body["application-name"]
       let releaseNumber = body["release-number"]
       let successfullyEmbedded = body["successfully-embedded"]
       let reasonOfFailure
-      let operationServerName = request.url
 
       // in case successfullyEmbedded is false & "reason-of-failure" is not provided send 400
       if (!successfullyEmbedded) {
@@ -564,7 +561,7 @@ exports.listApplications = async function () {
  * customerJourney String Holds information supporting customer’s journey to which the execution applies
  * returns List
  **/
-exports.listApplicationsInGui = async function (user, originator, xCorrelator, traceIndicator, customerJourney, request) {
+exports.listApplicationsInGui = async function (user, xCorrelator, traceIndicator, customerJourney) {
   return new Promise(async function (resolve, reject) {
     try {
       let headerRequest = {
@@ -725,7 +722,7 @@ exports.redirectInfoAboutApprovalStatusChanges =  async function (body, user, or
  * customerJourney String Holds information supporting customer’s journey to which the execution applies
  * no response value expected for this operation
  **/
-exports.regardApplication = function (body, user, originator, xCorrelator, traceIndicator, customerJourney, operationServerName) {
+exports.regardApplication = function (body, user, xCorrelator, traceIndicator, customerJourney) {
   return new Promise(async function (resolve, reject) {
     try {
       let applicationData = []

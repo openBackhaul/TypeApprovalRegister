@@ -10,7 +10,7 @@ module.exports.approveApplicationInGui = async function approveApplicationInGui(
   let startTime = process.hrtime();
   let responseCode = responseCodeEnum.code.OK;
   let responseBodyToDocument = {};
-  await IndividualServices.approveApplicationInGui(body, user, originator, xCorrelator, traceIndicator, customerJourney, req)
+  await IndividualServices.approveApplicationInGui(body, user, xCorrelator, traceIndicator, customerJourney)
     .then(async function (responseBody) {
       responseBodyToDocument = responseBody;
       let responseHeader = await restResponseHeader.createResponseHeader(xCorrelator, startTime, req.url);
@@ -76,7 +76,7 @@ module.exports.documentApprovalStatus = async function documentApprovalStatus(re
   let startTime = process.hrtime();
   let responseCode = responseCodeEnum.code.NO_CONTENT;
   let responseBodyToDocument = {};
-  await IndividualServices.documentApprovalStatus(body, user, originator, xCorrelator, traceIndicator, customerJourney, req.url)
+  await IndividualServices.documentApprovalStatus(body, user, xCorrelator, traceIndicator, customerJourney)
     .then(async function (responseBody) {
       responseBodyToDocument = responseBody;
       let responseHeader = await restResponseHeader.createResponseHeader(xCorrelator, startTime, req.url);
@@ -98,7 +98,7 @@ module.exports.documentEmbeddingStatus = async function documentEmbeddingStatus(
   let startTime = process.hrtime();
   let responseCode = responseCodeEnum.code.NO_CONTENT;
   let responseBodyToDocument = {};
-  await IndividualServices.documentEmbeddingStatus(body, user, originator, xCorrelator, traceIndicator, customerJourney, req)
+  await IndividualServices.documentEmbeddingStatus(body, req)
     .then(async function (responseBody) {
       responseBodyToDocument = responseBody;
       let responseHeader = await restResponseHeader.createResponseHeader(xCorrelator, startTime, req.url);
@@ -120,7 +120,7 @@ module.exports.documentEmbeddingStatusInGui = async function documentEmbeddingSt
   let startTime = process.hrtime();
   let responseCode = responseCodeEnum.code.OK;
   let responseBodyToDocument = {};
-  await IndividualServices.documentEmbeddingStatusInGui(body, user, originator, xCorrelator, traceIndicator, customerJourney, req)
+  await IndividualServices.documentEmbeddingStatusInGui(body, user, xCorrelator, traceIndicator, customerJourney)
     .then(async function (responseBody) {
       responseBodyToDocument = responseBody;
       let responseHeader = await restResponseHeader.createResponseHeader(xCorrelator, startTime, req.url);
@@ -164,7 +164,7 @@ module.exports.listApplicationsInGui = async function listApplicationsInGui(req,
   let startTime = process.hrtime();
   let responseCode = responseCodeEnum.code.OK;
   let responseBodyToDocument = {};
-  await IndividualServices.listApplicationsInGui(user, originator, xCorrelator, traceIndicator, customerJourney, req)
+  await IndividualServices.listApplicationsInGui(user, xCorrelator, traceIndicator, customerJourney)
     .then(async function (responseBody) {
       responseBodyToDocument = responseBody;
       let responseHeader = await restResponseHeader.createResponseHeader(xCorrelator, startTime, req.url);
@@ -230,7 +230,7 @@ module.exports.regardApplication = async function regardApplication(req, res, ne
   let startTime = process.hrtime();
   let responseCode = responseCodeEnum.code.NO_CONTENT;
   let responseBodyToDocument = {};
-  await IndividualServices.regardApplication(body, user, originator, xCorrelator, traceIndicator, customerJourney, req.url)
+  await IndividualServices.regardApplication(body, user, xCorrelator, traceIndicator, customerJourney)
     .then(async function (responseBody) {
       responseBodyToDocument = responseBody;
       let responseHeader = await restResponseHeader.createResponseHeader(xCorrelator, startTime, req.url);
