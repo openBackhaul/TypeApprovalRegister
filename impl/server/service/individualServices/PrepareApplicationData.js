@@ -82,7 +82,7 @@ exports.deleteApplication = async (applicationData, applicationNameToDelete, app
 exports.getMatchedKeyAndNewApplicationDetails = async (applicationData, conditionToMatch, valueToUpdate) => {
     return new Promise(async function (resolve, reject) {
         try {
-            // check if the combination of application-name and application-release-number exist added received process-id into application-data.json
+            // check if the combination of application-name and application-release-number exist then add relevant details into application-data.json
             let newApplicationData
             let matchedKey
             let foundStatus
