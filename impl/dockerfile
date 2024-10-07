@@ -12,7 +12,7 @@ RUN cd ./client && npm ci --only=production && npm run build
 # Install npm packages for server
 RUN cd ./server && npm ci --only=production
 
-EXPOSE 3025
+EXPOSE 3032
 
 #Command to start the application
 CMD ["sh", "-c", "cd ./server && node index.js"]

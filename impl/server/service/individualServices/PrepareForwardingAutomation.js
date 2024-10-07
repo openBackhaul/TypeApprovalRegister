@@ -1,8 +1,8 @@
-const forwardingConstructAutomationInput = require('onf-core-model-ap/applicationPattern/onfModel/services/models/forwardingConstruct/AutomationInput');
 const onfFormatter = require('onf-core-model-ap/applicationPattern/onfModel/utility/OnfAttributeFormatter');
 const prepareALTForwardingAutomation = require('onf-core-model-ap-bs/basicServices/services/PrepareALTForwardingAutomation');
 const ForwardingProcessingInput = require('onf-core-model-ap/applicationPattern/onfModel/services/models/forwardingConstruct/ForwardingProcessingInput');
 const ForwardingConstructProcessingService = require('onf-core-model-ap/applicationPattern/onfModel/services/ForwardingConstructProcessingServices');
+const createHttpError = require('http-errors');
 
 const approvalStatusEnum = {
     REGISTERED: "application-profile-1-0:APPROVAL_STATUS_TYPE_REGISTERED",
@@ -13,7 +13,6 @@ const approvalStatusEnum = {
 
 exports.regardApplication = function (applicationName, releaseNumber, approvalStatus, operationServerName, headerRequest) {
     return new Promise(async function (resolve, reject) {
-        let forwardingConstructAutomationList = [];
         try {
             /***********************************************************************************
              * RegisteringCausesInfoAboutApprovalStatusToRegistryOffice /v1/update-approval-status
@@ -80,7 +79,6 @@ exports.redirectInfoAboutApprovalStatusChanges = function (logicalTerminationPoi
 
 exports.documentApprovalStatus = function (applicationName, releaseNumber, approvalStatus, operationServerName, headerRequest) {
     return new Promise(async function (resolve, reject) {
-        let forwardingConstructAutomationList = [];
         try {
             /***********************************************************************************
              * UpdateOfApprovalStatusCausesInfoToRegistryOffice /v1/regard-updated-approval-status
@@ -173,7 +171,6 @@ exports.OAMLayerRequest = function (uuid) {
 
 exports.updateDocumentEmbeddingStatusInGui = function ( applicationName, releaseNumber, successfullyEmbedded, reasonOfFailure, headerRequest) {
     return new Promise(async function (resolve, reject) {
-        let forwardingConstructAutomationList = [];
         try {
             /***********************************************************************************
              * GuiRequestForDocumentingAnEmbeddingStatusChangeCauses.DocumentingEmbeddingStatus TAR://v1/document-embedding-status
@@ -214,7 +211,6 @@ exports.updateDocumentEmbeddingStatusInGui = function ( applicationName, release
 
 exports.retrievingListOfApplications = function (retrievingListOfApplicationsForwardingName,headerRequest) {
     return new Promise(async function (resolve, reject) {
-        let forwardingConstructAutomationList = [];
         try {
             /***********************************************************************************
              * RetrievingListOfApplications TAR://v1/list-applications
@@ -241,7 +237,6 @@ exports.retrievingListOfApplications = function (retrievingListOfApplicationsFor
 
 exports.guiRequestForDocumentingAnApprovalStatusChangeCausesDocumentingApprovalStatus = function (applicationName, releaseNumber, approvalStatus, headerRequest) {
     return new Promise(async function (resolve, reject) {
-        let forwardingConstructAutomationList = [];
         try {
             /***********************************************************************************
              * GuiRequestForDocumentingAnApprovalStatusChangeCauses.DocumentingApprovalStatus TAR://v1/document-approval-status
